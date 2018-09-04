@@ -21,6 +21,7 @@ jobs:
                 flatpak remote-add flathub https://dl.flathub.org/repo/flathub.flatpakrepo;
                 flatpak install -y flathub org.gnome.Sdk//3.28 org.gnome.Sdk.Debug//3.28 > /dev/null;
                 flatpak install -y flathub org.gnome.Sdk.Locale//3.28 org.gnome.Platform.Locale//3.28 > /dev/null;
+                flatpak install -y flathub org.gnome.Sdk.Docs//3.28 > /dev/null;
                 echo Done installation;
                 cd /workdir;
                 echo Building flatpak...;
