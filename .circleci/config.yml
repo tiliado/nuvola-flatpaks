@@ -18,7 +18,7 @@ jobs:
                 export LC_ALL=en_US.UTF-8;
                 echo Install tools;
                 dnf -y update && dnf install -y flatpak flatpak-builder && dnf clean all;
-                flatpak remote-add -y flathub https://dl.flathub.org/repo/flathub.flatpakrepo;
+                flatpak remote-add flathub https://dl.flathub.org/repo/flathub.flatpakrepo;
                 flatpak install -y flathub org.gnome.Sdk//3.28 org.gnome.Sdk.Debug//3.28 > /dev/null;
                 flatpak install -y flathub org.gnome.Sdk.Locale//3.28 org.gnome.Platform.Locale//3.28 > /dev/null;
                 echo Done installation;
