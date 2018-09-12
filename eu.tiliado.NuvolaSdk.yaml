@@ -1,7 +1,7 @@
 build-runtime: true
 id: "eu.tiliado.NuvolaSdk"
 id-platform: "eu.tiliado.NuvolaPlatform"
-branch: master"
+branch: master
 runtime: "org.gnome.Sdk"
 runtime-version: "3.28"
 sdk: org.gnome.Sdk
@@ -25,7 +25,7 @@ inherit-sdk-extensions:
 
 modules:
 
-  - name: python3,
+  - name: python3
     x-anitya-id: 13254
     x-version: "3.6.2"
     build-options:
