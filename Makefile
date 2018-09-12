@@ -10,7 +10,7 @@ dnf-install:
 
 install-deps:
 	flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-	flatpak install -y --subpath= flathub \
+	flatpak install -y flathub \
 		org.gnome.Sdk//$(GNOME_VERSION) \
 		org.gnome.Sdk.Debug//$(GNOME_VERSION) \
 		org.gnome.Sdk.Locale//$(GNOME_VERSION) \
