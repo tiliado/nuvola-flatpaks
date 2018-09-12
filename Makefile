@@ -16,8 +16,7 @@ install-deps:
 		org.gnome.Sdk.Locale//$(GNOME_VERSION) \
 		org.gnome.Sdk.Docs//$(GNOME_VERSION) \
 		org.gnome.Platform.Locale//$(GNOME_VERSION) \
-		org.freedesktop.Platform.html5-codecs \
-		> /dev/null
+		org.freedesktop.Platform.html5-codecs
 
 build:
 	rm -rf result
