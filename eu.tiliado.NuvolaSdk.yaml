@@ -31,6 +31,9 @@ modules:
     build-options:
       env:
         PYTHONHASHSEED: "0"
+    ensure-writable:
+      - "/bin/pip3"
+      
     sources:
       - type: archive
         url: "https://www.python.org/ftp/python/3.6.2/Python-3.6.2.tar.xz"
