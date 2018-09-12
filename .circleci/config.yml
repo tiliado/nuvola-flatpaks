@@ -19,7 +19,7 @@ jobs:
                 cd /workdir;
                 echo Install tools;
                 dnf install -y make;
-                make dnf-install-flatpak;
+                make dnf-install;
                 make install-deps;
                 echo Done installation;
                 cd /workdir;

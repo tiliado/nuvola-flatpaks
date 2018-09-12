@@ -3,9 +3,9 @@ GNOME_VERSION := 3.28
 info:
 	cat Makefile
 
-dnf-install-flatpak:
+dnf-install:
 	dnf -y update
-	dnf install -y flatpak flatpak-builder
+	dnf install -y time flatpak flatpak-builder
 	dnf clean all
 
 install-deps:
