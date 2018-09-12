@@ -16,16 +16,14 @@ jobs:
                 set -eu;
                 export LANG=en_US.UTF-8;
                 export LC_ALL=en_US.UTF-8;
+                cd /workdir;
                 echo Install tools;
-                dnf -y update && dnf install -y flatpak flatpak-builder && dnf clean all;
-                flatpak remote-add flathub https://dl.flathub.org/repo/flathub.flatpakrepo;
-                flatpak install -y flathub org.gnome.Sdk//3.28 org.gnome.Sdk.Debug//3.28 > /dev/null;
-                flatpak install -y flathub org.gnome.Sdk.Locale//3.28 org.gnome.Platform.Locale//3.28 > /dev/null;
-                flatpak install -y flathub org.gnome.Sdk.Docs//3.28 > /dev/null;
+                make dnf-install-flatpak;
+                make install-deps;
                 echo Done installation;
                 cd /workdir;
                 echo Building flatpak...;
-                flatpak-builder result eu.tiliado.NuvolaSdk.yaml;
+                make build
                 echo Archiving flatpak...;
                 tar -czf result.tar.gz result;
                 echo Done.
