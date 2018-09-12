@@ -10,15 +10,15 @@ sdk-extensions:
   - "org.gnome.Sdk.Debug"
   - "org.gnome.Sdk.Locale"
   - "org.gnome.Sdk.Docs"
-platform-extensions:
-  - "org.gnome.Platform.Locale"
+#platform-extensions:
+# FIXME:  - "org.gnome.Platform.Locale"
 inherit-extensions:
   - "org.freedesktop.Platform.GL"
   - "org.freedesktop.Platform.Timezones"
   - "org.freedesktop.Platform.GStreamer"
   - "org.freedesktop.Platform.Icontheme"
   - "org.freedesktop.Platform.VAAPI.Intel"
-  - "org.freedesktop.Platform.html5-codecs"
+# FIXME:  - "org.freedesktop.Platform.html5-codecs"
   - "org.gtk.Gtk3theme"
 inherit-sdk-extensions:
   - "org.freedesktop.Sdk.Extension"
