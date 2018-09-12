@@ -18,6 +18,7 @@ jobs:
                 export LC_ALL=en_US.UTF-8;
                 cd /workdir;
                 echo Install tools;
+                dnf install -y make;
                 make dnf-install-flatpak;
                 make install-deps;
                 echo Done installation;
