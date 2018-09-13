@@ -65,3 +65,18 @@ modules:
       - "rm -r /usr/lib/python3.6/unittest/__pycache__"
       - "rm -r /usr/lib/python3.6/site-packages/pkg_resources/_vendor/__pycache__/"
       - "./fixpyc3timestamp.py /usr"
+
+  - name: python3-pyparsing
+    x-anitya-id: 3756
+    x-version: "2.1.10"
+    buildsystem: simple
+    ensure-writable:
+      - /lib/python3.6/site-packages/easy-install.pth
+      - /lib/python3.6/site-packages/setuptools.pth
+    build-commands:
+      - /usr/bin/python3.6 setup.py install -v --prefix=/usr
+    sources:
+      - type: archive
+        x-url-pattern: https://downloads.sourceforge.net/project/pyparsing/pyparsing/pyparsing-{version}/pyparsing-{version}.tar.gz
+        url: https://downloads.sourceforge.net/project/pyparsing/pyparsing/pyparsing-2.1.10/pyparsing-2.1.10.tar.gz
+        sha256: 811c3e7b0031021137fc83e051795025fcb98674d07eb8fe922ba4de53d39188
