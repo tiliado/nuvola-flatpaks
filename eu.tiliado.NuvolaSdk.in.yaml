@@ -93,3 +93,16 @@ modules:
     build-commands:
       - mkdir -pv /usr/share/javascript/engine.io-client
       - cp -v engine.io.js /usr/share/javascript/engine.io-client
+  
+  - name: unitjs
+    x-anitya-id: 17859
+    x-version: "2.0.0"
+    sources:
+      - type: archive
+        x-url-pattern: https://github.com/unitjs/unit.js/archive/v{version}.tar.gz
+        url: https://github.com/unitjs/unit.js/archive/v2.0.0.tar.gz
+        sha256: 1421f528356d0b6e3ccb5372640f83cd0e5ca1b479fa785da603c1f3849c1fa2
+    buildsystem: simple
+    build-commands:
+      - mkdir -pv /usr/share/javascript/unitjs
+      - cp -v browser/dist/unit.js /usr/share/javascript/unitjs
