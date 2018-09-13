@@ -81,6 +81,21 @@ modules:
         url: https://downloads.sourceforge.net/project/pyparsing/pyparsing/pyparsing-2.1.10/pyparsing-2.1.10.tar.gz
         sha256: 811c3e7b0031021137fc83e051795025fcb98674d07eb8fe922ba4de53d39188
 
+  - name: python3-six
+    x-anitya-id: 4027
+    x-version: "1.10.0"
+    sources:
+      - type: archive
+        x-url-pattern: https://bitbucket.org/gutworth/six/get/{version}.tar.bz2
+        url: https://bitbucket.org/gutworth/six/get/1.10.0.tar.bz2
+        sha256: 79f123a49ce0dcfc5bc229e308cf632a2931ab0f4718e6778a13dae917aa2e46
+    buildsystem: simple
+    ensure-writable:
+      - /lib/python3.6/site-packages/easy-install.pth
+      - /lib/python3.6/site-packages/setuptools.pth
+    build-commands:
+      - /usr/bin/python3.6 setup.py install -v --prefix=/usr
+
   - name: engineio
     x-anitya-id: 17857
     x-version: "3.1.0"
