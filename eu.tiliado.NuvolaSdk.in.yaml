@@ -96,6 +96,21 @@ modules:
     build-commands:
       - /usr/bin/python3.6 setup.py install -v --prefix=/usr
 
+  - name: python3-scour
+    x-anitya-id: 16344
+    x-version: "0.35"
+    sources:
+      - type: archive
+        x-url-pattern: https://github.com/scour-project/scour/archive/v{version}.tar.gz
+        url: https://github.com/scour-project/scour/archive/v0.35.tar.gz
+        sha256: 91a7dd0d721a3567b802c1b353ef451621594e628fe723cedb65cd4629fbc96f
+    buildsystem: simple
+    ensure-writable:
+      - /lib/python3.6/site-packages/easy-install.pth
+      - /lib/python3.6/site-packages/setuptools.pth
+    build-commands:
+      - /usr/bin/python3.6 setup.py install -v --prefix=/usr
+
   - name: engineio
     x-anitya-id: 17857
     x-version: "3.1.0"
