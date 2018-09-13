@@ -80,3 +80,16 @@ modules:
         x-url-pattern: https://downloads.sourceforge.net/project/pyparsing/pyparsing/pyparsing-{version}/pyparsing-{version}.tar.gz
         url: https://downloads.sourceforge.net/project/pyparsing/pyparsing/pyparsing-2.1.10/pyparsing-2.1.10.tar.gz
         sha256: 811c3e7b0031021137fc83e051795025fcb98674d07eb8fe922ba4de53d39188
+
+  - name: engineio
+    x-anitya-id: 17857
+    x-version: "3.1.0"
+    sources:
+      - type: archive
+        x-url-pattern: https://github.com/socketio/engine.io-client/archive/{version}.tar.gz
+        url: https://github.com/socketio/engine.io-client/archive/3.1.0.tar.gz
+        sha256: 866629b467d17cca87015118aaef668d9705420d117ace337a5d35c3cc2a0a34
+    buildsystem: simple
+    build-commands:
+      - mkdir -pv /usr/share/javascript/engine.io-client
+      - cp -v engine.io.js /usr/share/javascript/engine.io-client
