@@ -25,6 +25,21 @@ inherit-sdk-extensions:
 
 modules:
 
+  - name: greybird
+    x-anitya-id: 1250
+    x-version: "3.22.3"
+    buildsystem: simple
+    build-commands:
+      - "install -dm755 /usr/share/themes/Greybird/gtk-3.0"
+      - "cp -a gtk-3.0/*.css /usr/share/themes/Greybird/gtk-3.0"
+      - "cp -aRL gtk-3.0/apps /usr/share/themes/Greybird/gtk-3.0"
+      - "cp -aRL gtk-3.0/assets /usr/share/themes/Greybird/gtk-3.0"
+    sources:
+      - type: archive
+        x-url-pattern: "https://github.com/shimmerproject/Greybird/archive/v{version}.tar.gz"
+        url: https://github.com/shimmerproject/Greybird/archive/v3.22.3.tar.gz
+        sha256: 7b81451f6157c49e4a8b01c4889668c3bc7653fc0a910e536a615705fbb5aec3
+
   - name: python3
     x-anitya-id: 13254
     x-version: "3.6.2"
@@ -33,7 +48,6 @@ modules:
         PYTHONHASHSEED: "0"
     ensure-writable:
       - "/bin/pip3"
-      
     sources:
       - type: archive
         x-url-pattern: "https://www.python.org/ftp/python/{version}/Python-{version}.tar.xz"
