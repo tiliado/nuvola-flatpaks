@@ -55,7 +55,7 @@ modules:
         sha256: "9229773be41ed144370f47f0f626a1579931f5a390f1e8e3853174d52edd64a9"
       - type: file
         path: "tools/fixpyc3timestamp.py"
-    post-install: 
+    post-install:
       - "cd /usr/bin && rm 2to3* idle3* pydoc3* pyvenv*"
       - "rm -r /usr/share/man /usr/lib/*.a"
       - "rm -r /usr/lib/python3.6/site-packages/pip /usr/lib/python3.6/test/__pycache__"
@@ -108,7 +108,7 @@ modules:
     build-commands:
       - mkdir -pv /usr/share/javascript/engine.io-client
       - cp -v engine.io.js /usr/share/javascript/engine.io-client
-  
+
   - name: unitjs
     x-anitya-id: 17859
     x-version: "2.0.0"
