@@ -18,6 +18,9 @@ install-deps:
 		org.gnome.Platform.Locale//$(GNOME_VERSION) \
 		org.freedesktop.Platform.html5-codecs
 
-build:
+eu.tiliado.NuvolaSdk.yaml: eu.tiliado.NuvolaSdk.in.yaml
+	sed -e 's/@GNOME_VERSION@/$(GNOME_VERSION)/g' $< > $@
+
+build: eu.tiliado.NuvolaSdk.yaml
 	rm -rf result
 	time flatpak-builder result eu.tiliado.NuvolaSdk.yaml
