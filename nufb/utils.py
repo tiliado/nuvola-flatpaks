@@ -5,7 +5,7 @@
 This module contains various utility functions.
 """
 from pathlib import Path
-from typing import MutableMapping, Any, Union
+from typing import MutableMapping, Any, Union, Optional
 
 import ruamel.yaml
 
@@ -33,6 +33,39 @@ def ensure_list(dictionary: MutableMapping[Any, Any], key: str) -> list:
         new_array: list = []
         dictionary[key] = new_array
         return new_array
+
+
+def ensure_string(dictionary: MutableMapping[Any, Any], key: str,
+                  default: Optional[str] = None) -> str:
+    """
+    Ensure that a mutable mapping contains a string value for the specified
+    key.
+
+    If the existing value for the key is a string, it is returned. If there is
+    no value for the key and `default` is not `None`, it is set as the new
+    value for the key and then returned. Otherwise, an exception is raised.
+
+    :param dictionary: The mutable mapping.
+    :param key: The key that should contain a string value.
+    :param default: The value to use if there is no value for the given key.
+    :return: The list for the given key.
+    :raise TypeError: If the existing value for the given key is not a
+        string, or if there is no existing value for the given key and
+        `default` is `None`.
+    """
+    try:
+        value = dictionary[key]
+        if isinstance(value, str):
+            return value
+        raise TypeError(
+            f'The value for key {key!r} is not a string but {type(value)}.')
+    except KeyError:
+        if default is None:
+            raise TypeError(
+                f'The value for key {key!r} is missing and no default value '
+                'was provided.')
+        dictionary[key] = default
+        return default
 
 
 def load_yaml(source: Union[str, Path]) -> dict:

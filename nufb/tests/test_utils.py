@@ -9,6 +9,7 @@ import pytest
 from nufb import utils
 
 KEY = 'key'
+DEFAULT = 'default'
 
 
 class TestEnsureList:
@@ -45,6 +46,47 @@ class TestEnsureList:
         dictionary = {KEY: 'value'}
         with pytest.raises(TypeError):
             utils.ensure_list(dictionary, KEY)
+
+
+class TestEnsureString:
+    """Tests for nufb.utils.ensure_string."""
+
+    def test_missing_key_without_default(self):
+        """KeyError is thrown for missing key without a default value."""
+        dictionary = {}
+        with pytest.raises(TypeError):
+            utils.ensure_string(dictionary, KEY)
+        assert KEY not in dictionary
+
+    def test_missing_key_with_default(self):
+        """A default value is set and returned for missing key."""
+        dictionary = {}
+        result = utils.ensure_string(dictionary, KEY, DEFAULT)
+        assert id(dictionary[KEY]) == id(result) == id(DEFAULT)
+        assert id(utils.ensure_string(dictionary, KEY)) == id(result)
+
+    def test_empty_string(self):
+        """Already existing empty string is returned unmodified."""
+        empty = ''
+        dictionary = {KEY: empty}
+        result = utils.ensure_string(dictionary, KEY, DEFAULT)
+        assert id(result) == id(empty)
+        assert id(utils.ensure_string(dictionary, KEY)) == id(empty)
+
+    def test_non_empty_string(self):
+        """Already existing non-empty string is returned unmodified."""
+        not_empty = 'value'
+        dictionary = {KEY: not_empty}
+        result = utils.ensure_string(dictionary, KEY, DEFAULT)
+        assert id(result) == id(not_empty)
+        assert result == 'value'
+        assert id(utils.ensure_string(dictionary, KEY)) == id(not_empty)
+
+    def test_wrong_type(self):
+        """If the value is not a string, TypeError is raised."""
+        dictionary = {KEY: ['value']}
+        with pytest.raises(TypeError):
+            utils.ensure_string(dictionary, KEY)
 
 
 class TestLoadYaml:
