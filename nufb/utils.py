@@ -1,3 +1,6 @@
+# Copyright 2019 Jiří Janoušek <janousek.jiri@gmail.com>
+# License: BSD-2-Clause, see file LICENSE at the project root.
+
 """
 This module contains various utility functions.
 """
