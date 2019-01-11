@@ -203,6 +203,13 @@ class TestModule:
         data = {}
         assert id(wrappers.Module(data).data) == id(data)
 
+    def test_new(self):
+        """New module"""
+        name = 'my-module'
+        module = wrappers.Module.new(name, size=10)
+        assert module.name == name
+        assert module.data['size'] == 10
+
     def test_name_field(self):
         """Test name getter and setter"""
         module = wrappers.Module()

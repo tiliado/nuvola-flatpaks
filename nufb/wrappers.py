@@ -142,6 +142,18 @@ class Module:
             data = {}
         self.data = data
 
+    @classmethod
+    def new(cls, name: str, **fields) -> 'Module':
+        """
+        Create a new module with the given name.
+
+        :param name: The name of the module.
+        :param fields: Other fields.
+        :return: New module.
+        """
+        fields[const.MODULE_NAME] = name
+        return cls(fields)
+
     @property
     def name(self) -> str:
         """
