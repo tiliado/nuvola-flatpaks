@@ -1,4 +1,5 @@
 """Tests for nufb.utils"""
+from pathlib import Path
 
 import pytest
 
@@ -39,3 +40,18 @@ class TestEnsureList:
         dictionary = {'name': 'value'}
         with pytest.raises(TypeError):
             utils.ensure_list(dictionary, 'name')
+
+
+class TestLoadYaml:
+    """Rests for nufb.utils.load_yaml."""
+
+    def test_load_string(self):
+        """Load YAML from string."""
+        result = utils.load_yaml('a: b\nb: c\n')
+        assert result == {'a': 'b', 'b': 'c'}
+
+    def test_load_file(self, data_dir: Path):
+        """Load YAML from string."""
+        path = data_dir / 'document.yaml'
+        result = utils.load_yaml(path)
+        assert result == {'a': 'b', 'b': 'c'}

@@ -1,8 +1,10 @@
 """
 This module contains various utility functions.
 """
+from pathlib import Path
+from typing import MutableMapping, Any, Union
 
-from typing import MutableMapping, Any
+import ruamel.yaml
 
 
 def ensure_list(dictionary: MutableMapping[Any, Any], key: str) -> list:
@@ -28,3 +30,16 @@ def ensure_list(dictionary: MutableMapping[Any, Any], key: str) -> list:
         new_array: list = []
         dictionary[key] = new_array
         return new_array
+
+
+def load_yaml(source: Union[str, Path]) -> dict:
+    """
+    Load YAML source file/string as Python dictionary.
+
+    :param source: The source file or string.
+    :return: Python representation of the YAML document.
+    """
+    yaml = ruamel.yaml.YAML(typ='safe')
+    dictionary = yaml.load(source)
+    assert isinstance(dictionary, dict)
+    return dictionary
