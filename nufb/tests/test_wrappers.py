@@ -194,6 +194,13 @@ class TestManifest:
         assert wrappers.Manifest().find_module(name) is None
         assert id(wrappers.Manifest(data).find_module(name).data) == id(module)
 
+    def test_init_module(self):
+        """Initialization module."""
+        assert wrappers.Manifest().init_module.name == 'init'
+        module = {'name': 'init'}
+        data = {'modules': [module]}
+        assert id(wrappers.Manifest(data).init_module.data) == id(module)
+
 
 class TestModule:
     """Tests for nufb.wrappers.Module"""

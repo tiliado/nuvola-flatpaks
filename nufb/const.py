@@ -20,3 +20,6 @@ MANIFEST_MODULES = 'modules'
 
 #: The name of the module, used in e.g. build logs.
 MODULE_NAME = 'name'
+
+#: The name of a custom module for initialization.
+INIT_MODULE_NAME = 'init'
