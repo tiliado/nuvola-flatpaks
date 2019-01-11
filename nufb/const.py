@@ -23,3 +23,6 @@ MODULE_NAME = 'name'
 
 #: The name of a custom module for initialization.
 INIT_MODULE_NAME = 'init'
+
+#: The name of a custom module for initialization.
+FINISH_MODULE_NAME = 'finish'

@@ -19,6 +19,7 @@ class Manifest:
     _modules: Optional[List['Module']]
     _raw_modules: Optional[List[dict]]
     _init_module: Optional['Module']
+    _finish_module: Optional['Module']
 
     def __init__(self, data: Optional[dict] = None):
         if data is None:
@@ -28,6 +29,7 @@ class Manifest:
         self._modules = None
         self._raw_modules = None
         self._init_module = None
+        self._finish_module = None
 
         if const.MANIFEST_ID in data and const.MANIFEST_APP_ID in data:
             raise ValueError(
@@ -98,6 +100,17 @@ class Manifest:
                 self.add_module(self._init_module, 0)
         assert self._init_module
         return self._init_module
+
+    @property
+    def finish_module(self) -> 'Module':
+        """Custom finish module."""
+        if self._finish_module is None:
+            self._finish_module = self.find_module(const.FINISH_MODULE_NAME)
+            if not self._finish_module:
+                self._finish_module = Module.new(const.FINISH_MODULE_NAME)
+                self.add_module(self._finish_module)
+        assert self._finish_module
+        return self._finish_module
 
     def _process_modules(self):
         self._raw_modules = utils.ensure_list(

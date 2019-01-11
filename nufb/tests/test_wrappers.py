@@ -201,6 +201,13 @@ class TestManifest:
         data = {'modules': [module]}
         assert id(wrappers.Manifest(data).init_module.data) == id(module)
 
+    def test_finish_module(self):
+        """Finish module."""
+        assert wrappers.Manifest().finish_module.name == 'finish'
+        module = {'name': 'finish'}
+        data = {'modules': [module]}
+        assert id(wrappers.Manifest(data).finish_module.data) == id(module)
+
 
 class TestModule:
     """Tests for nufb.wrappers.Module"""
