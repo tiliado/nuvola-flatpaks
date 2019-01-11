@@ -14,3 +14,9 @@ MANIFEST_ID = 'id'
 
 #: A string defining the application id.
 MANIFEST_APP_ID = 'app-id'
+
+#: An array of objects specifying the modules to be built in order.
+MANIFEST_MODULES = 'modules'
+
+#: The name of the module, used in e.g. build logs.
+MODULE_NAME = 'name'

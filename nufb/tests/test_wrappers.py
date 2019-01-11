@@ -7,6 +7,7 @@ import pytest
 from nufb import wrappers
 
 
+# pylint: disable=too-many-public-methods
 class TestManifest:
     """Tests for nufb.wrappers.Manifest"""
 
@@ -87,6 +88,61 @@ class TestManifest:
             manifest.branch = 123
         assert data['branch'] == manifest.branch == branch
 
+    def test_raw_modules_no_data(self):
+        """When no modules are in manifest, an empty list is created."""
+        data = {}
+        manifest = wrappers.Manifest(data)
+        assert manifest.raw_modules == []
+        assert id(manifest.raw_modules) == id(data['modules'])
+
+    def test_raw_modules_empty(self):
+        """When an empty modules array is manifest, it is unmodified."""
+        modules = []
+        data = {'modules': modules}
+        manifest = wrappers.Manifest(data)
+        assert manifest.raw_modules == modules == []
+        assert id(manifest.raw_modules) == id(data['modules']) == id(modules)
+
+    def test_raw_modules_not_empty(self):
+        """When a non-empty modules array is manifest, it is unmodified."""
+        module = {'name': None}
+        modules = [module]
+        data = {'modules': modules}
+        manifest = wrappers.Manifest(data)
+        assert manifest.raw_modules == modules == [module]
+        assert id(manifest.raw_modules) == id(data['modules']) == id(modules)
+
+    def test_modules_no_data(self):
+        """When no modules are in manifest, an empty list is created."""
+        data = {}
+        manifest = wrappers.Manifest(data)
+        assert manifest.modules == []
+        assert id(manifest.modules) != id(data['modules'])
+
+    def test_modules_empty(self):
+        """
+        When an empty modules array is manifest, an empty list is created.
+        """
+        modules = []
+        data = {'modules': modules}
+        manifest = wrappers.Manifest(data)
+        assert manifest.modules == []
+        assert id(manifest.modules) != id(modules)
+
+    def test_modules_not_empty(self):
+        """
+        When a non-empty modules array is manifest, a non-empty list is
+        created.
+        """
+        module = {'name': 'my-name'}
+        modules = [module]
+        data = {'modules': modules}
+        manifest = wrappers.Manifest(data)
+        assert manifest.modules != [module]
+        assert id(manifest.modules) != id(data['modules'])
+        assert manifest.modules[0].data == module
+        assert id(manifest.modules[0].data) == id(module)
+
     def test_str_no_data(self):
         """Empty data provide no id but the branch has a default."""
         assert str(wrappers.Manifest()) == '<Manifest: id=None, branch=master>'
@@ -101,3 +157,60 @@ class TestManifest:
         data = {'id': 'eu.tiliado.App', 'branch': 'stable'}
         assert str(wrappers.Manifest(data)) \
             == '<Manifest: id=eu.tiliado.App, branch=stable>'
+
+    def test_add_module(self):
+        """Add module at various positions."""
+        module = wrappers.Module()
+
+        manifest = wrappers.Manifest()
+        manifest.add_module(module, -123)
+        assert len(manifest.modules) == 1
+        assert manifest.modules[0] == module
+
+        manifest = wrappers.Manifest()
+        assert not manifest.modules
+        manifest.add_module(module)
+        assert len(manifest.modules) == 1
+        assert manifest.modules[0] == module
+
+        modules = [{}, {}, {}, {}]
+        data = {'modules': modules}
+        manifest = wrappers.Manifest(data)
+        manifest.add_module(module, 0)
+        assert len(manifest.modules) == 5
+        assert manifest.modules[0] == module
+        manifest.add_module(module, -2)
+        assert len(manifest.modules) == 6
+        assert manifest.modules[3] == module
+        manifest.add_module(module)
+        assert len(manifest.modules) == 7
+        assert manifest.modules[6] == module
+
+
+class TestModule:
+    """Tests for nufb.wrappers.Module"""
+    def test_construct(self):
+        """Test init method."""
+        assert wrappers.Module().data == {}
+        data = {}
+        assert id(wrappers.Module(data).data) == id(data)
+
+    def test_name_field(self):
+        """Test name getter and setter"""
+        module = wrappers.Module()
+        with pytest.raises(TypeError):
+            _ = module.name   # noqa
+
+        name = 'my-module'
+        module.name = name
+        assert module.name == name
+
+        with pytest.raises(TypeError):
+            module.name = 123
+        assert module.name == name
+
+    def test_str(self):
+        """str() shouldn't raise an error"""
+        assert str(wrappers.Module()) == '<Module: name=None>'
+        assert str(wrappers.Module({'name': 123})) == '<Module: name=123>'
+        assert str(wrappers.Module({'name': 'abc'})) == '<Module: name=abc>'
