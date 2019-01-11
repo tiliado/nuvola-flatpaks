@@ -8,6 +8,8 @@ import pytest
 
 from nufb import utils
 
+KEY = 'key'
+
 
 class TestEnsureList:
     """Tests for nufb.utils.ensure_list."""
@@ -15,34 +17,34 @@ class TestEnsureList:
     def test_missing_key(self):
         """New empty list is created, set, and returned for missing key."""
         dictionary = {}
-        result = utils.ensure_list(dictionary, 'name')
+        result = utils.ensure_list(dictionary, KEY)
         assert result == []
-        assert id(dictionary['name']) == id(result)
-        assert id(utils.ensure_list(dictionary, 'name')) == id(result)
+        assert id(dictionary[KEY]) == id(result)
+        assert id(utils.ensure_list(dictionary, KEY)) == id(result)
 
     def test_empty_list(self):
         """Already existing empty list is returned unmodified."""
         empty = []
-        dictionary = {'name': empty}
-        result = utils.ensure_list(dictionary, 'name')
+        dictionary = {KEY: empty}
+        result = utils.ensure_list(dictionary, KEY)
         assert id(result) == id(empty)
         assert result == []
-        assert id(utils.ensure_list(dictionary, 'name')) == id(empty)
+        assert id(utils.ensure_list(dictionary, KEY)) == id(empty)
 
     def test_non_empty_list(self):
         """Already existing non-empty list is returned unmodified."""
         not_empty = ['value']
-        dictionary = {'name': not_empty}
-        result = utils.ensure_list(dictionary, 'name')
+        dictionary = {KEY: not_empty}
+        result = utils.ensure_list(dictionary, KEY)
         assert id(result) == id(not_empty)
         assert result == ['value']
-        assert id(utils.ensure_list(dictionary, 'name')) == id(not_empty)
+        assert id(utils.ensure_list(dictionary, KEY)) == id(not_empty)
 
-    def test_type_error(self):
+    def test_wrong_type(self):
         """If the value is not a list, TypeError is raised."""
-        dictionary = {'name': 'value'}
+        dictionary = {KEY: 'value'}
         with pytest.raises(TypeError):
-            utils.ensure_list(dictionary, 'name')
+            utils.ensure_list(dictionary, KEY)
 
 
 class TestLoadYaml:
