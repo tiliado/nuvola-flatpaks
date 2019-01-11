@@ -15,7 +15,8 @@ good-names=i,
            k,
            fh,
            argv,
-           e
+           e,
+           T
 
 [MESSAGES CONTROL]
 disable=too-few-public-methods,

@@ -5,9 +5,25 @@
 This module contains various utility functions.
 """
 from pathlib import Path
-from typing import MutableMapping, Any, Union, Optional
+from typing import MutableMapping, Any, Union, Optional, TypeVar, Type
 
 import ruamel.yaml
+
+T = TypeVar('T')
+
+
+def expect_type(value: Any, typ: Type[T]) -> T:
+    """
+    Check that the value has a correct type.
+
+    :param value: The value.
+    :param typ: The expected type.
+    :return: The value if the tpe is correct.
+    :raise TypeError: If the types differ.
+    """
+    if not isinstance(value, typ):
+        raise TypeError(f'{typ} expected but {type(value)} provided.')
+    return value
 
 
 def ensure_list(dictionary: MutableMapping[Any, Any], key: str) -> list:

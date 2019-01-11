@@ -12,6 +12,30 @@ KEY = 'key'
 DEFAULT = 'default'
 
 
+class TestExpectType:
+    """Tests for nufb.utils.expect_type"""
+
+    def test_none(self):
+        """None raises TypeError"""
+        with pytest.raises(
+                TypeError,
+                match=r'.+int.+expected but .+NoneType.+provided.*'):
+            utils.expect_type(None, int)
+
+    def test_wrong_type(self):
+        """Wrong type raises TypeError"""
+        with pytest.raises(
+                TypeError,
+                match=r'.+int.+expected but .+str.+provided.*'):
+            utils.expect_type('abc', int)
+
+    def test_correct_type(self):
+        """Correct type returns the value itself"""
+        value = 'abc'
+        result = utils.expect_type(value, str)
+        assert id(value) == id(result)
+
+
 class TestEnsureList:
     """Tests for nufb.utils.ensure_list."""
 
