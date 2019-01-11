@@ -1,0 +1,10 @@
+/build
+/data/cef_binary_*
+/repo
+/venv
+/doc/_build
+/.idea
+/doc/modules.rst
+*.py[oc]
+.pytest_cache
+.mypy_cache

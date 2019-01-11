@@ -1,0 +1,32 @@
+[MASTER]
+ignore=CVS
+load-plugins=pylint.extensions.bad_builtin,
+             pylint.extensions.check_elif,
+             pylint.extensions.comparetozero,
+             pylint.extensions.docparams,
+             pylint.extensions.mccabe,
+             pylint.extensions.overlapping_exceptions,
+             pylint_quotes
+
+
+[BASIC]
+good-names=i,
+           j,
+           k,
+           fh,
+           argv,
+           e
+
+[MESSAGES CONTROL]
+disable=too-few-public-methods,
+        no-self-use
+
+[FORMAT]
+
+expected-line-ending-format=LF
+indent-after-paren=4
+indent-string='    '
+max-line-length=79
+single-line-class-stmt=no
+single-line-if-stmt=no
+string-quote=single-avoid-escape

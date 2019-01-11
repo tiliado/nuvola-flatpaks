@@ -1,0 +1,6 @@
+flake8
+pylint
+pylint-quotes
+sphinx
+pytest
+mypy
