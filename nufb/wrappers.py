@@ -119,7 +119,7 @@ class Manifest:
 
     def add_module(self, module: 'Module', position: Optional[int] = None):
         """
-        Ann new module.
+        Add new module.
 
         :param module: The module to add.
         :param position: The position to insert at or `None` to append at

@@ -114,7 +114,7 @@ class TestEnsureString:
 
 
 class TestLoadYaml:
-    """Rests for nufb.utils.load_yaml."""
+    """Tests for nufb.utils.load_yaml."""
 
     def test_load_string(self):
         """Load YAML from string."""
