@@ -108,6 +108,21 @@ class Manifest:
             raw_modules.insert(position, module.data)
             modules.insert(position, module)
 
+    def find_module(self, name: str) -> Optional['Module']:
+        """
+        Find module by name.
+
+        :param name: The name of a module.
+        :return: The module if it has been found, `None` otherwise.
+        """
+        for module in self.modules:
+            try:
+                if module.name == name:
+                    return module
+            except TypeError:
+                pass  # no name
+        return None
+
     def __str__(self) -> str:
         data = self.data
         app_id = data.get(const.MANIFEST_ID, data.get(const.MANIFEST_APP_ID))

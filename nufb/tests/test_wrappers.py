@@ -186,6 +186,14 @@ class TestManifest:
         assert len(manifest.modules) == 7
         assert manifest.modules[6] == module
 
+    def test_find_module(self):
+        """Find a module"""
+        name = 'my-module'
+        module = {'name': name}
+        data = {'modules': [module]}
+        assert wrappers.Manifest().find_module(name) is None
+        assert id(wrappers.Manifest(data).find_module(name).data) == id(module)
+
 
 class TestModule:
     """Tests for nufb.wrappers.Module"""
