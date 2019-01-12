@@ -5,6 +5,7 @@
 This module contains various utility functions.
 """
 import os
+import shutil
 from pathlib import Path
 from typing import MutableMapping, Any, Union, Optional, TypeVar, Type, List
 
@@ -129,3 +130,23 @@ def get_user_cache_dir(subdir: Optional[str] = None) -> Path:
     else:
         cache_dir = Path.home() / '.cache'
     return cache_dir / subdir if subdir else cache_dir
+
+
+def hardlink_or_copy(source: Path, destination: Path) -> bool:
+    """
+    Hardlink the source to the destination or make a copy if hardlink fails.
+
+    :param source: The source file.
+    :param destination: The destination file.
+    :return: `True` if file was hard-linked `False` if it was copied
+    :raise OSError: On failure.
+    """
+    try:
+        os.link(str(source), str(destination))
+        return True
+    except OSError as e:
+        # Invalid cross-device link
+        if e.errno != 18:
+            raise
+        shutil.copy2(str(source), str(destination))
+        return False
