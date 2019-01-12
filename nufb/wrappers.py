@@ -240,5 +240,15 @@ class Module:
         """
         return utils.ensure_list(self.data, const.MODULE_POST_INSTALL)
 
+    @property
+    def stage_patterns(self) -> List[str]:
+        """
+        A list of staged files needed to build next modules but not included
+        in the final flatpak.
+
+        :type: List[str]
+        """
+        return utils.ensure_list(self.data, const.STAGE_PATTERNS)
+
     def __str__(self) -> str:
         return f'<Module: name={self.data.get(const.MODULE_NAME)}>'

@@ -36,3 +36,7 @@ INIT_MODULE_NAME = 'init'
 
 #: The name of a custom module for initialization.
 FINISH_MODULE_NAME = 'finish'
+
+#: Staged files needed to build next modules but not included in the final
+#: flatpak.
+STAGE_PATTERNS = 'x-stage'

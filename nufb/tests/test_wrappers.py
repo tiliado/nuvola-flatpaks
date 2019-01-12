@@ -242,6 +242,7 @@ class TestModule:
         ('sources', None, [{'path': 'file.txt'}]),
         ('build_commands', None, [{'path': 'file.txt'}]),
         ('post_install', None, ['rm file.txt']),
+        ('stage_patterns', 'x-stage', ['/app/file.txt']),
     ])
     def test_fields_of_type_list(self, field: str, key: str, values: list):
         """Properties which return a list."""
