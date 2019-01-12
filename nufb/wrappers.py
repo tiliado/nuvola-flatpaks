@@ -40,6 +40,9 @@ class Manifest:
     def id(self) -> str:
         """
         A string defining the application id.
+
+        :type: str
+        :raise TypeError: Invalid type.
         """
         if not self._id:
             try:
@@ -63,6 +66,8 @@ class Manifest:
     def branch(self) -> str:
         """
         The branch of the application, defaults to master.
+
+        :type: str
         """
         return utils.ensure_string(
             self.data, const.MANIFEST_BRANCH, const.MANIFEST_BRANCH_DEFAULT)
@@ -76,6 +81,8 @@ class Manifest:
     def raw_modules(self) -> List[dict]:
         """
         The raw data of manifest modules.
+
+        :type: List[dict]
         """
         if self._raw_modules is None:
             self._process_modules()
@@ -85,6 +92,8 @@ class Manifest:
     def modules(self) -> List['Module']:
         """
         Wrapped modules of the manifest.
+
+        :type: List[Module]
         """
         if self._modules is None:
             self._process_modules()
@@ -92,7 +101,11 @@ class Manifest:
 
     @property
     def init_module(self) -> 'Module':
-        """Custom initialization module."""
+        """
+        Custom initialization module.
+
+        :type: Module
+        """
         if self._init_module is None:
             self._init_module = self.find_module(const.INIT_MODULE_NAME)
             if not self._init_module:
@@ -103,7 +116,11 @@ class Manifest:
 
     @property
     def finish_module(self) -> 'Module':
-        """Custom finish module."""
+        """
+        Custom finish module.
+
+        :type: Module
+        """
         if self._finish_module is None:
             self._finish_module = self.find_module(const.FINISH_MODULE_NAME)
             if not self._finish_module:
@@ -184,6 +201,8 @@ class Module:
     def name(self) -> str:
         """
         The name of the module, used in e.g. build logs.
+
+        :type: str
         """
         return utils.ensure_string(self.data, const.MODULE_NAME)
 
@@ -197,6 +216,8 @@ class Module:
         """
         A list of objects defining sources that will be downloaded and
         extracted in order.
+
+        :type: List[dict]
         """
         return utils.ensure_list(self.data, const.MODULE_SOURCES)
 
