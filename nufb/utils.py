@@ -4,6 +4,7 @@
 """
 This module contains various utility functions.
 """
+import os
 from pathlib import Path
 from typing import MutableMapping, Any, Union, Optional, TypeVar, Type, List
 
@@ -113,3 +114,18 @@ def add_unique(lst: List[T], value: T) -> bool:
         return False
     lst.append(value)
     return True
+
+
+def get_user_cache_dir(subdir: Optional[str] = None) -> Path:
+    """
+    Get user's cache directory or its subdirectory.
+
+    :param subdir: The subdirectory to get or None.
+    :return: User's cache directory or its subdirectory.
+    """
+    xdg_cache_dir = os.environ.get('XDG_CACHE_HOME')
+    if xdg_cache_dir:
+        cache_dir = Path(xdg_cache_dir).resolve()
+    else:
+        cache_dir = Path.home() / '.cache'
+    return cache_dir / subdir if subdir else cache_dir

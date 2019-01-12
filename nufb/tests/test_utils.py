@@ -2,6 +2,8 @@
 # License: BSD-2-Clause, see file LICENSE at the project root.
 
 """Tests for nufb.utils"""
+import os
+from os.path import expanduser
 from pathlib import Path
 
 import pytest
@@ -158,3 +160,19 @@ class TestAddUnique:
         assert lst == [value1]
         assert utils.add_unique(lst, value3)
         assert lst == [value1, value3]
+
+
+@pytest.mark.parametrize('xdg_variable,without_subdir,with_subdir', [
+    (None, expanduser('~/.cache'), expanduser('~/.cache/subdir')),
+    ('/a/b/c/d', '/a/b/c/d', '/a/b/c/d/subdir'),
+    ('/', '/', '/subdir'),
+])
+def test_get_user_cache_dir(xdg_variable, without_subdir, with_subdir):
+    """Test for nufb.utils.get_user_cache_dir"""
+    environ = os.environ
+    try:
+        os.environ = {'XDG_CACHE_HOME': xdg_variable} if xdg_variable else {}
+        assert utils.get_user_cache_dir() == Path(without_subdir)
+        assert utils.get_user_cache_dir('subdir') == Path(with_subdir)
+    finally:
+        os.environ = environ
