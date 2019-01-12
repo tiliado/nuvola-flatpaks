@@ -238,45 +238,34 @@ class TestModule:
             module.name = 123
         assert module.name == name
 
-    def test_sources_field(self):
-        """The sources property."""
-        assert wrappers.Module().sources == []
+    @pytest.mark.parametrize('field,key,values', [
+        ('sources', None, [{'path': 'file.txt'}]),
+        ('build_commands', None, [{'path': 'file.txt'}]),
+    ])
+    def test_fields_of_type_list(self, field: str, key: str, values: list):
+        """Properties which return a list."""
+        if not key:
+            key = field.replace('_', '-')
 
-        sources = []
-        data = {'sources': sources}
-        module = wrappers.Module(data)
-        assert module.sources == []
-        assert id(module.sources) == id(sources)
+        assert getattr(wrappers.Module(), field) == []
 
-        sources.append({'path': 'file.txt'})
+        empty: list = []
+        data: dict = {key: empty}
         module = wrappers.Module(data)
-        assert module.sources == [{'path': 'file.txt'}]
-        assert id(module.sources) == id(sources)
+        result = getattr(module, field)
+        assert result == []
+        assert id(result) == id(empty)
 
-        data = {'sources': 'file.txt'}
+        data = {key: values}
+        original_values = values[:]
         module = wrappers.Module(data)
+        result = getattr(module, field)
+        assert result == original_values
+        assert id(result) == id(values)
+
+        data = {key: 123456}
         with pytest.raises(TypeError):
-            __ = module.sources   # noqa
-
-    def test_build_commands_field(self):
-        """The sources property."""
-        assert wrappers.Module().sources == []
-
-        build_commands = []
-        data = {'build-commands': build_commands}
-        module = wrappers.Module(data)
-        assert module.build_commands == []
-        assert id(module.build_commands) == id(build_commands)
-
-        build_commands.append({'path': 'file.txt'})
-        module = wrappers.Module(data)
-        assert module.build_commands == [{'path': 'file.txt'}]
-        assert id(module.build_commands) == id(build_commands)
-
-        data = {'build-commands': 'file.txt'}
-        module = wrappers.Module(data)
-        with pytest.raises(TypeError):
-            __ = module.build_commands   # noqa
+            getattr(wrappers.Module(data), field)
 
     def test_str(self):
         """str() shouldn't raise an error"""
