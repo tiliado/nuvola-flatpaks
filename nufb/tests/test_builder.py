@@ -21,43 +21,44 @@ class TestBuilder:
         build_root = tmp_path / 'blah-blah' / 'root'
         builder = Builder(build_root, tmp_path, manifest)
         assert tmp_path.is_dir()
-        assert not builder.build_dir.exists()
+        assert not builder.paths.build_dir.exists()
         builder.set_up()
-        assert builder.manifest_json.read_text() == MANIFEST_JSON
+        assert builder.paths.manifest.read_text() == MANIFEST_JSON
+        assert builder.paths.manifest.parent == builder.paths.build_dir
 
     def test_set_up_dirty(self, tmp_path: Path, manifest: Manifest):
         """Test set_up() method when corresponding directories exist."""
         build_root = tmp_path / 'blah-blah' / 'root'
         builder = Builder(build_root, tmp_path, manifest)
-        builder.manifest_json.parent.mkdir(parents=True)
-        builder.manifest_json.write_text('abc')
-        sub_dir = builder.build_dir / 'sub-dir'
+        builder.paths.manifest.parent.mkdir(parents=True)
+        builder.paths.manifest.write_text('abc')
+        sub_dir = builder.paths.build_dir / 'sub-dir'
         sub_dir.mkdir(parents=True)
-        assert builder.build_dir.is_dir()
+        assert builder.paths.build_dir.is_dir()
         builder.set_up()
-        assert builder.build_dir.is_dir()
+        assert builder.paths.build_dir.is_dir()
         assert not sub_dir.exists()
-        assert builder.manifest_json.read_text() == MANIFEST_JSON
+        assert builder.paths.manifest.read_text() == MANIFEST_JSON
 
     def test_clean_up_nothing(self, tmp_path: Path, manifest: Manifest):
         """No error if there is nothing to clean up."""
         build_root = tmp_path / 'blah-blah' / 'root'
         builder = Builder(build_root, tmp_path, manifest)
-        assert not builder.build_dir.is_dir()
+        assert not builder.paths.build_dir.is_dir()
         builder.clean_up()
 
     def test_clean_up_dirty(self, tmp_path: Path, manifest: Manifest):
         """There is something to clean up."""
         build_root = tmp_path / 'blah-blah' / 'root'
         builder = Builder(build_root, tmp_path, manifest)
-        builder.manifest_json.parent.mkdir(parents=True)
-        builder.manifest_json.write_text('abc')
-        builder.build_dir.is_dir()
-        sub_dir = builder.build_dir / 'sub-dir'
+        builder.paths.manifest.parent.mkdir(parents=True)
+        builder.paths.manifest.write_text('abc')
+        builder.paths.build_dir.is_dir()
+        sub_dir = builder.paths.build_dir / 'sub-dir'
         sub_dir.mkdir(parents=True)
         builder.clean_up()
-        assert not builder.build_dir.exists()
-        assert not builder.manifest_json.exists()
+        assert not builder.paths.build_dir.exists()
+        assert not builder.paths.manifest.exists()
         assert not sub_dir.exists()
 
     def test_copy_resources_success(self, tmp_path: Path):
@@ -105,7 +106,7 @@ class TestBuilder:
         builder = Builder(build_root, resources_dir, manifest)
         builder.copy_resources()
         for path in files:
-            assert (builder.build_dir / path).read_text() \
+            assert (builder.paths.build_dir / path).read_text() \
                 == os.path.basename(path)
 
     def test_copy_resources_missing(self, tmp_path: Path):

@@ -17,24 +17,20 @@ class Builder:
     Build a flatpak according to the manifest.
 
     :param build_root: The root build directory.
-    :param resources_dir: The directory containing buid resources.
+    :param resources_dir: The directory containing build resources.
     :param manifest: The manifest to use to build the flatpak.
     """
-    build_root: Path
-    build_dir: Path
     resources_dir: Path
     manifest: Manifest
-    manifest_json: Path
     build_name: str
+    paths: 'BuildPaths'
 
     def __init__(self, build_root: Path, resources_dir: Path,
                  manifest: Manifest):
-        self.build_root = build_root
         self.resources_dir = resources_dir
         self.manifest = manifest
         self.build_name = f'{manifest.id}-{manifest.branch}'
-        self.build_dir = build_root / self.build_name
-        self.manifest_json = self.build_dir / (self.build_name + '.json')
+        self.paths = BuildPaths(build_root, self.build_name)
 
     def build(self):
         """
@@ -55,11 +51,11 @@ class Builder:
         :raise OSError: When a filesystem operation fails.
         """
         try:
-            rmtree(self.build_dir)
+            rmtree(self.paths.build_dir)
         except FileNotFoundError:
             pass
-        self.build_dir.mkdir(parents=True)
-        with self.manifest_json.open('w') as fh:
+        self.paths.build_dir.mkdir(parents=True)
+        with self.paths.manifest.open('w') as fh:
             json.dump(self.manifest.data, fh, indent=2)
 
     def copy_resources(self):
@@ -81,7 +77,7 @@ class Builder:
                     continue
 
                 source_path = self.resources_dir / path
-                destination_path = self.build_dir / path
+                destination_path = self.paths.build_dir / path
                 try:
                     destination_path.unlink()
                 except FileNotFoundError:
@@ -96,6 +92,27 @@ class Builder:
         :raise OSError: When a filesystem operation fails.
         """
         try:
-            rmtree(self.build_dir)
+            rmtree(self.paths.build_dir)
         except FileNotFoundError:
             pass
+
+
+class BuildPaths:
+    """
+    Data structure containing various build paths.
+
+    :param build_root: The root build directory.
+    :param build_name: The name of a build.
+    """
+    build_root: Path
+    build_dir: Path
+    result_dir: Path
+    state_dir: Path
+    manifest: Path
+
+    def __init__(self, build_root: Path, build_name: str):
+        self.build_root = build_root
+        self.build_dir = build_root / build_name
+        self.result_dir = self.build_dir / 'result'
+        self.state_dir = build_root / 'flatpak-builder'
+        self.manifest = self.build_dir / (build_name + '.json')
