@@ -77,7 +77,7 @@ class Builder:
                 else:
                     continue
 
-                if os.path.isabs(path):
+                if not path or os.path.isabs(path):
                     continue
 
                 source_path = self.resources_dir / path

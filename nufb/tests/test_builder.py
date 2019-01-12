@@ -88,6 +88,10 @@ class TestBuilder:
                         {
                             'type': 'patch',
                             'path': files[3]
+                        },
+                        {
+                            'type': 'archive',
+                            'url': 'http://www.valgrind.org/valgrind.tar.bz2'
                         }
                     ]
                 },
