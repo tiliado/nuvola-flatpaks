@@ -32,17 +32,28 @@ class Builder:
         self.build_name = f'{manifest.id}-{manifest.branch}'
         self.paths = BuildPaths(build_root, self.build_name)
 
-    def build(self):
+    def build(self,
+              keep_build_dirs: bool = False,
+              delete_build_dirs: bool = False):
         """
         Build the flatpak.
 
+        :param bool keep_build_dirs: Keep the build directories even if the
+            build is successful.
+        :param bool delete_build_dirs: Delete the build dirs even if the build
+            fails.
         :raise OSError: When a filesystem operation fails.
         """
+        # Build dir is kept on failure by default.
+        clean_up = delete_build_dirs
         try:
             self.set_up()
             self.copy_resources()
+            # Build dir is deleted on success by default.
+            clean_up = not keep_build_dirs
         finally:
-            self.clean_up()
+            if clean_up:
+                self.clean_up()
 
     def set_up(self):
         """
