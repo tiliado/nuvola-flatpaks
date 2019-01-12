@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+from nufb.wrappers import Manifest
+
 
 @pytest.fixture
 def data_dir() -> Path:
@@ -16,3 +18,9 @@ def data_dir() -> Path:
     :return: The data dir of tests.
     """
     return Path(__file__).parent / 'data'
+
+
+@pytest.fixture
+def manifest() -> Manifest:
+    """Create a simple valid manifest."""
+    return Manifest({'id': 'eu.tiliado.Test'})
