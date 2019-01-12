@@ -33,6 +33,8 @@ class Builder:
     def build(self):
         """
         Build the flatpak.
+
+        :raise OSError: When a filesystem operation fails.
         """
         try:
             self.set_up()
@@ -40,7 +42,11 @@ class Builder:
             self.clean_up()
 
     def set_up(self):
-        """Prepare the build environment."""
+        """
+        Prepare the build environment.
+
+        :raise OSError: When a filesystem operation fails.
+        """
         try:
             rmtree(self.build_dir)
         except FileNotFoundError:
@@ -50,7 +56,11 @@ class Builder:
             json.dump(self.manifest.data, fh, indent=2)
 
     def clean_up(self):
-        """Clean up after the build."""
+        """
+        Clean up after the build.
+
+        :raise OSError: When a filesystem operation fails.
+        """
         try:
             rmtree(self.build_dir)
         except FileNotFoundError:
