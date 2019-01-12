@@ -126,3 +126,35 @@ class TestLoadYaml:
         path = data_dir / 'document.yaml'
         result = utils.load_yaml(path)
         assert result == {'a': 'b', 'b': 'c'}
+
+
+class TestAddUnique:
+    """Tests for nufb.utils.add_unique."""
+
+    def test_string(self):
+        """Add string values"""
+        value1 = 'abc'
+        value2 = 'abc'
+        value3 = 'efg'
+        lst = []
+
+        assert utils.add_unique(lst, value1)
+        assert lst == [value1]
+        assert not utils.add_unique(lst, value2)
+        assert lst == [value1]
+        assert utils.add_unique(lst, value3)
+        assert lst == [value1, value3]
+
+    def test_dict(self):
+        """Add dict values"""
+        value1 = {'name': 'abc'}
+        value2 = {'name': 'abc'}
+        value3 = {'name': 'abc', 'size': 10}
+        lst = []
+
+        assert utils.add_unique(lst, value1)
+        assert lst == [value1]
+        assert not utils.add_unique(lst, value2)
+        assert lst == [value1]
+        assert utils.add_unique(lst, value3)
+        assert lst == [value1, value3]

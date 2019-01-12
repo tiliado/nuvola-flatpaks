@@ -5,7 +5,7 @@
 This module contains various utility functions.
 """
 from pathlib import Path
-from typing import MutableMapping, Any, Union, Optional, TypeVar, Type
+from typing import MutableMapping, Any, Union, Optional, TypeVar, Type, List
 
 import ruamel.yaml
 
@@ -95,3 +95,21 @@ def load_yaml(source: Union[str, Path]) -> dict:
     dictionary = yaml.load(source)
     assert isinstance(dictionary, dict)
     return dictionary
+
+
+def add_unique(lst: List[T], value: T) -> bool:
+    """
+    Adds a value to a list but only if not already present.
+
+    If you don't need to have the items ordered and the items are hashable,
+    consider using :meth:`set.add` of Python's built-in :class:`set`
+    data type instead as it provides better performance.
+
+    :param lst: The list to add the value to.
+    :param value: The value to add to the list.
+    :return: `True` if the value was added to the list, `False` otherwise.
+    """
+    if value in lst:
+        return False
+    lst.append(value)
+    return True
