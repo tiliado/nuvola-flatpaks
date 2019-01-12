@@ -24,6 +24,10 @@ MODULE_NAME = 'name'
 #: An array of objects defining sources that will be downloaded and extracted.
 MODULE_SOURCES = 'sources'
 
+#: An array of commands to run during build (between make and make install
+#: if those are used).
+MODULE_BUILD_COMMANDS = 'build-commands'
+
 #: The name of a custom module for initialization.
 INIT_MODULE_NAME = 'init'
 

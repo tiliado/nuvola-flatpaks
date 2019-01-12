@@ -258,6 +258,26 @@ class TestModule:
         with pytest.raises(TypeError):
             __ = module.sources   # noqa
 
+    def test_build_commands_field(self):
+        """The sources property."""
+        assert wrappers.Module().sources == []
+
+        build_commands = []
+        data = {'build-commands': build_commands}
+        module = wrappers.Module(data)
+        assert module.build_commands == []
+        assert id(module.build_commands) == id(build_commands)
+
+        build_commands.append({'path': 'file.txt'})
+        module = wrappers.Module(data)
+        assert module.build_commands == [{'path': 'file.txt'}]
+        assert id(module.build_commands) == id(build_commands)
+
+        data = {'build-commands': 'file.txt'}
+        module = wrappers.Module(data)
+        with pytest.raises(TypeError):
+            __ = module.build_commands   # noqa
+
     def test_str(self):
         """str() shouldn't raise an error"""
         assert str(wrappers.Module()) == '<Module: name=None>'

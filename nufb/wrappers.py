@@ -221,5 +221,15 @@ class Module:
         """
         return utils.ensure_list(self.data, const.MODULE_SOURCES)
 
+    @property
+    def build_commands(self) -> List[str]:
+        """
+        A list of commands to run during build (between make and make
+        install if those are used).
+
+        :type: List[str]
+        """
+        return utils.ensure_list(self.data, const.MODULE_BUILD_COMMANDS)
+
     def __str__(self) -> str:
         return f'<Module: name={self.data.get(const.MODULE_NAME)}>'
