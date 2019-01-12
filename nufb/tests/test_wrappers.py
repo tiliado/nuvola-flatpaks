@@ -238,6 +238,26 @@ class TestModule:
             module.name = 123
         assert module.name == name
 
+    def test_sources_field(self):
+        """The sources property."""
+        assert wrappers.Module().sources == []
+
+        sources = []
+        data = {'sources': sources}
+        module = wrappers.Module(data)
+        assert module.sources == []
+        assert id(module.sources) == id(sources)
+
+        sources.append({'path': 'file.txt'})
+        module = wrappers.Module(data)
+        assert module.sources == [{'path': 'file.txt'}]
+        assert id(module.sources) == id(sources)
+
+        data = {'sources': 'file.txt'}
+        module = wrappers.Module(data)
+        with pytest.raises(TypeError):
+            __ = module.sources   # noqa
+
     def test_str(self):
         """str() shouldn't raise an error"""
         assert str(wrappers.Module()) == '<Module: name=None>'

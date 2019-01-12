@@ -192,5 +192,13 @@ class Module:
         utils.expect_type(value, str)
         self.data[const.MODULE_NAME] = value
 
+    @property
+    def sources(self) -> List[dict]:
+        """
+        A list of objects defining sources that will be downloaded and
+        extracted in order.
+        """
+        return utils.ensure_list(self.data, const.MODULE_SOURCES)
+
     def __str__(self) -> str:
         return f'<Module: name={self.data.get(const.MODULE_NAME)}>'
