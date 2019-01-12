@@ -7,6 +7,7 @@
 import clizy
 
 import nufb
+from nufb.build import buildcdk
 
 
 def version():
@@ -15,4 +16,4 @@ def version():
 
 
 if __name__ == '__main__':
-    clizy.run(version)
+    clizy.run_funcs(version, buildcdk)

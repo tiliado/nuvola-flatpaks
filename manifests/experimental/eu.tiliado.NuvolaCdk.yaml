@@ -1,0 +1,723 @@
+id: eu.tiliado.NuvolaCdk
+branch: experimental
+runtime: org.gnome.Sdk
+runtime-version: "3.30"
+sdk: org.gnome.Sdk
+command: bash
+
+finish-args:
+    # X11 + XShm access
+  - "--share=ipc"
+  - "--socket=x11"
+    # Wayland access
+  - "--socket=wayland"
+    # OpenGL access
+  - "--device=dri"
+    # Needs to talk to the network
+  - "--share=network"
+    # Play audio
+  - "--socket=pulseaudio"
+    # OpenSUSE & ALSA issue: tiliado/nuvolaruntime#376
+  - "--env=ALSA_CONFIG_PATH="
+    # Needed for dconf to work
+  - "--filesystem=xdg-run/dconf"
+  - "--filesystem=~/.config/dconf:ro"
+  - "--talk-name=ca.desrt.dconf"
+  - "--env=DCONF_USER_CONFIG_DIR=.config/dconf"
+    # For nvidia driver version
+  - "--filesystem=/sys/module/nvidia:ro"
+    # Bumblebeed: https://github.com/tiliado/nuvolaruntime/issues/380
+  - "--filesystem=/sys/module/i915:ro"
+  - "--filesystem=/sys/fs/cgroup/pids/system.slice:ro"
+    # Network Manager for HTTP Remote control, Nuvola service only
+  - "--system-talk-name=org.freedesktop.NetworkManager"
+    # Session managers
+  - "--talk-name=org.gnome.SessionManager"
+  - "--talk-name=org.xfce.SessionManager"
+    # VA-API drivers
+  - "--env=LIBVA_DRIVERS_PATH=/app/lib/dri:/usr/lib/dri"
+    # VDPAU drivers
+  - "--env=VDPAU_DRIVER_PATH=/app/lib/vdpau"
+    # We want bash!
+  - "--env=SHELL=/usr/bin/bash"
+    # Tiliado
+  - "--own-name=eu.tiliado.*"
+    # MPRIS
+  - "--own-name=org.mpris.MediaPlayer2.*"
+    # Unity launcher API
+  - "--talk-name=com.canonical.Unity"
+    # Notifications
+  - "--talk-name=org.freedesktop.Notifications"
+    # App indicators
+  - "--talk-name=org.kde.StatusNotifierWatcher"
+    # Media keys
+  - "--talk-name=org.gnome.SettingsDaemon.MediaKeys"
+  - "--talk-name=org.gnome.SettingsDaemon"
+    # Keep .bashrc, etc
+  - "--persist="
+    # Temporary icons
+  - "--filesystem=~/.local/share/icons/hicolor"
+
+cleanup: 
+  - /cache
+  - /man
+  - /share/man
+  - /lib/systemd
+  - "*.la"
+  - "*.a"
+
+modules:
+  
+  # Static files
+  
+  - name: greybird
+    x-anitya-id: 1250
+    x-version: "3.22.3"
+    buildsystem: simple
+    build-commands:
+      - "install -dm755 /app/share/themes/Greybird/gtk-3.0"
+      - "cp -a gtk-3.0/*.css /app/share/themes/Greybird/gtk-3.0"
+      - "cp -aRL gtk-3.0/apps /app/share/themes/Greybird/gtk-3.0"
+      - "cp -aRL gtk-3.0/assets /app/share/themes/Greybird/gtk-3.0"
+    sources:
+      - type: archive
+        x-url-pattern: "https://github.com/shimmerproject/Greybird/archive/v{version}.tar.gz"
+        url: https://github.com/shimmerproject/Greybird/archive/v3.22.3.tar.gz
+        sha256: 7b81451f6157c49e4a8b01c4889668c3bc7653fc0a910e536a615705fbb5aec3
+    x-keep:
+      - /app/share/themes/Greybird/*
+      
+  - name: engineio
+    x-anitya-id: 17857
+    x-version: "3.1.0"
+    sources:
+      - type: archive
+        x-url-pattern: https://github.com/socketio/engine.io-client/archive/{version}.tar.gz
+        url: https://github.com/socketio/engine.io-client/archive/3.1.0.tar.gz
+        sha256: 866629b467d17cca87015118aaef668d9705420d117ace337a5d35c3cc2a0a34
+    buildsystem: simple
+    build-commands:
+      - mkdir -pv /app/share/javascript/engine.io-client
+      - install -Dvt /app/share/javascript/engine.io-client engine.io.js
+    x-keep:
+      - /app/share/javascript/engine.io-client/engine.io.js
+
+  - name: unitjs
+    x-anitya-id: 17859
+    x-version: "2.0.0"
+    sources:
+      - type: archive
+        x-url-pattern: https://github.com/unitjs/unit.js/archive/v{version}.tar.gz
+        url: https://github.com/unitjs/unit.js/archive/v2.0.0.tar.gz
+        sha256: 1421f528356d0b6e3ccb5372640f83cd0e5ca1b479fa785da603c1f3849c1fa2
+    buildsystem: simple
+    build-commands:
+      - install -Dvt /app/share/javascript/unitjs -v browser/dist/unit.js
+    x-keep:
+      - /app/share/javascript/unitjs/unit.js
+
+  # Python modules
+  
+  - name: python3-six
+    x-anitya-id: 4027
+    x-version: "1.10.0"
+    sources:
+      - type: archive
+        x-url-pattern: https://bitbucket.org/gutworth/six/get/{version}.tar.bz2
+        url: https://bitbucket.org/gutworth/six/get/1.10.0.tar.bz2
+        sha256: 79f123a49ce0dcfc5bc229e308cf632a2931ab0f4718e6778a13dae917aa2e46
+    buildsystem: simple
+    ensure-writable:
+      - /lib/python3.7/site-packages/easy-install.pth
+      - /lib/python3.7/site-packages/setuptools.pth
+    build-commands:
+      - python3 setup.py install -v --prefix=/app
+    x-keep:
+      - /app/lib/python3.7/site-packages/easy-install.pth
+      - /app/lib/python3.7/site-packages/six-1.10.0*
+
+  - name: python3-pyparsing
+    x-anitya-id: 3756
+    x-version: "2.1.10"
+    sources:
+      - type: archive
+        x-url-pattern: https://downloads.sourceforge.net/project/pyparsing/pyparsing/pyparsing-{version}/pyparsing-{version}.tar.gz
+        url: https://downloads.sourceforge.net/project/pyparsing/pyparsing/pyparsing-2.1.10/pyparsing-2.1.10.tar.gz
+        sha256: 811c3e7b0031021137fc83e051795025fcb98674d07eb8fe922ba4de53d39188
+    buildsystem: simple
+    ensure-writable:
+      - /lib/python3.7/site-packages/easy-install.pth
+      - /lib/python3.7/site-packages/setuptools.pth
+    build-commands:
+      - python3 setup.py install -v --prefix=/app
+    x-keep:
+      - /app/lib/python3.7/site-packages/pyparsing-2.1.10-py3.7.egg
+
+  - name: python3-scour
+    x-anitya-id: 16344
+    x-version: "0.35"
+    sources:
+      - type: archive
+        x-url-pattern: https://github.com/scour-project/scour/archive/v{version}.tar.gz
+        url: https://github.com/scour-project/scour/archive/v0.35.tar.gz
+        sha256: 91a7dd0d721a3567b802c1b353ef451621594e628fe723cedb65cd4629fbc96f
+    buildsystem: simple
+    ensure-writable:
+      - /lib/python3.7/site-packages/easy-install.pth
+      - /lib/python3.7/site-packages/setuptools.pth
+    build-commands:
+      - python3 setup.py install -v --prefix=/app
+    x-keep:
+      - /app/bin/scour
+      - /app/lib/python3.7/site-packages/scour-0.35-py3.7.egg
+
+  - name: python3-ply
+    x-anitya-id: 17145
+    x-version: "3.10"
+    sources:
+      - type: archive
+        x-download: "https://pypi.org/project/ply/#files"  
+        url: "https://pypi.python.org/packages/ce/3d/1f9ca69192025046f02a02ffc61bfbac2731aab06325a218370fd93e18df/ply-3.10.tar.gz"
+        sha256: "96e94af7dd7031d8d6dd6e2a8e0de593b511c211a86e28a9c9621c275ac8bacb"
+    buildsystem: simple
+    ensure-writable:
+      - /lib/python3.7/site-packages/easy-install.pth
+      - /lib/python3.7/site-packages/setuptools.pth
+    build-commands:
+      - "python3 setup.py install -v --prefix=/app"
+    x-keep:
+      - /app/lib/python3.7/site-packages/ply-3.10-*
+
+  - name: python3-cppheaderparser
+    x-anitya-id: 18444
+    x-version: "2.7.4"
+    sources: 
+      - type: archive
+        x-download: "https://pypi.org/project/CppHeaderParser/#files"
+        url: "https://pypi.python.org/packages/3c/ba/d8d168a4b54cae66eaf13d1d9197ca9349c94653815e061f79e7eed86c01/CppHeaderParser-2.7.4.tar.gz"
+        sha256: "382b30416d95b0a5e8502b214810dcac2a56432917e2651447d3abe253e3cc42"
+    buildsystem: simple
+    ensure-writable:
+      - /lib/python3.7/site-packages/easy-install.pth
+      - /lib/python3.7/site-packages/setuptools.pth"
+    build-commands:
+      - /usr/bin/python3 setup.py install -v --prefix=/app
+    x-keep:
+      - /app/lib/python3.7/site-packages/CppHeaderParser-2.7.4-*
+      
+  - name: python3-pillow
+    x-anitya-id: 7974
+    x-version: "5.1.0"
+    sources:
+      - type: archive
+        x-download: "https://pypi.org/project/Pillow/#files"
+        url: "https://files.pythonhosted.org/packages/89/b8/2f49bf71cbd0e9485bb36f72d438421b69b7356180695ae10bd4fd3066f5/Pillow-5.1.0.tar.gz"
+        sha256: "cee9bc75bff455d317b6947081df0824a8f118de2786dc3d74a3503fd631f4ef"
+    buildsystem: simple
+    ensure-writable:
+      - /lib/python3.7/site-packages/easy-install.pth
+      - /lib/python3.7/site-packages/setuptools.pth
+    build-commands:
+      - "python3 setup.py install -v --prefix=/app"
+    x-keep:
+      - /app/lib/python3.7/site-packages/Pillow-5.1.0-py3.7-linux-x86_64.egg
+    
+  # Vala & C stuff
+
+  - name: valgrind
+    x-anitya-id: 13639
+    x-version: "3.14.0"
+    sources:
+      - type: archive
+        x-url-pattern: "http://www.valgrind.org/downloads/valgrind-{version}.tar.bz2"
+        url: "http://www.valgrind.org/downloads/valgrind-3.14.0.tar.bz2"
+        sha256: "037c11bfefd477cc6e9ebe8f193bb237fe397f7ce791b4a4ce3fa1c6a520baa5"
+    build-options:
+      cflags: "-fno-stack-protector"
+    post-install: 
+      - rm -r /app/share/man /app/lib/pkgconfig/valgrind.pc /app/include/valgrind
+      - rm -r /app/share/doc/valgrind
+    x-keep: 
+      - /app/lib/valgrind/*
+      - /app/bin/*
+
+  - name: graphviz
+    x-anitya-id: 1249
+    x-version: "???"
+    sources:
+      - type: archive
+        url: "https://graphviz.gitlab.io/pub/graphviz/stable/SOURCES/graphviz.tar.gz"
+        sha256: "ca5218fade0204d59947126c38439f432853543b0818d9d728c589dfe7f3a421"
+    config-opts: 
+      - --disable-static
+      - --enable-sharp=no
+      - --enable-swig=no
+      - --enable-go=no
+      - --enable-guile=no
+      - --enable-io=no
+      - --enable-java=no
+      - --enable-lua=no
+      - --enable-ocaml=no
+      - --enable-perl=no
+      - --enable-php=no
+      - --enable-python=no
+      - --enable-r=no
+      - --enable-ruby=no
+      - --enable-tcl=no
+      - --with-poppler=no
+      - --with-ghostscript=no
+      - --with-gtk=no
+      - --with-gtkgl=no
+      - --with-gtkglext=no
+      - --with-gst=no
+      - --with-ann=no
+      - --with-glade=no
+      - --with-qt=no
+      - --with-ming=n
+    post-install:
+      - "cd /app/bin && rm -v acyclic circo dijkstra dot dot2gxl dot_builtins"
+      - "cd /app/bin && rm -v dotty edgepaint fdp bcomps ccomps cluster tred twopi"
+      - "cd /app/bin && rm -v unflatten gc gml2gv graphml2gv gv2gml gv2gxl gvcolor"
+      - "cd /app/bin && rm -v gvgen gvmap* gvpack gvpr gxl2dot gxl2gv mm2gv neato"
+      - "cd /app/bin && rm -v nop osage patchwork sfdp vimdot sccmap lneato prune"
+      - "rm -r /app/share/man /app/share/graphviz/doc"
+      - "rm /app/lib/graphviz/*.la /app/lib/*.la"
+      - rm -r /app/share/graphviz
+    x-stage:
+      - /app/include/graphviz/*
+      - /app/lib/pkgconfig/libcdt.pc
+      - /app/lib/pkgconfig/libcgraph.pc
+      - /app/lib/pkgconfig/libgvc.pc
+      - /app/lib/pkgconfig/libgvpr.pc
+      - /app/lib/pkgconfig/liblab_gamut.pc
+      - /app/lib/pkgconfig/libpathplan.pc
+      - /app/lib/pkgconfig/libxdot.pc
+    x-keep:
+      - /app/lib/graphviz/libgvplugin*
+      - /app/lib/libcdt.*
+      - /app/lib/libcgraph.*
+      - /app/lib/libgvc.*
+      - /app/lib/libgvpr.*
+      - /app/lib/liblab_gamut.*
+      - /app/lib/libpathplan.*
+      - /app/lib/libxdot.*
+      - /app/lib/graphviz/config6
+
+  - name: vala
+    sources:
+      - type: git
+        path: /home/fenryxo/dev/repo/vala
+        branch: master
+        disable-shallow-clone: true
+    post-install: 
+      - "rm -rf /app/share/man"
+      - "rm -r /app/include/graphviz"
+      - "rm -r /app/include/vala-0.44 /app/include/valadoc-0.44 /app/share/devhelp /app/share/aclocal"
+      - "rm /app/share/vala/vapi/valadoc* /app/share/vala/vapi/libvala* /app/lib/*.la"
+    x-keep:
+      - /app/share/vala-*
+      - /app/bin/*
+      - /app/share/valadoc/*
+      - /app/share/vala/*
+      - /app/lib/*
+
+  - name: libgee
+    x-anitya-id: 1625
+    x-version: "0.20.1"
+    sources:
+      - type: archive
+        x-url-pattern: "https://download.gnome.org/sources/libgee/{version2}/libgee-{version}.tar.xz"
+        url: "https://download.gnome.org/sources/libgee/0.20/libgee-0.20.1.tar.xz"
+        sha256: "bb2802d29a518e8c6d2992884691f06ccfcc25792a5686178575c7111fea4630"
+    config-opts:
+      - "--enable-introspection=no"
+      - "--disable-static"
+      - "--enable-gtk-doc=no"
+    post-install: 
+      - "rm /app/lib/libgee-0.8.la"
+    x-keep:
+      - /app/include/gee-0.8/gee.h
+      - /app/lib/libgee-0.8.so*
+      - /app/lib/pkgconfig/gee-0.8.pc
+      - /app/share/vala/vapi/gee-0.8.vapi
+
+  - name: libdri2
+    sources:
+      - type: git
+        url: "https://github.com/robclark/libdri2.git"
+    config-opts:
+      - "--disable-static"
+    post-install: 
+      - "rm /app/lib/libdri2.la"
+    x-keep:
+      - /app/lib/libdri2.so*
+      - /app/include/X11/extensions/dri2.h
+      - /app/lib/pkgconfig/dri2.pc
+      
+  - name: cmark
+    x-anitya-id: 9159
+    x-version: "0.28.3"
+    sources:
+      - type: archive
+        x-url-pattern: https://github.com/commonmark/cmark/archive/{version}.tar.gz
+        url: https://github.com/commonmark/cmark/archive/0.28.3.tar.gz
+        sha256: "acc98685d3c1b515ff787ac7c994188dadaf28a2d700c10c1221da4199bae1fc"
+    buildsystem: cmake
+    builddir: true
+    config-opts:
+      - "-DCMAKE_BUILD_TYPE=Release"
+      - "-DCMAKE_C_FLAGS_RELEASE:STRING=-DNDEBUG"
+      - "-DCMAKE_CXX_FLAGS_RELEASE:STRING=-DNDEBUG"
+      - "-DCMAKE_INSTALL_PREFIX:PATH=/app"
+      - "-DLIB_INSTALL_DIR:PATH=/app/lib"
+      - "-DSYSCONF_INSTALL_DIR:PATH=/app/etc"
+      - "-DSHARE_INSTALL_PREFIX:PATH=/app/share"
+      - "-DINCLUDE_INSTALL_DIR:PATH=/app/include"
+      - "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
+    post-install: 
+      - "rm -r /app/bin/cmark /app/lib*/cmake/cmark* /app/lib*/libcmark.a /app/share/man/man*/cmark.*"
+    x-keep:
+      - /app/bin/cmark
+      - /app/include/cmark*.h
+      - /app/lib/libcmark.so*
+      - /app/lib/pkgconfig/libcmark.pc
+
+  # Misc
+  
+  - name: nano
+    x-anitya-id: 2046
+    x-version: "2.7.4"
+    sources:
+      - type: archive
+        x-url-pattern: "https://www.nano-editor.org/dist/v{version2}/nano-{version}.tar.xz"
+        url: "https://www.nano-editor.org/dist/v2.7/nano-2.7.4.tar.xz"
+        sha256: "752170643039e2c95a433de357f0c70a8c4c4c561a90a7e7259a63e225b659b9"
+    config-opts:
+      - "--enable-utf8"
+    post-install:
+      - "rm -r /app/share/man /app/share/info /app/share/doc"
+      - "rm /app/share/runtime/locale/*/share/*/LC_MESSAGES/nano.mo"
+    x-keep:
+      - /app/bin/nano
+      - /app/bin/rnano
+      - /app/share/nano/*
+
+  # Ubuntu stuff
+
+  - name: mate-common # Required by AyatanaIndicators project
+    x-anitya-id: 1891
+    x-version: "1.20.0"
+    sources: 
+      - type: archive
+        x-url-pattern: http://pub.mate-desktop.org/releases/{version2}/mate-common-{vrsion}.tar.xz
+        url: http://pub.mate-desktop.org/releases/1.20/mate-common-1.20.0.tar.xz
+        sha1: "5e092883770b53cf6996bbc26db791ca112d0356"
+    post-install:
+      - rm /app/share/man/man1/mate-* /app/share/aclocal/mate-*
+    x-stage:
+      - /app/bin/mate-autogen
+      - /app/bin/mate-doc-common
+      - /app/share/mate-common/*
+
+  - name: libayatana-ido # Required by libindicator
+    x-anitya-id: 18445
+    x-version: "0.4.2"
+    sources:
+      - type: archive
+        x-url-pattern: "https://github.com/AyatanaIndicators/ayatana-ido/archive/{version}.tar.gz"
+        url: "https://github.com/AyatanaIndicators/ayatana-ido/archive/0.4.2.tar.gz"
+        sha256: "627937cdc35f30aedd80b2aa03325d25bc25ed8e75a2b5c50487f81ebc6fc517"
+    no-parallel-make: true
+    config-opts:
+      - "--disable-static"
+      - "--disable-gtk-doc"
+    post-install:
+      - "rm /app/lib/*.la /app/lib/girepository-1.0/AyatanaIdo3-0.4.typelib"
+      - rm /app/share/gir-1.0/AyatanaIdo3-0.4.gir /app/share/vala/vapi/AyatanaIdo3-0.4.vapi
+    x-stage:
+      - /app/lib/pkgconfig/libayatana-ido3-0.4.pc
+      - /app/include/libayatana-ido*
+    x-keep:
+      - /app/lib/libayatana-ido3-0.4.so*
+
+  - name: libindicator # Required by libappindicator
+    x-anitya-id: 18447
+    x-version: "0.6.2"
+    sources:
+      - type: archive
+        x-url-pattern: "https://github.com/AyatanaIndicators/libayatana-indicator/archive/{version}.tar.gz"
+        url: "https://github.com/AyatanaIndicators/libayatana-indicator/archive/0.6.2.tar.gz"
+        sha256: "5d82fd4522f623d8e0e516f709dbb8b736f667faf30f582ba9ea08aee3f931f0"
+    config-opts:
+      - --disable-static
+      - --disable-tests
+    post-install:
+       - rm /app/lib/*.la /app/libexec/ayatana-indicator-loader3
+       - rm -r /app/share/libayatana-indicator
+    x-stage:
+      - /app/include/libayatana-indicator3-0.4/*
+      - /app/lib/pkgconfig/ayatana-indicator3-0.4.pc
+    x-keep:
+      - /app/lib/libayatana-indicator3.so*
+
+  - name: libdbusmenu # Required by libappindicator
+    sources:
+      - type: archive
+        url: "https://launchpad.net/ubuntu/+archive/primary/+files/libdbusmenu_16.04.1+17.04.20170109.1.orig.tar.gz"
+        sha256: "ff579a85be2321c0f1ef4c2fc4fd5be5e5f85fd947af4d1a582224959ff82467"
+      - type: patch
+        path: dbusmenu-gi-path.patch
+    config-opts:
+      - "--enable-gtk-doc=no"
+      - "--disable-dumper"
+      - "--disable-static"
+    post-install:
+      - "rm /app/lib/libdbusmenu-*.la /app/lib/girepository-1.0/Dbusmenu* /app/share/gir-1.0/Dbusmenu*"
+      - "rm -r /app/share/libdbusmenu /app/share/doc /app/libexec/dbusmenu-*"
+    x-keep:
+      - /app/include/libdbusmenu-*-0.4/*
+      - /app/lib/libdbusmenu-*.so*
+      - /app/lib/pkgconfig/dbusmenu-*-0.4.pc
+      - /app/share/vala/vapi/Dbusmenu*
+      
+  - name: libappindicator
+    x-anitya-id: 18446
+    x-version: "0.5.3"
+    sources:
+      - type: archive
+        x-url-pattern: "https://github.com/AyatanaIndicators/libayatana-appindicator/archive/{version}.tar.gz"
+        url: "https://github.com/AyatanaIndicators/libayatana-appindicator/archive/0.5.3.tar.gz"
+        sha256: "04b1652391ca612f9714dba6a7114c4bef913ca261471e1a35e912ef5e9578f2"
+      - type: patch
+        path: libappindicator-no-python2.patch
+    config-opts:
+      - "--disable-static"
+      - "--disable-mono-test"
+      - "--disable-tests"
+      - "--with-gtk=3"
+    post-install:
+      - "rm /app/lib/*.la"
+      - rm /app/lib/girepository-1.0/AyatanaAppIndicator3*
+      - rm /app/share/gir-1.0/AyatanaAppIndicator3*
+    x-keep:
+      - /app/include/libayatana-appindicator3*
+      - /app/lib/libayatana-appindicator3.so*
+      - /app/lib/pkgconfig/ayatana-appindicator3-0.1.pc
+      - /app/share/vala/vapi/ayatana-appindicator3*
+
+  - name: libdee # Required by libunity
+    sources:
+        - type: archive
+          url: "https://launchpad.net/dee/1.0/1.2.7/+download/dee-1.2.7.tar.gz"
+          sha256: "1bf0336ce684aa0f48d6eae2469628c1a9b43695a77443bc31a5790aa673bf8a"
+    config-opts:
+      - "--enable-introspection=no"
+      - "--disable-static"
+    build-options:
+      cflags: "-Wno-error=misleading-indentation"
+    post-install:
+      - "cd /app/bin && rm -v dee-tool"
+      - "rm -r /app/share/gtk-doc"
+      - "rm /app/lib/libdee-1.0.la /app/lib/pkgconfig/dee-icu-1.0.pc"
+      - rm -r /app/lib/python2.7
+    x-stage:
+      - /app/include/dee-1.0/*
+      - /app/lib/pkgconfig/dee-1.0.pc
+      - /app/share/vala/vapi/dee-1.0.*
+    x-keep:
+      - /app/lib/libdee-1.0.so*
+
+  - name: libunity
+    sources:
+      - type: archive
+        url: "https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/libunity/7.1.4+18.04.20180209.1-0ubuntu2/libunity_7.1.4+18.04.20180209.1.orig.tar.gz"
+        sha256: "a6f3a6f6ef5536398b207b31ffed0747b7a9916512a71656d3c1d7e129acf15f"
+      - type: patch
+        path: libunity_7.1.4_2.patch
+    config-opts:
+      - "--disable-static"
+      - "--enable-introspection=no"
+    post-install:
+      - "cd /app/bin && rm -v libunity-tool unity-scope-loader"
+      - "rm -r /app/share/man /app/lib/libunity*.la /app/lib/libunity/libunity*.la"
+      - "rm -r /app/share/unity-scopes /app/share/vala/vapi/unity-extras.vapi"
+      - "rm  /app/share/unity/client-*.json"
+      - rm /app/lib/libunity-extras.* /app/share/vala/vapi/unity-*.*
+      - rm /app/lib/libunity/libunity-protocol-private.so*
+      - rm /app/lib/pkgconfig/unity-*.pc /app/share/gir-1.0/Unity*.gir
+      - rm -r /app/share/glib-2.0/schemas /app/lib/python2.7
+    x-keep:
+      - /app/include/unity/*
+      - /app/lib/libunity.so*
+      - /app/lib/pkgconfig/unity.pc
+      - /app/share/vala/vapi/unity.*
+
+  # Chromium Embedded Framework
+  
+  - name: udev # Required by CEF
+    sources:
+      - type: archive
+        url: "https://www.kernel.org/pub/linux/utils/kernel/hotplug/udev-175.tar.xz"
+        sha256: "6e7c7330a8f7a1d118e33338941381faa005759921caa241535d6930bb12140f"
+    config-opts:
+      - "--disable-hwdb"
+      - "--disable-logging"
+      - "--disable-gudev"
+      - "--disable-introspection"
+      - "--disable-keymap"
+      - "--disable-mtd_probe"
+    post-install:
+      - "rm -r /app/include/libudev.h /app/share/pkgconfig /app/share/gtk-doc /app/share/doc /app/sbin /app/lib/*.la"
+      - rm /app/etc/udev/udev.conf /app/lib/pkgconfig/libudev.pc
+      - rm -r /app/share/man
+    x-keep:
+      - /app/lib/libudev.so*
+      - /app/libexec/*
+
+  - name: flatpak-xdg-open-shim
+    sources:
+      - type: git
+        url: "https://github.com/mattdangerw/flatpak-xdg-open-shim.git"
+    x-keep:
+      - /app/bin/xdg-email
+      - /app/bin/xdg-open
+
+  - name: pciutils # Required by CEF
+    sources:
+      - type: archive
+        url: "https://www.kernel.org/pub/software/utils/pciutils/pciutils-3.5.6.tar.xz"
+        sha256: "f346eeb90cce0910c05b877fe49eadc760fa084c0455fd313e39d4b2c2d4bb21"
+    buildsystem: simple
+    build-commands:
+      - "make OPT=\"${CFLAGS} -fPIC -DPIC\" ZLIB=no SHARED=no PREFIX=/app SHAREDIR=/app/share/hwdata MANDIR=/app/share/man SBINDIR=/app/bin lib/libpci.a"
+      - "cp lib/libpci.a ."
+      - "make clean"
+      - "make OPT=\"${CFLAGS}\" ZLIB=no SHARED=yes PREFIX=/app SBINDIR=/app/bin SHAREDIR=/app/share/hwdata MANDIR=/app/share/man all"
+      - "make SHARED=yes PREFIX=/app SBINDIR=/app/bin SHAREDIR=/app/share/hwdata MANDIR=/app/share/man install install-lib"
+    post-install:
+      - "cd /app/bin && rm -v lspci setpci update-pciids"
+      - "rm -rf /app/share/man"
+      - "rm -r /app/include/pci /app/lib/pkgconfig/libpci.pc"
+    x-keep:
+      - /app/lib/libpci.so*
+      - /app/share/hwdata/pci.ids
+      
+  - name: cef
+    sources:
+      - type: archive
+        path: "cef_binary_3.3578.1864.g5ca70b0_linux64.tar.bz2"
+        sha256: "661b5d8984371f4fed05a81b6320e2c73f5c340d2a8ce203e08cb0a71efd5033"
+    buildsystem: simple
+    build-options:
+      cflags: "-O2 -g -Wno-error=attributes"
+      cxxflags: "-O2 -g -Wno-error=attributes"
+    build-commands:
+      - "mkdir -pv build"
+      - "cd build && cmake -G \"Unix Makefiles\" -DCMAKE_BUILD_TYPE=Release .."
+      - "cd build && make libcef_dll_wrapper"
+      - "mkdir -pv /app/include/cef"
+      - "cp -r include /app/include/cef"
+      - "mkdir -pv /app/lib/cef"
+      - "cp -rv Release/* /app/lib/cef"
+      - "cp -v build/libcef_dll_wrapper/libcef_dll_wrapper.a /app/lib/cef/libcef_dll_wrapper"
+      - "mkdir -pv /app/share/cef"
+      - "cp -r Resources/* /app/lib/cef"
+    x-keep:
+      - /app/lib/cef/*
+      - /app/include/cef/*
+
+    # StandardJS style checker
+    
+  - name: nodejs
+    sources:
+      - type: archive
+        url: "https://nodejs.org/dist/latest-v8.x/node-v8.15.0.tar.xz"
+        sha256: "968523333947cc3f769d73dedc6c9c60580826d8714bc0e62ca4589de6a7c633"
+    post-install:
+      - cd /app/lib/node_modules/npm && rm -r changelogs doc html man scripts
+      - "rm -v /app/bin/npx /app/share/systemtap/tapset/node.stp"
+      - "rm -r /app/include/node /app/share/doc /app/share/man /app/share/systemtap"
+    x-stage:
+      - /app/bin/npm
+      - /app/lib/node_modules/npm/*
+    x-keep:
+      - /app/bin/node
+
+  - name: standardjs
+    buildsystem: simple
+    sources:
+      - type: archive
+        url: "https://github.com/standard/standard/archive/v12.0.1.tar.gz"
+        sha256: "889efeea952cf0873f4f71f9b9ca025d440ff007bb3622a5d601531dada4624a"
+        dest: standard
+      - type: file
+        path: standard-package-lock.json
+        dest-filename: package-lock.json
+        dest: standard
+      - standard-sources.json
+      - type: script
+        dest-filename: standardjs.sh
+        commands:
+          - "node /app/lib/node_modules/standard/bin/cmd.js \"$@\""
+    build-commands:
+      - "cd standard && npm install --offline --cache=../npm-cache/"
+      - "cd standard && rm -rf node_modules/*/docs node_modules/*/test node_modules/*/*.md node_modules/*/.[a-zA-Z0-9]*"
+      - "cd standard && rm -rf node_modules/*/example node_modules/*/__tests__ node_modules/*/*.markdown node_modules/*/Makefile"
+      - "cd standard && rm -rf node_modules/*/src/__tests__"
+      - "mkdir -p /app/lib/node_modules"
+      - "cp -r standard /app/lib/node_modules/"
+      - "cp standardjs.sh /app/bin/standard"
+      - "chmod a+x /app/bin/standard"
+    post-install:
+      - "rm -r /app/lib/node_modules/npm /app/bin/npm"
+      - cd /app/lib/node_modules/standard && rm -r *.md docs .??*  badge.*
+    x-keep:
+      - /app/lib/node_modules/standard/*
+      - /app/bin/standard
+
+    # Finish!
+  - name: finish
+    buildsystem: simple
+    build-commands:
+      - echo ok
+      - ln -s /usr/bin/bash /app/bin/bash
+      - rm -r /app/share/mate-common
+      - cd /app/share/vala/vapi && rm  dee-1.0.*
+      - cd /app/lib/debug/source && rm -r vala udev pciutils nano nodejs
+      - rm -r /app/lib/debug/libexec
+      - cd /app/lib/debug/lib && rm -r vala* 
+      - cd /app/lib/debug/bin && rm vala* nano.* node.*
+      - cd /app/include && rm -r libayatana-indicator3* libayatana-ido3* dee-1.0
+      - rm /app/bin/mate-*
+      - rm -f /app/stage_files.txt
+      - cd /app/lib/pkgconfig && rm ayatana-indicator3-0.4.pc dee-1.0.pc libayatana-ido3-0.4.pc
+      - "rm -r /app/lib/girepository-1.0"
+      - "cd /app/lib/debug/lib && rm -r libvala* graphviz"
+      - "cd /app/lib/debug/bin && rm vapi*"
+      - "rm -r /app/share/runtime"
+      - "rm -r /app/share/locale"
+    x-keep:
+      - /app/lib/debug/source/libunity/*
+      - /app/lib/debug/source/libindicator/*
+      - /app/lib/debug/source/libgee/*
+      - /app/lib/debug/source/libdee/*
+      - /app/lib/debug/source/libdbusmenu/*
+      - /app/lib/debug/source/libayatana-ido/*
+      - /app/lib/debug/source/libappindicator/*
+      - /app/lib/debug/source/cmark/*
+      - /app/lib/debug/source/libdri2/*
+      - /app/lib/debug/lib/libayatana-appindicator3.*
+      - /app/lib/debug/lib/libayatana-ido3-0.4.*
+      - /app/lib/debug/lib/libayatana-indicator3.*
+      - /app/lib/debug/lib/libcmark.*
+      - /app/lib/debug/lib/libdbusmenu-glib.*
+      - /app/lib/debug/lib/libdbusmenu-gtk3.*
+      - /app/lib/debug/lib/libdbusmenu-jsonloader.*
+      - /app/lib/debug/lib/libdee-1.0.*
+      - /app/lib/debug/lib/libdri2.*
+      - /app/lib/debug/lib/libgee-0.8.*
+      - /app/lib/debug/lib/libpci.*
+      - /app/lib/debug/lib/libudev.*
+      - /app/lib/debug/lib/libunity.*
+      - /app/lib/debug/lib/cef/*
+      - /app/keep_files.txt

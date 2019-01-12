@@ -1,0 +1,157 @@
+diff --git a/protocol/protocol-scope-interface.vala b/protocol/protocol-scope-interface.vala
+index 4d8aa48..7a82f91 100644
+--- a/protocol/protocol-scope-interface.vala
++++ b/protocol/protocol-scope-interface.vala
+@@ -131,8 +131,8 @@ public interface ScopeService : GLib.Object
+       uint channel_type,
+       HashTable<string, Variant> hints,
+       Cancellable? cancellable = null,
+-      out HashTable<string, Variant> out_hints,
+-      BusName? sender = null) throws IOError;
++      BusName? sender,
++      out HashTable<string, Variant> out_hints) throws IOError;
+ 
+   public abstract async void close_channel (
+       string channel_id,
+diff --git a/protocol/unity-scope-proxy-remote.vala b/protocol/unity-scope-proxy-remote.vala
+index 8b8125f..9f25a41 100644
+--- a/protocol/unity-scope-proxy-remote.vala
++++ b/protocol/unity-scope-proxy-remote.vala
+@@ -368,7 +368,7 @@ private class ScopeProxyRemote : GLib.Object, ScopeProxy
+ 
+     HashTable<string, Variant> out_hints;
+     var channel_id = yield _service.open_channel ((uint) channel_type, hints,
+-                                                  cancellable,
++                                                  cancellable, null,
+                                                   out out_hints);
+     Dee.Peer peer = private_channel ?
+       new Dee.Client (out_hints[CHANNEL_SWARM_NAME_HINT].get_string ()) :
+diff --git a/src/unity-aggregator-scope-private.vala b/src/unity-aggregator-scope-private.vala
+index 014efe0..fee8c5d 100644
+--- a/src/unity-aggregator-scope-private.vala
++++ b/src/unity-aggregator-scope-private.vala
+@@ -1418,8 +1418,8 @@ private class AggregatorScopeImpl : GLib.Object, ScopeService, ScopeDBusImpl,
+       uint channel_type,
+       HashTable<string, Variant> hints,
+       GLib.Cancellable? cancellable,
+-      out HashTable<string, Variant> out_hints,
+-      BusName? sender = null) throws IOError
++      BusName? sender,
++      out HashTable<string, Variant> out_hints) throws IOError
+   {
+     Unity.AggregatorScope aggscope = owner as Unity.AggregatorScope;
+ 
+@@ -1602,4 +1602,4 @@ private class AggregatorScopeImpl : GLib.Object, ScopeService, ScopeDBusImpl,
+   }
+ }
+ 
+-} /* namespace Unity.Internal */
+\ No newline at end of file
++} /* namespace Unity.Internal */
+diff --git a/src/unity-deprecated-scope-impl.vala b/src/unity-deprecated-scope-impl.vala
+index 52ca9c7..962bbf3 100644
+--- a/src/unity-deprecated-scope-impl.vala
++++ b/src/unity-deprecated-scope-impl.vala
+@@ -609,8 +609,8 @@ private class DeprecatedScopeImpl : GLib.Object, ScopeService, ScopeDBusImpl, De
+       uint channel_type,
+       HashTable<string, Variant> hints,
+       GLib.Cancellable? cancellable,
+-      out HashTable<string, Variant> out_hints,
+-      BusName? sender) throws IOError
++      BusName? sender,
++      out HashTable<string, Variant> out_hints) throws IOError
+   {
+     ChannelFlags flags = ChannelFlags.from_hints (hints);
+     var channel = new ScopeChannel ((ChannelType) channel_type);
+diff --git a/src/unity-deprecated-scope.vala b/src/unity-deprecated-scope.vala
+index 4fc5355..80ba4d4 100644
+--- a/src/unity-deprecated-scope.vala
++++ b/src/unity-deprecated-scope.vala
+@@ -38,7 +38,7 @@ public abstract class DeprecatedScopeBase : GLib.Object
+     set 
+     {
+       _categories = value;
+-      _pimpl.set_categories (value.get_categories ());
++      // _pimpl.set_categories (value.get_categories ());
+     }
+   }
+   public FilterSet filters
+@@ -47,7 +47,7 @@ public abstract class DeprecatedScopeBase : GLib.Object
+     set
+     {
+       _filters = value;
+-      _pimpl.set_filters (value.get_filters ());
++      // _pimpl.set_filters (value.get_filters ());
+     }
+   }
+ 
+diff --git a/src/unity-scope-channel.vala b/src/unity-scope-channel.vala
+index 76c551d..ef18292 100644
+--- a/src/unity-scope-channel.vala
++++ b/src/unity-scope-channel.vala
+@@ -183,7 +183,7 @@ internal class ScopeChannel : Object
+       sm.flush_mode = Dee.SharedModelFlushMode.MANUAL;
+       sm.set_schema_full (RESULTS_SCHEMA);
+       sm.set_column_names_full (RESULTS_COLUMN_NAMES);
+-      sm.register_vardict_schema (METADATA_COLUMN, vardict_schema);
++      // sm.register_vardict_schema (METADATA_COLUMN, vardict_schema);
+       transfer_model = sm;
+     }
+     else
+@@ -199,7 +199,7 @@ internal class ScopeChannel : Object
+ 
+     backend_model.set_schema_full (RESULTS_SCHEMA);
+     backend_model.set_column_names_full (RESULTS_COLUMN_NAMES);
+-    backend_model.register_vardict_schema (METADATA_COLUMN, vardict_schema);
++    // backend_model.register_vardict_schema (METADATA_COLUMN, vardict_schema);
+ 
+     set_filter_base (filter_model);
+ 
+diff --git a/src/unity-scope-dbus-impl.vala b/src/unity-scope-dbus-impl.vala
+index 9d5524f..ef74889 100644
+--- a/src/unity-scope-dbus-impl.vala
++++ b/src/unity-scope-dbus-impl.vala
+@@ -149,8 +149,8 @@ private class DefaultScopeDBusImpl : GLib.Object, ScopeService, ScopeDBusImpl
+     FilterSet filters = owner.get_filters ();
+     CategorySet categories = owner.get_categories ();
+ 
+-    set_filters (filters.get_filters ());
+-    set_categories (categories.get_categories ());
++    // set_filters (filters.get_filters ());
++    // set_categories (categories.get_categories ());
+ 
+     _dbus_name = owner.get_unique_name ();
+     if (_dbus_name == null || _dbus_name == "")
+@@ -716,8 +716,8 @@ private class DefaultScopeDBusImpl : GLib.Object, ScopeService, ScopeDBusImpl
+       uint channel_type,
+       HashTable<string, Variant> hints,
+       GLib.Cancellable? cancellable,
+-      out HashTable<string, Variant> out_hints,
+-      BusName? sender) throws IOError
++      BusName? sender,
++      out HashTable<string, Variant> out_hints) throws IOError
+   {
+     ChannelFlags flags = ChannelFlags.from_hints (hints);
+     var channel = new ScopeChannel ((ChannelType) channel_type);
+diff --git a/src/unity-synchronizer.vala b/src/unity-synchronizer.vala
+index 60dd135..da8928b 100644
+--- a/src/unity-synchronizer.vala
++++ b/src/unity-synchronizer.vala
+@@ -58,8 +58,8 @@ internal class ResultsSynchronizer : GLib.Object, MergeStrategy
+     _providers = new HashTable<Dee.Model, unowned Dee.Model> (null, null);
+     _provider_ids = new HashTable<string, unowned Dee.Model> (str_hash, str_equal);
+     _provider_signal_ids = new HashTable<unowned Dee.Model, SignalHandlers?> (null, null);
+-    _provider_tags = new HashTable<unowned Dee.Model, unowned Dee.ModelTag> (null, null);
+-    _clear_seqnum_tags = new HashTable<unowned Dee.Model, unowned Dee.ModelTag> (null, null);
++    _provider_tags = new HashTable<unowned Dee.Model, Dee.ModelTag<unowned Dee.ModelIter>> (null, null);
++    _clear_seqnum_tags = new HashTable<unowned Dee.Model, Dee.ModelTag<uint>> (null, null);
+     merge_strategy = this;
+   }
+ 
+@@ -301,4 +301,4 @@ internal class ResultsSynchronizer : GLib.Object, MergeStrategy
+ }
+ 
+ 
+-} /* namespace Unity */
+\ No newline at end of file
++} /* namespace Unity */

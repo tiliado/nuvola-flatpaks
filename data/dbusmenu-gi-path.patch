@@ -1,0 +1,30 @@
+diff -u -r libdbusmenu_16.04.1+17.04.20170109.1.orig/configure.ac libdbusmenu_16.04.1+17.04.20170109.1/configure.ac
+--- libdbusmenu_16.04.1+17.04.20170109.1.orig/configure.ac	2017-01-09 16:38:04.000000000 +0100
++++ libdbusmenu_16.04.1+17.04.20170109.1/configure.ac	2017-05-02 21:55:54.130584394 +0200
+@@ -141,10 +141,10 @@
+ if test "$enable_introspection" = "yes"; then
+ 	# Redefine introspection dirs using proper prefixes
+ 
+-	INTROSPECTION_GIRDIR=`$PKG_CONFIG --define-variable=datadir=${datadir} --variable=girdir gobject-introspection-1.0`
++	INTROSPECTION_GIRDIR=/app/share/gir-1.0
+ 	AC_SUBST(INTROSPECTION_GIRDIR)
+ 
+-	INTROSPECTION_TYPELIBDIR=`$PKG_CONFIG --define-variable=libdir=${libdir} --variable=typelibdir gobject-introspection-1.0`
++	INTROSPECTION_TYPELIBDIR="/app/lib/girepository-1.0"
+ 	AC_SUBST(INTROSPECTION_TYPELIBDIR)
+ fi
+ 
+diff -u -r libdbusmenu_16.04.1+17.04.20170109.1.orig/m4/introspection.m4 libdbusmenu_16.04.1+17.04.20170109.1/m4/introspection.m4
+--- libdbusmenu_16.04.1+17.04.20170109.1.orig/m4/introspection.m4	2017-01-09 16:38:04.000000000 +0100
++++ libdbusmenu_16.04.1+17.04.20170109.1/m4/introspection.m4	2017-05-02 22:03:19.130583468 +0200
+@@ -57,8 +57,8 @@
+        INTROSPECTION_SCANNER=`$PKG_CONFIG --variable=g_ir_scanner gobject-introspection-1.0`
+        INTROSPECTION_COMPILER=`$PKG_CONFIG --variable=g_ir_compiler gobject-introspection-1.0`
+        INTROSPECTION_GENERATE=`$PKG_CONFIG --variable=g_ir_generate gobject-introspection-1.0`
+-       INTROSPECTION_GIRDIR=`$PKG_CONFIG --variable=girdir gobject-introspection-1.0`
+-       INTROSPECTION_TYPELIBDIR="$($PKG_CONFIG --variable=typelibdir gobject-introspection-1.0)"
++       INTROSPECTION_GIRDIR="/app/share/gir-1.0"
++       INTROSPECTION_TYPELIBDIR="/app/lib/girepository-1.0"
+        INTROSPECTION_CFLAGS=`$PKG_CONFIG --cflags gobject-introspection-1.0`
+        INTROSPECTION_LIBS=`$PKG_CONFIG --libs gobject-introspection-1.0`
+        INTROSPECTION_MAKEFILE=`$PKG_CONFIG --variable=datadir gobject-introspection-1.0`/gobject-introspection-1.0/Makefile.introspection
