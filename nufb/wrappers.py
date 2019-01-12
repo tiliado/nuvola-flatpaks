@@ -231,5 +231,14 @@ class Module:
         """
         return utils.ensure_list(self.data, const.MODULE_BUILD_COMMANDS)
 
+    @property
+    def post_install(self) -> List[str]:
+        """
+        A list of shell commands that are run after the install phase.
+
+        :type: List[str]
+        """
+        return utils.ensure_list(self.data, const.MODULE_POST_INSTALL)
+
     def __str__(self) -> str:
         return f'<Module: name={self.data.get(const.MODULE_NAME)}>'

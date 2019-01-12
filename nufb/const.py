@@ -28,6 +28,9 @@ MODULE_SOURCES = 'sources'
 #: if those are used).
 MODULE_BUILD_COMMANDS = 'build-commands'
 
+#: An array of shell commands that are run after the install phase.
+MODULE_POST_INSTALL = 'post-install'
+
 #: The name of a custom module for initialization.
 INIT_MODULE_NAME = 'init'
 
