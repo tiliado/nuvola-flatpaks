@@ -32,7 +32,7 @@ class Builder:
         self.build_root = build_root
         self.resources_dir = resources_dir
         self.manifest = manifest
-        self.build_name = f'{manifest.id} - {manifest.branch}'
+        self.build_name = f'{manifest.id}-{manifest.branch}'
         self.build_dir = build_root / self.build_name
         self.manifest_json = self.build_dir / (self.build_name + '.json')
 
