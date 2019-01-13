@@ -5,10 +5,10 @@
 
 MODULE = nufb
 
+all: setup check docs
+
 info:
 	cat Makefile
-
-all: check docs
 
 check: flake8 mypy pylint test
 
@@ -26,10 +26,14 @@ test:
 
 venv:
 	python3 -m venv venv
+
+setup: venv/.stamp
+
+venv/.stamp: venv requirements.txt requirements-devel.txt
 	venv/bin/python3 -m pip install --upgrade pip
 	venv/bin/python3 -m pip install --upgrade -r requirements.txt
 	venv/bin/python3 -m pip install --upgrade -r requirements-devel.txt
-	touch venv
+	touch venv/.stamp
 
 docs: venv
 	$(MAKE) -C doc html
