@@ -107,10 +107,16 @@ class Manifest:
         :type: Module
         """
         if self._init_module is None:
-            self._init_module = self.find_module(const.INIT_MODULE_NAME)
-            if not self._init_module:
-                self._init_module = Module.new(const.INIT_MODULE_NAME)
-                self.add_module(self._init_module, 0)
+            module = self.find_module(const.INIT_MODULE_NAME)
+            if not module:
+                module = Module.new(const.INIT_MODULE_NAME)
+                self.add_module(module, 0)
+            self._init_module = module
+            # If there are no sources and no build system is provided,
+            # module is skipped.
+            if not module.sources and not module.build_system:
+                module.build_system = const.BUILD_SYSTEM_SIMPLE
+
         assert self._init_module
         return self._init_module
 
@@ -122,10 +128,16 @@ class Manifest:
         :type: Module
         """
         if self._finish_module is None:
-            self._finish_module = self.find_module(const.FINISH_MODULE_NAME)
-            if not self._finish_module:
-                self._finish_module = Module.new(const.FINISH_MODULE_NAME)
-                self.add_module(self._finish_module)
+            module = self.find_module(const.FINISH_MODULE_NAME)
+            if not module:
+                module = Module.new(const.FINISH_MODULE_NAME)
+                self.add_module(module)
+            self._finish_module = module
+            # If there are no sources and no build system is provided,
+            # module is skipped.
+            if not module.sources and not module.build_system:
+                module.build_system = const.BUILD_SYSTEM_SIMPLE
+
         assert self._finish_module
         return self._finish_module
 

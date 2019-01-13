@@ -197,16 +197,36 @@ class TestManifest:
     def test_init_module(self):
         """Initialization module."""
         assert wrappers.Manifest().init_module.name == 'init'
+
         module = {'name': 'init'}
         data = {'modules': [module]}
         assert id(wrappers.Manifest(data).init_module.data) == id(module)
+        assert module == {
+            'name': 'init', 'buildsystem': 'simple', 'sources': []
+        }
+
+        module = {'name': 'init', 'buildsystem': 'autotools'}
+        data = {'modules': [module]}
+        assert wrappers.Manifest(data).init_module.data == {
+            'name': 'init', 'buildsystem': 'autotools', 'sources': []
+        }
 
     def test_finish_module(self):
         """Finish module."""
         assert wrappers.Manifest().finish_module.name == 'finish'
+
         module = {'name': 'finish'}
         data = {'modules': [module]}
         assert id(wrappers.Manifest(data).finish_module.data) == id(module)
+        assert module == {
+            'name': 'finish', 'buildsystem': 'simple', 'sources': []
+        }
+
+        module = {'name': 'finish', 'buildsystem': 'autotools'}
+        data = {'modules': [module]}
+        assert wrappers.Manifest(data).finish_module.data == {
+            'name': 'finish', 'buildsystem': 'autotools', 'sources': []
+        }
 
 
 class TestModule:
