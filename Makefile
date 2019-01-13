@@ -1,7 +1,7 @@
 # Copyright 2019 Jiří Janoušek <janousek.jiri@gmail.com>
 # License: BSD-2-Clause, see file LICENSE at the project root.
 
-.PHONY: docs distclean info check flake8 pylint test mypy all
+.PHONY: docs distclean info check flake8 pylint test mypy all tox setup
 
 MODULE = nufb
 
@@ -9,6 +9,9 @@ all: setup check docs
 
 info:
 	cat Makefile
+
+tox:
+	tox
 
 check: flake8 mypy pylint test
 

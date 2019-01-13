@@ -8,3 +8,4 @@
 *.py[oc]
 .pytest_cache
 .mypy_cache
+/.tox
