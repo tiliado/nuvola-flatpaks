@@ -679,7 +679,6 @@ modules:
   - name: finish
     buildsystem: simple
     build-commands:
-      - echo ok
       - ln -s /usr/bin/bash /app/bin/bash
       - rm -r /app/share/mate-common
       - cd /app/share/vala/vapi && rm  dee-1.0.*
