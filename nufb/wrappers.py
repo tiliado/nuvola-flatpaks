@@ -3,9 +3,11 @@
 """
 This module contains convenience wrappers for manifest and its subitems.
 """
-from typing import Optional, List, cast
+import itertools
+from typing import Optional, List, cast, Dict
 
 from nufb import const, utils
+from nufb.helpers import Helper
 
 
 class Manifest:
@@ -15,6 +17,7 @@ class Manifest:
     :param data: The raw manifest data or None to create an empty dictionary.
     """
     data: dict
+    helpers: Dict[str, Helper]
     _id: Optional[str]
     _modules: Optional[List['Module']]
     _raw_modules: Optional[List[dict]]
@@ -25,6 +28,7 @@ class Manifest:
         if data is None:
             data = {}
         self.data = data
+        self.helpers = {}
         self._id = None
         self._modules = None
         self._raw_modules = None
@@ -177,6 +181,28 @@ class Manifest:
             except TypeError:
                 pass  # no name
         return None
+
+    def add_helper(self, helper: Helper) -> None:
+        """
+        Add temporary build helper.
+        :param helper: The helper to add.
+        """
+        if helper.name not in self.helpers:
+            self.helpers[helper.name] = helper
+            module = self.init_module
+            if helper.sources:
+                module.sources.extend(helper.sources)
+            if helper.install:
+                module.build_commands[:] = itertools.chain(
+                    helper.install, module.build_commands)
+            if helper.stage:
+                module.stage_patterns.extend(helper.stage)
+            if helper.keep:
+                module.keep_patterns.extend(helper.keep)
+
+            module = self.finish_module
+            if helper.remove:
+                module.post_install.extend(helper.remove)
 
     def __str__(self) -> str:
         data = self.data
