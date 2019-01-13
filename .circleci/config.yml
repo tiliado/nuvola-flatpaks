@@ -10,7 +10,7 @@ jobs:
           command: |
             dnf update -y
             dnf install -y \
-              python37 python36 make tox \
+              python37 python36 make tox tar xz \
               latexmk texlive-cmap texlive-fncychap texlive-fancyhdr \
               texlive-titlesec texlive-tabulary texlive-framed \
               texlive-wrapfig texlive-parskip texlive-upquote \
@@ -23,3 +23,16 @@ jobs:
           name: Run tox
           working_directory: ~/workdir/checkout
           command: tox
+      - run:
+          name: Archive documentation
+          working_directory: ~/workdir/checkout
+          command: |
+            mv doc/_build/html nufb-doc
+            tar -cvJf nufb-doc.tar.xz nufb-doc
+            mv doc/_build/latex/NuvolaFlatpaks.pdf nufb-docs.pdf
+      - store_artifacts:
+          path: ~/workdir/checkout/nufb-doc.tar.xz
+          destination: nufb-doc.tar.xz
+      - store_artifacts:
+          path: ~/workdir/checkout/nufb-docs.pdf
+          destination: nufb-doc.pdf
