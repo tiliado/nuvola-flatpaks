@@ -1,0 +1,19 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/workdir
+    docker:
+      - image: fedora:latest
+    steps:
+      - run:
+          name: Update and install deps
+          command: |
+            dnf update -y
+            dnf install -y python37 python36 make tox
+            dnf clean all > /dev/null
+      - checkout:
+          path: ~/workdir/checkout
+      - run:
+          name: Run tox
+          working_directory: ~/workdir/checkout
+          command: tox
