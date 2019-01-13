@@ -1,7 +1,7 @@
 # Copyright 2019 Jiří Janoušek <janousek.jiri@gmail.com>
 # License: BSD-2-Clause, see file LICENSE at the project root.
 
-.PHONY: docs distclean info check flake8 pylint test mypy all tox setup
+.PHONY: docs distclean info check flake8 pylint test mypy all tox setup clean
 
 MODULE = nufb
 
@@ -40,6 +40,10 @@ venv/.stamp: venv requirements.txt requirements-devel.txt
 
 docs: venv
 	$(MAKE) -C doc html
+	$(MAKE) -C doc latexpdf
 
-distclean:
+clean:
+	rm -rf doc/_build
+
+distclean: clean
 	rm -rf venv

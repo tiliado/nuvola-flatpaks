@@ -9,7 +9,13 @@ jobs:
           name: Update and install deps
           command: |
             dnf update -y
-            dnf install -y python37 python36 make tox
+            dnf install -y \
+              python37 python36 make tox \
+              latexmk texlive-cmap texlive-fncychap texlive-fancyhdr \
+              texlive-titlesec texlive-tabulary texlive-framed \
+              texlive-wrapfig texlive-parskip texlive-upquote \
+              texlive-capt-of texlive-needspace \
+              texlive-collection-fontsrecommended
             dnf clean all > /dev/null
       - checkout:
           path: ~/workdir/checkout
