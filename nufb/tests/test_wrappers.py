@@ -242,6 +242,7 @@ class TestModule:
         ('sources', None, [{'path': 'file.txt'}]),
         ('build_commands', None, [{'path': 'file.txt'}]),
         ('post_install', None, ['rm file.txt']),
+        ('ensure_writable', None, ['/file.txt']),
         ('stage_patterns', 'x-stage', ['/app/file.txt']),
         ('keep_patterns', 'x-keep', ['/app/file.txt']),
     ])

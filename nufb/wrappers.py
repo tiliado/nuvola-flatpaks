@@ -251,6 +251,18 @@ class Module:
         return utils.ensure_list(self.data, const.STAGE_PATTERNS)
 
     @property
+    def ensure_writable(self) -> List[str]:
+        """
+        A list of installed files that need to be writable.
+
+        Installed files are not writable by default and are supposed to be
+        replaced instead of modifying them in place.
+
+        :type: List[str]
+        """
+        return utils.ensure_list(self.data, const.MODULE_ENSURE_WRITABLE)
+
+    @property
     def keep_patterns(self) -> List[str]:
         """
         A list of installed files of modules which are included in the final

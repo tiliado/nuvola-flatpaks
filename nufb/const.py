@@ -31,6 +31,11 @@ MODULE_BUILD_COMMANDS = 'build-commands'
 #: An array of shell commands that are run after the install phase.
 MODULE_POST_INSTALL = 'post-install'
 
+#: Installed files that need to be writable. Installed files are not
+#: writable by default and are supposed to be replaced instead of modifying
+#: them in place.
+MODULE_ENSURE_WRITABLE = 'ensure-writable'
+
 #: The name of a custom module for initialization.
 INIT_MODULE_NAME = 'init'
 
