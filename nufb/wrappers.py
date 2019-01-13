@@ -316,6 +316,10 @@ class Module:
         """
         return utils.ensure_list(self.data, const.STAGE_PATTERNS)
 
+    @stage_patterns.deleter
+    def stage_patterns(self):
+        del self.data[const.STAGE_PATTERNS]
+
     @property
     def ensure_writable(self) -> List[str]:
         """
@@ -337,6 +341,10 @@ class Module:
         :type: List[str]
         """
         return utils.ensure_list(self.data, const.KEEP_PATTERNS)
+
+    @keep_patterns.deleter
+    def keep_patterns(self):
+        del self.data[const.KEEP_PATTERNS]
 
     def __str__(self) -> str:
         return f'<Module: name={self.data.get(const.MODULE_NAME)}>'
