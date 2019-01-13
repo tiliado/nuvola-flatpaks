@@ -696,6 +696,7 @@ modules:
       - "rm -r /app/share/runtime"
       - "rm -r /app/share/locale"
     x-keep:
+      - /app/bin/bash
       - /app/lib/debug/source/libunity/*
       - /app/lib/debug/source/libindicator/*
       - /app/lib/debug/source/libgee/*
