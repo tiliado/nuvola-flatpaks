@@ -40,3 +40,6 @@ FINISH_MODULE_NAME = 'finish'
 #: Staged files needed to build next modules but not included in the final
 #: flatpak.
 STAGE_PATTERNS = 'x-stage'
+
+#: Installed files of modules which are included in the final flatpak.
+KEEP_PATTERNS = 'x-keep'

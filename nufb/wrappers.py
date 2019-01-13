@@ -250,5 +250,15 @@ class Module:
         """
         return utils.ensure_list(self.data, const.STAGE_PATTERNS)
 
+    @property
+    def keep_patterns(self) -> List[str]:
+        """
+        A list of installed files of modules which are included in the final
+        flatpak.
+
+        :type: List[str]
+        """
+        return utils.ensure_list(self.data, const.KEEP_PATTERNS)
+
     def __str__(self) -> str:
         return f'<Module: name={self.data.get(const.MODULE_NAME)}>'
