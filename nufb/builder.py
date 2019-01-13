@@ -6,32 +6,22 @@
 import json
 import os
 import subprocess
-from pathlib import Path
 from shutil import rmtree
 
 from nufb import utils
-from nufb.wrappers import Manifest
+from nufb.task import Task
 
 
 class Builder:
     """
     Build a flatpak according to the manifest.
 
-    :param build_root: The root build directory.
-    :param resources_dir: The directory containing build resources.
-    :param manifest: The manifest to use to build the flatpak.
+    :param task: The build task.
     """
-    resources_dir: Path
-    manifest: Manifest
-    build_name: str
-    paths: 'BuildPaths'
+    task: Task
 
-    def __init__(self, build_root: Path, resources_dir: Path,
-                 manifest: Manifest):
-        self.resources_dir = resources_dir
-        self.manifest = manifest
-        self.build_name = f'{manifest.id}-{manifest.branch}'
-        self.paths = BuildPaths(build_root, self.build_name)
+    def __init__(self, task: Task):
+        self.task = task
 
     def build(self,
               keep_build_dirs: bool = False,
@@ -65,12 +55,12 @@ class Builder:
         :raise OSError: When a filesystem operation fails.
         """
         try:
-            rmtree(self.paths.build_dir)
+            rmtree(self.task.build_dir)
         except FileNotFoundError:
             pass
-        self.paths.build_dir.mkdir(parents=True)
-        with self.paths.manifest.open('w') as fh:
-            json.dump(self.manifest.data, fh, indent=2)
+        self.task.build_dir.mkdir(parents=True)
+        with self.task.manifest_json.open('w') as fh:
+            json.dump(self.task.manifest.data, fh, indent=2)
 
     def copy_resources(self):
         """
@@ -78,7 +68,7 @@ class Builder:
 
         :raise OSError: When a filesystem operation fails.
         """
-        for module in self.manifest.modules:
+        for module in self.task.manifest.modules:
             for source in module.sources:
                 if isinstance(source, str):
                     path = source
@@ -90,8 +80,8 @@ class Builder:
                 if not path or os.path.isabs(path):
                     continue
 
-                source_path = self.resources_dir / path
-                destination_path = self.paths.build_dir / path
+                source_path = self.task.resources_dir / path
+                destination_path = self.task.build_dir / path
                 try:
                     destination_path.unlink()
                 except FileNotFoundError:
@@ -117,13 +107,13 @@ class Builder:
         :param bool delete_build_dirs: Delete the build dirs even if the build
             fails.
         """
-        work_dir = self.paths.build_dir
+        work_dir = self.task.build_dir
 
         # Use a symlink instead of --state-dir because the latter
         # makes flatpak-builder use absolute paths in ostree cache.
-        global_state = self.paths.global_state_dir
+        global_state = self.task.global_state_dir
         global_state.mkdir(exist_ok=True)
-        local_state = self.paths.working_state_dir
+        local_state = self.task.working_state_dir
         local_state.mkdir(exist_ok=True)
         for symlink in 'cache', 'ccache', 'checksums', 'downloads', 'git':
             target = global_state / symlink
@@ -141,11 +131,11 @@ class Builder:
             argv.append('--delete-build-dirs')
 
         argv.extend([
-            str(self.paths.result_dir.relative_to(work_dir)),
-            str(self.paths.manifest.relative_to(work_dir))])
+            str(self.task.result_dir.relative_to(work_dir)),
+            str(self.task.manifest_json.relative_to(work_dir))])
 
         print(argv)
-        subprocess.run(argv, cwd=str(work_dir))
+        subprocess.run(argv, cwd=str(work_dir), check=True)
 
     def clean_up(self):
         """
@@ -154,29 +144,6 @@ class Builder:
         :raise OSError: When a filesystem operation fails.
         """
         try:
-            rmtree(self.paths.build_dir)
+            rmtree(self.task.build_dir)
         except FileNotFoundError:
             pass
-
-
-class BuildPaths:
-    """
-    Data structure containing various build paths.
-
-    :param build_root: The root build directory.
-    :param build_name: The name of a build.
-    """
-    build_root: Path
-    build_dir: Path
-    result_dir: Path
-    global_state_dir: Path
-    working_state_dir: Path
-    manifest: Path
-
-    def __init__(self, build_root: Path, build_name: str):
-        self.build_root = build_root
-        self.build_dir = build_root / build_name
-        self.result_dir = self.build_dir / 'result'
-        self.global_state_dir = build_root / 'flatpak-builder'
-        self.working_state_dir = self.build_dir / '.flatpak-builder'
-        self.manifest = self.build_dir / (build_name + '.json')

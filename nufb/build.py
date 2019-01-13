@@ -7,6 +7,7 @@ from pathlib import Path
 
 from nufb import utils
 from nufb.builder import Builder
+from nufb.task import Task
 from nufb.wrappers import Manifest
 
 
@@ -25,8 +26,8 @@ def build(build_root: Path, resources_dir: Path, manifests_dir: Path,
 
     data = utils.load_yaml(manifests_dir / branch / (manifest_id + '.yaml'))
     manifest = Manifest(data)
-
-    builder = Builder(build_root, resources_dir, manifest)
+    task = Task(build_root, resources_dir, manifest)
+    builder = Builder(task)
     builder.build(**kwargs)
 
 
