@@ -238,6 +238,26 @@ class TestModule:
             module.name = 123
         assert module.name == name
 
+    def test_build_system_field(self):
+        """The getter and setter of build_system."""
+        data = {}
+        module = wrappers.Module(data)
+        assert module.build_system is None
+        module.build_system = 'simple'
+        assert module.build_system == data['buildsystem'] == 'simple'
+        with pytest.raises(ValueError):
+            module.build_system = 'xxx'
+        assert module.build_system == 'simple'
+
+        module = wrappers.Module({'buildsystem': 'xxx'})
+        with pytest.raises(ValueError):
+            __ = module.build_system   # noqa
+        module.build_system = 'simple'
+        assert module.build_system == 'simple'
+
+        module = wrappers.Module({'buildsystem': 'simple'})
+        assert module.build_system == 'simple'
+
     @pytest.mark.parametrize('field,key,values', [
         ('sources', None, [{'path': 'file.txt'}]),
         ('build_commands', None, [{'path': 'file.txt'}]),

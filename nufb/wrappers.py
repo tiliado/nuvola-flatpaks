@@ -212,6 +212,34 @@ class Module:
         self.data[const.MODULE_NAME] = value
 
     @property
+    def build_system(self) -> Optional[str]:
+        """
+        Build system to use. Any of :data:`const.BUILD_SYSTEMS` or `None`.
+
+        :type: str
+        :raise ValueError: If the build system is unknown.
+        """
+        try:
+            value = self.data[const.MODULE_BUILD_SYSTEM]
+            if value not in const.BUILD_SYSTEMS:
+                raise ValueError(f'{value!r} not in {const.BUILD_SYSTEMS}')
+            return cast(str, value)
+        except KeyError:
+            return None
+
+    @build_system.setter
+    def build_system(self, value: Optional[str]):
+        if not value:
+            try:
+                del self.data[const.MODULE_BUILD_SYSTEM]
+            except KeyError:
+                pass
+        else:
+            if value not in const.BUILD_SYSTEMS:
+                raise ValueError(f'{value!r} not in {const.BUILD_SYSTEMS}')
+            self.data[const.MODULE_BUILD_SYSTEM] = value
+
+    @property
     def sources(self) -> List[dict]:
         """
         A list of objects defining sources that will be downloaded and

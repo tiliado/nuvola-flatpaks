@@ -21,6 +21,40 @@ MANIFEST_MODULES = 'modules'
 #: The name of the module, used in e.g. build logs.
 MODULE_NAME = 'name'
 
+#: Build system to use. Any of :data:`BUILD_SYSTEMS`.
+MODULE_BUILD_SYSTEM = 'buildsystem'
+
+#: The :data:`MODULE_BUILD_SYSTEM` value for custom commands.
+BUILD_SYSTEM_SIMPLE = 'simple'
+
+#: The :data:`MODULE_BUILD_SYSTEM` value for autotools.
+BUILD_SYSTEM_AUTOTOOLS = 'autotools'
+
+#: The :data:`MODULE_BUILD_SYSTEM` value for cmake.
+BUILD_SYSTEM_CMAKE = 'cmake'
+
+#: The :data:`MODULE_BUILD_SYSTEM` value for cmake & ninja.
+BUILD_SYSTEM_CMAKE_NINJA = 'cmake-ninja'
+
+#: The :data:`MODULE_BUILD_SYSTEM` value for meson.
+BUILD_SYSTEM_MESON = 'meson'
+
+#: The :data:`MODULE_BUILD_SYSTEM` value for qmake.
+BUILD_SYSTEM_QMAKE = 'qmake'
+
+#: The values for :data:`MODULE_BUILD_SYSTEM` property.
+BUILD_SYSTEMS = (
+    BUILD_SYSTEM_SIMPLE,
+    BUILD_SYSTEM_AUTOTOOLS,
+    BUILD_SYSTEM_CMAKE,
+    BUILD_SYSTEM_CMAKE_NINJA,
+    BUILD_SYSTEM_MESON,
+    BUILD_SYSTEM_QMAKE
+)
+
+#: The implicit default :data:`MODULE_BUILD_SYSTEM` value.
+BUILD_SYSTEM_DEFAULT = 'autotools'
+
 #: An array of objects defining sources that will be downloaded and extracted.
 MODULE_SOURCES = 'sources'
 
