@@ -176,3 +176,24 @@ def test_get_user_cache_dir(xdg_variable, without_subdir, with_subdir):
         assert utils.get_user_cache_dir('subdir') == Path(with_subdir)
     finally:
         os.environ = environ
+
+
+def test_subclasses():
+    """Test for nufb.utils.subclasses."""
+
+    class ClassA:
+        """..."""
+
+    class ClassB(ClassA):
+        """..."""
+
+    class ClassC(ClassA):
+        """..."""
+
+    class ClassD(ClassB):
+        """..."""
+
+    class ClassE(ClassD):
+        """..."""
+
+    assert tuple(utils.subclasses(ClassA)) == (ClassB, ClassD, ClassE, ClassC)

@@ -22,7 +22,8 @@ good-names=i,
 
 [MESSAGES CONTROL]
 disable=too-few-public-methods,
-        no-self-use
+        no-self-use,
+        missing-yield-type-doc
 
 [FORMAT]
 

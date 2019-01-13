@@ -7,7 +7,8 @@ This module contains various utility functions.
 import os
 import shutil
 from pathlib import Path
-from typing import MutableMapping, Any, Union, Optional, TypeVar, Type, List
+from typing import (
+    MutableMapping, Any, Union, Optional, TypeVar, Type, List, Iterable)
 
 import ruamel.yaml
 
@@ -150,3 +151,15 @@ def hardlink_or_copy(source: Path, destination: Path) -> bool:
             raise
         shutil.copy2(str(source), str(destination))
         return False
+
+
+def subclasses(cls: Type[T]) -> Iterable[Type[T]]:
+    """
+    Iterate over subclasses of the given class.
+
+    :param cls: The parent class.
+    :return: A generator yielding subclasses.
+    """
+    for subclass in cls.__subclasses__():
+        yield subclass
+        yield from subclasses(subclass)
