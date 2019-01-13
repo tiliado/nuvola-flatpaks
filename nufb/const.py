@@ -82,3 +82,6 @@ STAGE_PATTERNS = 'x-stage'
 
 #: Installed files of modules which are included in the final flatpak.
 KEEP_PATTERNS = 'x-keep'
+
+#: The build hooks to run at individual build phases.
+HOOKS = 'x-hooks'

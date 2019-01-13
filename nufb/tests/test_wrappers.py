@@ -228,6 +228,24 @@ class TestManifest:
             'name': 'finish', 'buildsystem': 'autotools', 'sources': []
         }
 
+    def test_hooks_field(self):
+        """The x-hooks property"""
+        assert wrappers.Manifest().hooks == []
+
+        empty = []
+        data = {'x-hooks': empty}
+        manifest = wrappers.Manifest(data)
+        assert manifest.hooks == []
+        assert id(manifest.hooks) == id(empty)
+
+        hooks = ['abc']
+        data = {'x-hooks': hooks}
+        manifest = wrappers.Manifest(data)
+        assert manifest.hooks == ['abc']
+        assert id(manifest.hooks) == id(hooks)
+        del manifest.hooks
+        assert 'x-hooks' not in data
+
 
 class TestModule:
     """Tests for nufb.wrappers.Module"""

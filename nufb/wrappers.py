@@ -145,6 +145,19 @@ class Manifest:
         assert self._finish_module
         return self._finish_module
 
+    @property
+    def hooks(self) -> List[str]:
+        """
+        The build hooks to run at individual build phases.
+
+        :type: List[str]
+        """
+        return utils.ensure_list(self.data, const.HOOKS)
+
+    @hooks.deleter
+    def hooks(self):
+        del self.data[const.HOOKS]
+
     def _process_modules(self):
         self._raw_modules = utils.ensure_list(
             self.data, const.MANIFEST_MODULES)
