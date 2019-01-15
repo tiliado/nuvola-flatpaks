@@ -5,10 +5,12 @@
 
 from pathlib import Path
 
-from nufb import utils
+from nufb import utils, log
 from nufb.builder import Builder
 from nufb.task import Task
 from nufb.wrappers import Manifest
+
+L = log.get_logger(__name__)
 
 
 def build(build_root: Path, resources_dir: Path, manifests_dir: Path,
@@ -23,6 +25,9 @@ def build(build_root: Path, resources_dir: Path, manifests_dir: Path,
     :param branch: The branch of the manifest.
     :param kwargs: Other parameters for the builder.
     """
+
+    L.debug('build(%s, %s, %s, %s, %s)', build_root, resources_dir,
+            manifests_dir, manifest_id, branch)
 
     data = utils.load_yaml(manifests_dir / branch / (manifest_id + '.yaml'))
     manifest = Manifest(data)

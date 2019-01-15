@@ -3,11 +3,15 @@
 # License: BSD-2-Clause, see file LICENSE at the project root.
 
 """Command-line interface for nufb"""
+import sys
 
 import clizy
 
 import nufb
+from nufb import log
 from nufb.build import buildcdk
+
+L = log.get_logger('nufbctl')
 
 
 def version():
@@ -16,4 +20,10 @@ def version():
 
 
 if __name__ == '__main__':
-    clizy.run_funcs(version, buildcdk)
+    log.set_up_logging()
+    L.debug('Argv: %s', sys.argv)
+    try:
+        clizy.run_funcs(version, buildcdk)
+    # pylint: disable=broad-except
+    except Exception as e:
+        L.exception('Unexpected error: %r', e)
