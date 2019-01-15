@@ -59,8 +59,6 @@ class Builder:
         except FileNotFoundError:
             pass
         self.task.build_dir.mkdir(parents=True)
-        with self.task.manifest_json.open('w') as fh:
-            json.dump(self.task.manifest.data, fh, indent=2)
 
     def copy_resources(self):
         """
@@ -107,6 +105,9 @@ class Builder:
         :param bool delete_build_dirs: Delete the build dirs even if the build
             fails.
         """
+        with self.task.manifest_json.open('w') as fh:
+            json.dump(self.task.manifest.data, fh, indent=2)
+
         work_dir = self.task.build_dir
 
         # Use a symlink instead of --state-dir because the latter

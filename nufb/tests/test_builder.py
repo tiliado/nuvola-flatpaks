@@ -11,7 +11,6 @@ import pytest
 from nufb.builder import Builder
 from nufb.task import Task
 from nufb.tests import make_file
-from nufb.tests.data import MANIFEST_JSON
 from nufb.wrappers import Manifest
 
 
@@ -24,8 +23,7 @@ class TestBuilder:
         assert tmp_path.is_dir()
         assert not builder.task.build_dir.exists()
         builder.set_up()
-        assert builder.task.manifest_json.read_text() == MANIFEST_JSON
-        assert builder.task.manifest_json.parent == builder.task.build_dir
+        assert builder.task.build_dir.is_dir()
 
     def test_set_up_dirty(self, tmp_path: Path, manifest: Manifest):
         """Test set_up() method when corresponding directories exist."""
@@ -39,7 +37,6 @@ class TestBuilder:
         builder.set_up()
         assert builder.task.build_dir.is_dir()
         assert not sub_dir.exists()
-        assert builder.task.manifest_json.read_text() == MANIFEST_JSON
 
     def test_clean_up_nothing(self, tmp_path: Path, manifest: Manifest):
         """No error if there is nothing to clean up."""
