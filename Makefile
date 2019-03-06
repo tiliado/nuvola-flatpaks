@@ -1,49 +1,55 @@
 # Copyright 2019 Jiří Janoušek <janousek.jiri@gmail.com>
 # License: BSD-2-Clause, see file LICENSE at the project root.
 
-.PHONY: docs distclean info check flake8 pylint test mypy all tox setup clean
+.PHONY: help all tox lint docs test setup clean distclean
 
+VENV_NAME ?= venv
+VENV_ACTIVATE = . $(VENV_NAME)/bin/activate
+PYTHON = ${VENV_NAME}/bin/python3
 MODULE = nufb
 
-all: setup check docs
+help:
+	@echo "Targets:"
+	@echo "- all: setup + lint + test + docs"
+	@echo "- tox: Run checks and tests with tox."
+	@echo "- lint: Run flake8, mypy and pylint."
+	@echo "- test: Runt pytest tests."
+	@echo "- docs: Generate documentation."
+	@echo "- setup: Set up python3 virtual environment."
+	@echo "- clean: Clean built files and cache."
+	@echo "- distclean: Clean built files, cache, venv and tox directories."
 
-info:
-	cat Makefile
 
-tox:
-	tox
+all: setup lint test docs
 
-check: flake8 mypy pylint test
+tox: setup
+	${PYTHON} -m tox
 
-flake8:
-	flake8 $(MODULE)
+lint: setup
+	${PYTHON} -m flake8 $(MODULE)
+	MYPYPATH=stubs ${PYTHON} -m mypy $(MODULE)
+	${PYTHON} -m pylint --rcfile .pylintrc $(MODULE)
 
-mypy:
-	MYPYPATH=stubs mypy $(MODULE)
+test: setup
+	${PYTHON} -m pytest
 
-pylint:
-	pylint --rcfile .pylintrc $(MODULE)
+docs: setup
+	$(VENV_ACTIVATE) && $(MAKE) -C doc html
+	$(VENV_ACTIVATE) && $(MAKE) -C doc latexpdf
 
-test:
-	pytest
+setup: $(VENV_NAME)/activate
 
-venv:
-	python3 -m venv venv
-
-setup: venv/.stamp
-
-venv/.stamp: venv requirements.txt requirements-devel.txt
-	venv/bin/python3 -m pip install --upgrade pip
-	venv/bin/python3 -m pip install --upgrade -r requirements.txt
-	venv/bin/python3 -m pip install --upgrade -r requirements-devel.txt
-	touch venv/.stamp
-
-docs: venv
-	$(MAKE) -C doc html
-	$(MAKE) -C doc latexpdf
+$(VENV_NAME)/activate: requirements.txt requirements-devel.txt
+	test -d $(VENV_NAME) || python3 -m venv $(VENV_NAME)
+	${PYTHON} -m pip install --upgrade pip
+	${PYTHON} -m pip install --upgrade -r requirements.txt
+	${PYTHON} -m pip install --upgrade -r requirements-devel.txt
+	touch $(VENV_NAME)/activate
 
 clean:
 	rm -rf doc/_build
+	find . -name __pycache__ -exec rm -rf {} \+
+	rm -rf .pytest_cache .mypy_cache
 
 distclean: clean
-	rm -rf venv
+	rm -rf .tox $(VENV_NAME)
