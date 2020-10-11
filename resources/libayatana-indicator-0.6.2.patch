@@ -1,0 +1,24 @@
+diff --git a/configure.ac b/configure.ac
+index 94024ac..ac4bd88 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -127,19 +127,6 @@ AC_DEFINE_PATH(PREFIX, "${prefix}", [prefix directory])
+ AC_DEFINE_PATH(SYSCONFDIR, "${sysconfdir}", [system configuration dir])
+ AC_DEFINE_PATH(LIBDIR, "${libdir}", [system configuration dir])
+ 
+-#########################
+-# Check for systemd
+-#########################
+-PKG_CHECK_MODULES(SYSTEMD,  systemd,
+-    [has_systemd=yes],
+-    []
+-)
+-if test "x$has_systemd" = "xyes"; then
+-	SYSTEMD_USERDIR=`$PKG_CONFIG --variable=systemduserunitdir systemd`
+-	AC_SUBST(SYSTEMD_USERDIR)
+-	AC_DEFINE(HAVE_SYSTEMD, 1, [create ayatana-indicators-pre.target for systemd])
+-fi
+-
+ #########################
+ # Check if build tests
+ #########################

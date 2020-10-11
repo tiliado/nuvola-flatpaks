@@ -5,6 +5,8 @@ import sys
 import clizy
 
 import nufb
+from nufb.builder import buildcdk
+from nufb.logging import init_logging
 
 
 def main() -> int:
@@ -13,7 +15,8 @@ def main() -> int:
     if sys.argv[0].endswith("__main__.py"):
         sys.argv[0] = "nufbctl"
 
-    clizy.run_funcs(version)
+    init_logging()
+    clizy.run_funcs(buildcdk, version)
     return 0
 
 
