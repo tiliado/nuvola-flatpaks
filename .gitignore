@@ -2,3 +2,7 @@ __pycache__
 
 # Too large
 /resources/cef_binary*
+# Official branding
+/resources/nuvola-branding.json
+/resources/nuvola-branding.xml
+/resources/nuvola.appdata.xml

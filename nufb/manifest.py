@@ -88,8 +88,8 @@ class Manifest:
             const.MODULE_BUILD_SYSTEM: const.BUILD_SYSTEM_SIMPLE,
             const.MODULE_BUILD_COMMANDS: [
                 "mkdir -p /app/lib/debug/filelist",
-                "cp filelist.py /app/lib/debug/filelist/filelist",
-                "touch /app/lib/debug/filelist/latest",
+                "test -f /app/lib/debug/filelist/filelist || cp filelist.py /app/lib/debug/filelist/filelist",
+                "test -e /app/lib/debug/filelist/latest || touch /app/lib/debug/filelist/latest",
             ],
             const.MODULE_SOURCES: [{"type": "file", "path": str(get_data_path("filelist.py"))}],
         }

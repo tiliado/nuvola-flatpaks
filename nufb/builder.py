@@ -288,3 +288,28 @@ def buildcdk(
         delete_build_dirs=delete_build_dirs,
         export=export,
     )
+
+
+def buildbase(
+        branch: str,
+        *,
+        no_export: bool = False,
+        force_export: bool = False,
+        keep_build_dirs: bool = False,
+        delete_build_dirs: bool = False,
+):
+    if no_export:
+        export = False
+    elif force_export:
+        export = True
+    else:
+        export = None
+    build(
+        utils.get_user_cache_dir('nuvola-flatpaks'),
+        Path.cwd() / 'resources',
+        Path.cwd() / 'manifests',
+        'eu.tiliado.NuvolaBase', branch,
+        keep_build_dirs=keep_build_dirs,
+        delete_build_dirs=delete_build_dirs,
+        export=export,
+    )
