@@ -133,7 +133,10 @@ class Builder:
         # Use a symlink instead of --state-dir because the latter
         # makes flatpak-builder use absolute paths in ostree cache.
         global_state = self.global_state_dir
-        global_state.mkdir(exist_ok=True)
+        ccache = global_state / "ccache"
+        ccache.mkdir(exist_ok=True)
+        with (ccache / "ccache.conf").open("w") as fh:
+            fh.write("max_size = 20.0G\n")
         local_state = self.working_state_dir
         local_state.mkdir(exist_ok=True)
         for symlink in 'cache', 'ccache', 'checksums', 'downloads', 'git':
