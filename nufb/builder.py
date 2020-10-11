@@ -218,6 +218,9 @@ class Builder:
         LOGGER.debug("Exporting %s debuginfo %s %s", self.manifest.id, self.manifest.branch, argv)
         subprocess.run(argv, cwd=work_dir, check=True)
 
+        argv = ["time", "flatpak", "update", "-y"]
+        subprocess.run(argv, cwd=work_dir, check=True)
+
     def clean_up(self):
         """
         Clean up after the build.
