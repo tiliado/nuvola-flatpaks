@@ -63,3 +63,8 @@ def hardlink_or_copy(source: Path, destination: Path) -> bool:
         shutil.copy2(source, destination)
         LOGGER.warning("File %r copied to %r.", source, destination)
         return False
+
+
+def get_data_path(path: Optional[str] = None) -> Path:
+    data_dir = Path(__file__).parent / "data"
+    return data_dir / path if path else data_dir

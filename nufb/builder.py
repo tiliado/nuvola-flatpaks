@@ -78,6 +78,7 @@ class Builder:
         except FileNotFoundError:
             pass
         self.build_dir.mkdir(parents=True)
+        self.manifest.process_stage_keep_rules()
 
     def copy_resources(self):
         """

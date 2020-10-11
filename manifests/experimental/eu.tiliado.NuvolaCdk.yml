@@ -59,16 +59,6 @@ finish-args:
   - --filesystem=~/.local/share/icons/hicolor
 
 modules:
-  - name: filelist
-    buildsystem: simple
-    sources:
-      - type: file
-        path: filelist.py
-    build-commands:
-      - mkdir -p /app/lib/debug/filelist
-      - cp filelist.py /app/lib/debug/filelist/filelist
-      - touch /app/lib/debug/filelist/latest
-
   # ======= Node JS =======
   - name: nodejs
     disabled: true

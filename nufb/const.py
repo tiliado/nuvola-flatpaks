@@ -58,6 +58,8 @@ BUILD_SYSTEM_DEFAULT = 'autotools'
 #: An array of objects defining sources that will be downloaded and extracted.
 MODULE_SOURCES = 'sources'
 
+MODULE_DISABLED = 'disabled'
+
 #: An array of commands to run during build (between make and make install
 #: if those are used).
 MODULE_BUILD_COMMANDS = 'build-commands'
