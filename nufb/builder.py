@@ -5,8 +5,10 @@
 import json
 import os
 import subprocess
+from os.path import expandvars, expanduser
 from pathlib import Path
 from shutil import rmtree
+from typing import Optional
 
 from nufb import utils
 from nufb.manifest import Manifest
@@ -31,7 +33,9 @@ class Builder:
     working_state_dir: Path
     manifest_json: Path
 
-    def __init__(self, build_root: Path, resources_dir: Path, manifest: Manifest):
+    def __init__(self, build_root: Path, resources_dir: Path, manifest: Manifest, config: dict):
+        self.repo_dir = Path(expandvars(expanduser(config["repository"]))).absolute()
+        self.key_id = config["key_id"]
         self.resources_dir = resources_dir
         self.manifest = manifest
         self.name = f'{manifest.id}-{manifest.branch}'
@@ -42,9 +46,12 @@ class Builder:
         self.working_state_dir = self.build_dir / '.flatpak-builder'
         self.manifest_json = self.build_dir / (self.name + '.json')
 
-    def build(self,
-              keep_build_dirs: bool = False,
-              delete_build_dirs: bool = False):
+    def build(
+            self,
+            keep_build_dirs: bool = False,
+            delete_build_dirs: bool = False,
+            export: bool = None,
+    ):
         """
         Build the flatpak.
 
@@ -59,10 +66,22 @@ class Builder:
         try:
             self.set_up()
             self.copy_resources()
-            self.build_flatpak(keep_build_dirs=keep_build_dirs,
-                               delete_build_dirs=delete_build_dirs)
+            self.build_flatpak(
+                keep_build_dirs=keep_build_dirs,
+                delete_build_dirs=delete_build_dirs,
+                require_changes=export is not True,
+            )
+
+            if export is not False:
+                self.export_flatpak()
+            else:
+                LOGGER.info("Export skipped as requested.")
+
             # Build dir is deleted on success by default.
             clean_up = not keep_build_dirs
+        except Exception:
+            clean_up = False
+            raise
         finally:
             if clean_up:
                 self.clean_up()
@@ -162,6 +181,43 @@ class Builder:
         LOGGER.debug("Running %s in %s.", argv, work_dir)
         subprocess.run(argv, cwd=work_dir, check=True)
 
+    def export_flatpak(self):
+        self.repo_dir.mkdir(exist_ok=True)
+        work_dir = self.build_dir
+        result_dir = work_dir / "result"
+        if not result_dir.exists():
+            LOGGER.info("Nothing new to export to the repository.")
+            return
+
+        base_argv = ['time', 'flatpak', "build-export", "-v", f"--gpg-sign={self.key_id}"]
+
+        argv = base_argv + [
+            "-s",
+            f"Import {self.manifest.id}.Debug//{self.manifest.branch}",
+            "--files=files",
+            "--metadata=metadata",
+            "--exclude=/lib/debug/*",
+            "--include=/lib/debug/app",
+            str(self.repo_dir),
+            str(result_dir),
+            self.manifest.branch,
+        ]
+        LOGGER.debug("Exporting %s app %s %s", self.manifest.id, self.manifest.branch, argv)
+        subprocess.run(argv, cwd=work_dir, check=True)
+
+        argv = base_argv + [
+            "-s",
+            f"Import {self.manifest.id}.Debug//{self.manifest.branch}",
+            "--runtime",
+            "--files=files/lib/debug",
+            "--metadata=metadata.debuginfo",
+            str(self.repo_dir),
+            str(result_dir),
+            self.manifest.branch,
+        ]
+        LOGGER.debug("Exporting %s debuginfo %s %s", self.manifest.id, self.manifest.branch, argv)
+        subprocess.run(argv, cwd=work_dir, check=True)
+
     def clean_up(self):
         """
         Clean up after the build.
@@ -191,14 +247,20 @@ def build(build_root: Path, resources_dir: Path, manifests_dir: Path,
                  manifests_dir, manifest_id, branch)
 
     data = utils.load_yaml(manifests_dir / branch / (manifest_id + '.yml'))
+    config = utils.load_yaml(Path.cwd() / 'nufb.yml')
     manifest = Manifest(data, branch)
-    builder = Builder(build_root, resources_dir, manifest)
+    builder = Builder(build_root, resources_dir, manifest, config)
     builder.build(**kwargs)
 
 
-def buildcdk(branch: str, *,
-             keep_build_dirs: bool = False,
-             delete_build_dirs: bool = False):
+def buildcdk(
+        branch: str,
+        *,
+        no_export: bool = False,
+        force_export: bool = False,
+        keep_build_dirs: bool = False,
+        delete_build_dirs: bool = False,
+):
     """
     Build Nuvola CDK
 
@@ -208,11 +270,18 @@ def buildcdk(branch: str, *,
     :param bool delete_build_dirs: Delete the build dirs even if the build
         fails.
     """
+    if no_export:
+        export = False
+    elif force_export:
+        export = True
+    else:
+        export = None
     build(
         utils.get_user_cache_dir('nuvola-flatpaks'),
         Path.cwd() / 'resources',
         Path.cwd() / 'manifests',
         'eu.tiliado.NuvolaCdk', branch,
         keep_build_dirs=keep_build_dirs,
-        delete_build_dirs=delete_build_dirs
+        delete_build_dirs=delete_build_dirs,
+        export=export,
     )
