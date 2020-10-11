@@ -165,27 +165,6 @@ modules:
       - cp -v browser/dist/unit.js /app/share/javascript/unitjs
 
   # ======= Python =======
-  - name: python3-six
-    # needed by: ?
-    buildsystem: simple
-    build-options:
-      env:
-        PYTHON: /usr/bin/python3
-    ensure-writable:
-      - /lib/python3.8/site-packages/easy-install.pth
-      - /lib/python3.8/site-packages/setuptools.pth
-    build-commands:
-      - '/usr/bin/python3 setup.py install -v --prefix=/app'
-    x-keep:
-      - /app/lib/python3.8/site-packages/six-*.egg/*
-    sources:
-      - type: archive
-        url: 'https://files.pythonhosted.org/packages/6b/34/415834bfdafca3c5f451532e8a8d9ba89a21c9743a0c59fbd0205c7f9426/six-1.15.0.tar.gz'
-        sha256: '30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259'
-        x-update:
-          type: pypi
-          project: six
-
   - name: python3-scour
     # needed by: nuvola
     buildsystem: simple
