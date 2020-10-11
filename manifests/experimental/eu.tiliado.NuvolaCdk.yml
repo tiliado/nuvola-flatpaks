@@ -121,14 +121,12 @@ modules:
     build-options:
       env:
         PYTHON: /usr/bin/python3
-    ensure-writable:
-      - /lib/python3.8/site-packages/easy-install.pth
-      - /lib/python3.8/site-packages/setuptools.pth
     build-commands:
-      - '/usr/bin/python3 setup.py install -v --prefix=/app'
+      - python3 -m pip install -v --prefix=/app .
     x-keep:
-      - /app/lib/python3.8/site-packages/pyparsing-*.egg/*
-      - /app/lib/python3.8/site-packages/easy-install.pth
+      - /app/lib/python3.8/site-packages/pyparsing-*.dist-info/*
+      - /app/lib/python3.8/site-packages/__pycache__/pyparsing.*.pyc
+      - /app/lib/python3.8/site-packages/pyparsing.py
     sources:
       - type: archive
         url: 'https://files.pythonhosted.org/packages/c1/47/dfc9c342c9842bbe0036c7f763d2d6686bcf5eb1808ba3e170afdb282210/pyparsing-2.4.7.tar.gz'
@@ -171,14 +169,12 @@ modules:
     build-options:
       env:
         PYTHON: /usr/bin/python3
-    ensure-writable:
-      - /lib/python3.8/site-packages/easy-install.pth
-      - /lib/python3.8/site-packages/setuptools.pth
     build-commands:
-      - '/usr/bin/python3 setup.py install -v --prefix=/app'
+      - python3 -m pip install -v --prefix=/app .
     x-keep:
       - /app/bin/scour
-      - /app/lib/python3.8/site-packages/scour-*.egg
+      - /app/lib/python3.8/site-packages/scour-*.dist-info/*
+      - /app/lib/python3.8/site-packages/scour/*
     sources:
       - type: archive
         url: 'https://files.pythonhosted.org/packages/45/fa/72bc295929c5b78245572c7e87bfd771d0548719033e55e88afc890952c6/scour-0.38.1.post1.tar.gz'
@@ -193,13 +189,11 @@ modules:
     build-options:
       env:
         PYTHON: /usr/bin/python3
-    ensure-writable:
-      - /lib/python3.8/site-packages/easy-install.pth
-      - /lib/python3.8/site-packages/setuptools.pth
     build-commands:
-      - '/usr/bin/python3 setup.py install -v --prefix=/app'
+      - python3 -m pip install -v --prefix=/app .
     x-keep:
-      - /app/lib/python3.8/site-packages/ply-*.egg/*
+      - /app/lib/python3.8/site-packages/ply-*.dist-info/*
+      - /app/lib/python3.8/site-packages/ply/*
     sources:
       - type: archive
         url: 'https://files.pythonhosted.org/packages/e5/69/882ee5c9d017149285cab114ebeab373308ef0f874fcdac9beb90e0ac4da/ply-3.11.tar.gz'
@@ -214,13 +208,11 @@ modules:
     build-options:
       env:
         PYTHON: /usr/bin/python3
-    ensure-writable:
-      - /lib/python3.8/site-packages/easy-install.pth
-      - /lib/python3.8/site-packages/setuptools.pth
     build-commands:
-      - '/usr/bin/python3 setup.py install -v --prefix=/app'
+      - python3 -m pip install -v --prefix=/app .
     x-keep:
-      - /app/lib/python3.8/site-packages/CppHeaderParser-*.egg/*
+      - /app/lib/python3.8/site-packages/CppHeaderParser-*.dist-info/*
+      - /app/lib/python3.8/site-packages/CppHeaderParser/*
     sources:
       - type: archive
         url: 'https://files.pythonhosted.org/packages/3c/ba/d8d168a4b54cae66eaf13d1d9197ca9349c94653815e061f79e7eed86c01/CppHeaderParser-2.7.4.tar.gz'
@@ -235,13 +227,11 @@ modules:
     build-options:
       env:
         PYTHON: /usr/bin/python3
-    ensure-writable:
-      - /lib/python3.8/site-packages/easy-install.pth
-      - /lib/python3.8/site-packages/setuptools.pth
     build-commands:
-      - '/usr/bin/python3 setup.py install -v --prefix=/app'
+      - python3 -m pip install -v --prefix=/app .
     x-keep:
-      - /app/lib/python3.8/site-packages/Pillow-*.egg
+      - /app/lib/python3.8/site-packages/Pillow-*.dist-info/*
+      - /app/lib/python3.8/site-packages/PIL/*
     sources:
       - type: archive
         url: 'https://files.pythonhosted.org/packages/3e/02/b09732ca4b14405ff159c470a612979acfc6e8645dc32f83ea0129709f7a/Pillow-7.2.0.tar.gz'

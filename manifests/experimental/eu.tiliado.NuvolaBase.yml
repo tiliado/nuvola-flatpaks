@@ -34,10 +34,16 @@ modules:
       - rm /app/bin/Cefium
 
   - name: nuvolasdk
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app .
     x-stage:
       - /app/bin/nuvolasdk
       - /app/lib/python3.8/site-packages/nuvolasdk/*
-      - /app/lib/python3.8/site-packages/nuvolasdk-*.egg-info/*
+      - /app/lib/python3.8/site-packages/nuvolasdk-*.dist-info/*
     sources:
       - type: git
         path: /home/fenryxo/dev/repo/nuvola/nuvolasdk
