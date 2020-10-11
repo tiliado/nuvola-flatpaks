@@ -1,0 +1,68 @@
+---
+app-id: eu.tiliado.Nuvola
+branch: experimental
+runtime: org.gnome.Platform
+runtime-version: '3.38'
+sdk: org.gnome.Sdk
+base: eu.tiliado.NuvolaBase
+base-extensions:
+  - eu.tiliado.NuvolaBase.Debug
+command: nuvolactl
+
+finish-args:
+  # X11 + XShm access
+  - --share=ipc
+  - --socket=x11
+  # Wayland access
+  - --socket=wayland
+  # OpenGL access
+  - --device=dri
+  # Needs to talk to the network
+  - --share=network
+  # Play audio
+  - --socket=pulseaudio
+  # OpenSUSE & ALSA issue: tiliado/nuvolaruntime#376
+  - --env=ALSA_CONFIG_PATH=
+  # Needed for dconf to work
+  - --filesystem=xdg-run/dconf
+  - --filesystem=~/.config/dconf:ro
+  - --talk-name=ca.desrt.dconf
+  - --env=DCONF_USER_CONFIG_DIR=.config/dconf
+  # For nvidia driver version
+  - --filesystem=/sys/module/nvidia:ro
+  # Bumblebeed: https://github.com/tiliado/nuvolaruntime/issues/380
+  - --filesystem=/sys/module/i915:ro
+  - --filesystem=/sys/fs/cgroup/pids/system.slice:ro
+  # Network Manager for HTTP Remote control Nuvola service only
+  - --system-talk-name=org.freedesktop.NetworkManager
+  # VA-API drivers
+  - --env=LIBVA_DRIVERS_PATH=/app/lib/dri:/usr/lib/dri
+  # VDPAU drivers
+  - --env=VDPAU_DRIVER_PATH=/app/lib/vdpau
+  # We want bash!
+  - --env=SHELL=/usr/bin/bash
+  # Session managers
+  - --talk-name=org.gnome.SessionManager
+  - --talk-name=org.xfce.SessionManager
+  # Media keys
+  - --talk-name=org.gnome.SettingsDaemon.MediaKeys
+  - --talk-name=org.gnome.SettingsDaemon
+  # Temporari for nuvolactl to work
+  - --talk-name=eu.tiliado.*
+
+modules:
+  - name: final
+    buildsystem: simple
+    x-keep:
+      - /app/{.ref,manifest*.json}
+      - /app/bin/{nuvola,nuvolactl,nuvolaruntime,nuvolaserviceinfo,xdg-*}
+      - /app/etc/udev/udev.conf
+      - /app/lib/{cef,libayatana-*,libunity,valacef,nuvolaruntime}/*
+      - /app/lib/{libayatana*,libdiorite*,libengineio*,libnuvolaruntime*,libvalacef*,}
+      - /app/lib/{libdbus-glib-1,libdbusmenu-glib,libdbusmenu-gtk3,libdee-1.0,libdri2,libunity,libudev,libpci}.so*
+      - /app/share/{nuvolaruntime,javascript,hwdata,valacef}/*
+      - /app/share/applications/eu.tiliado.Nuvola.desktop
+      - /app/share/dbus-1/services/eu.tiliado.Nuvola.service
+      - /app/share/icons/hicolor/*/apps/eu.tiliado.Nuvola.*
+    build-commands:
+      - rm /app/bin/{bash,nuvolasdk} /app/eu.tiliado.Nuvola.appdata.xml /app/libexec/udevd
