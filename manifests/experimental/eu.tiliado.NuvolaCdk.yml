@@ -61,11 +61,10 @@ finish-args:
 modules:
   # ======= Node JS =======
   - name: nodejs
-    disabled: true
     # needed by: standardjs
     buildsystem: simple
     build-commands:
-      - ./configure --prefix=/app && make install
+      - ./configure --prefix=/app && make -j$(grep -c processor /proc/cpuinfo) install
     x-keep:
       - /app/bin/node
     x-stage:
@@ -88,7 +87,6 @@ modules:
 
   - name: standardjs
     # needed by: nuvolasdk
-    disabled: true
     buildsystem: simple
     x-keep:
       - /app/bin/standard
@@ -766,8 +764,8 @@ modules:
       - /app/bin/bash
     build-commands:
       - ln -s /usr/bin/bash /app/bin/bash
-      - rm -rf /app/bin/{npm,mate-*,intltool*,gnome-autogen.sh}
-      - rm -rf /app/lib/{node_modules/npm,girepository-1.0}
-      - rm -rf /app/share/aclocal/*.m4 /app/share/mate-common/data/*.make /app/share/intltool
-      - rm -rf /app/include/{dbus-1.0,graphviz}
+      - rm -r /app/bin/{npm,mate-*,intltool*,gnome-autogen.sh}
+      - rm -r /app/lib/{node_modules/npm,girepository-1.0}
+      - rm -r /app/share/aclocal/*.m4 /app/share/mate-common/data/*.make /app/share/intltool
+      - rm -r /app/include/{dbus-1.0,graphviz}
       - rm /app/lib/pkgconfig/{dbus-glib*,libcdt,libcgraph,libgvc,libgvpr,liblab_gamut,libpathplan,libxdot}.pc
