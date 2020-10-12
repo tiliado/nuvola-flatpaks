@@ -1,0 +1,34 @@
+---
+extends: default
+rules:
+  comments:
+    level: error
+  comments-indentation:
+    level: error
+  indentation:
+    level: error
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: true
+  line-length:
+    level: error
+    max: 120
+    allow-non-breakable-inline-mappings: true
+  truthy:
+    level: error
+    allowed-values: ['true', 'false']
+  empty-lines:
+    max: 1
+    level: error
+  empty-values:
+    forbid-in-block-mappings: true
+    forbid-in-flow-mappings: true
+  hyphens:
+    max-spaces-after: 1
+  key-duplicates:
+    level: error
+  new-line-at-end-of-file:
+    level: error
+  new-lines:
+    type: unix
+  octal-values: enable
