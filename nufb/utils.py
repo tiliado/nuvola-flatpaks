@@ -3,15 +3,19 @@
 """
 This module contains various utility functions.
 """
+import asyncio
 import os
 import re
-import shutil
+from asyncio.subprocess import Process, DEVNULL, PIPE, STDOUT
 from io import StringIO
 from pathlib import Path
-from typing import Union, Optional, Dict, Any
+from typing import Union, Optional, Dict, Any, Tuple
 
+import aiofiles
+import aiofiles.os
 import ruamel.yaml
 
+from nufb import fs
 from nufb.logging import get_logger
 
 LOGGER = get_logger(__name__)
@@ -19,7 +23,7 @@ YAML_LOADER = ruamel.yaml.YAML(typ='safe')
 SUBST_RE = re.compile("@(\w+)@")
 
 
-def load_yaml(source: Union[str, Path], subst: Dict[str, Any] = None) -> dict:
+async def load_yaml(source: Union[str, Path], subst: Dict[str, Any] = None) -> dict:
     """
     Load YAML source file/string as Python dictionary.
 
@@ -27,10 +31,8 @@ def load_yaml(source: Union[str, Path], subst: Dict[str, Any] = None) -> dict:
     :param source: The source file or string.
     :return: Python representation of the YAML document.
     """
-    if isinstance(source, str):
-        source = Path(source)
-    with source.open() as fh:
-        data = fh.read()
+    async with aiofiles.open(source) as fh:
+        data = await fh.read()
 
     if subst is not None:
         data = SUBST_RE.sub(lambda m: subst[m.group(1)], data)
@@ -55,7 +57,7 @@ def get_user_cache_dir(subdir: Optional[str] = None) -> Path:
     return cache_dir / subdir if subdir else cache_dir
 
 
-def hardlink_or_copy(source: Path, destination: Path) -> bool:
+async def hardlink_or_copy(source: Path, destination: Path) -> bool:
     """
     Hardlink the source to the destination or make a copy if hardlink fails.
 
@@ -65,14 +67,14 @@ def hardlink_or_copy(source: Path, destination: Path) -> bool:
     :raise OSError: On failure.
     """
     try:
-        os.link(source, destination)
+        await fs.hardlink(source, destination)
         LOGGER.debug("File %r linked to %r.", source, destination)
         return True
     except OSError as e:
         # Invalid cross-device link
         if e.errno != 18:
             raise
-        shutil.copy2(source, destination)
+        await fs.copy(source, destination)
         LOGGER.warning("File %r copied to %r.", source, destination)
         return False
 
@@ -80,3 +82,11 @@ def hardlink_or_copy(source: Path, destination: Path) -> bool:
 def get_data_path(path: Optional[str] = None) -> Path:
     data_dir = Path(__file__).parent / "data"
     return data_dir / path if path else data_dir
+
+
+async def exec_subprocess(argv, *, stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, **kwargs) -> Tuple[int, str]:
+    proc = await asyncio.create_subprocess_exec(*argv, stdin=stdin, stdout=stdout, stderr=stderr, **kwargs)
+    stdout, stderr = await proc.communicate()
+    assert not stderr
+    result = await proc.wait()
+    return result, stdout.decode("utf-8")

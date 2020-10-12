@@ -2,17 +2,17 @@
 # License: BSD-2-Clause, see file LICENSE at the project root.
 
 """Individual build profiles."""
+import asyncio
 import json
 import os
-import subprocess
 from os.path import expandvars, expanduser
 from pathlib import Path
-from shutil import rmtree
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 
-from nufb import utils
+from nufb import utils, fs
 from nufb.manifest import Manifest
 from nufb.logging import get_logger
+from nufb.utils import exec_subprocess
 
 LOGGER = get_logger(__name__)
 
@@ -20,8 +20,6 @@ LOGGER = get_logger(__name__)
 class Builder:
     """
     Build a flatpak according to the manifest.
-
-    :param task: The build task.
     """
     manifest: Manifest
     name: str
@@ -46,7 +44,7 @@ class Builder:
         self.working_state_dir = self.build_dir / '.flatpak-builder'
         self.manifest_json = self.build_dir / (self.name + '.json')
 
-    def build(
+    async def build(
             self,
             keep_build_dirs: bool = False,
             delete_build_dirs: bool = False,
@@ -64,16 +62,16 @@ class Builder:
         # Build dir is kept on failure by default.
         clean_up = delete_build_dirs
         try:
-            self.set_up()
-            self.copy_resources()
-            self.build_flatpak(
+            await self.set_up()
+            await self.copy_resources()
+            await self.build_flatpak(
                 keep_build_dirs=keep_build_dirs,
                 delete_build_dirs=delete_build_dirs,
                 require_changes=export is not True,
             )
 
             if export is not False:
-                self.export_flatpak()
+                await self.export_flatpak()
             else:
                 LOGGER.info("Export skipped as requested.")
 
@@ -84,27 +82,38 @@ class Builder:
             raise
         finally:
             if clean_up:
-                self.clean_up()
+                await self.clean_up()
 
-    def set_up(self):
+    async def set_up(self):
         """
         Prepare the build environment.
 
         :raise OSError: When a filesystem operation fails.
         """
         try:
-            rmtree(self.build_dir)
+            await fs.rmtree(self.build_dir)
         except FileNotFoundError:
             pass
-        self.build_dir.mkdir(parents=True)
+        await fs.makedirs(self.build_dir, exist_ok=True)
         self.manifest.process_stage_keep_rules()
 
-    def copy_resources(self):
+    async def copy_resources(self):
         """
         Copy resources to the build directory.
 
         :raise OSError: When a filesystem operation fails.
         """
+
+        async def task(source_path, destination_path):
+            try:
+                await fs.remove(destination_path)
+            except FileNotFoundError:
+                pass
+            await fs.makedirs(destination_path.parent, exist_ok=True)
+            await utils.hardlink_or_copy(source_path, destination_path)
+
+        tasks = []
+
         for module in self.manifest.modules:
             for source in self.manifest.sources(module, create=False):
                 if isinstance(source, str):
@@ -117,16 +126,11 @@ class Builder:
                 if not path or os.path.isabs(path):
                     continue
 
-                source_path = self.resources_dir / path
-                destination_path = self.build_dir / path
-                try:
-                    destination_path.unlink()
-                except FileNotFoundError:
-                    pass
-                destination_path.parent.mkdir(parents=True, exist_ok=True)
-                utils.hardlink_or_copy(source_path, destination_path)
+                tasks.append(task(self.resources_dir / path, self.build_dir / path))
 
-    def build_flatpak(self,
+        await asyncio.gather(*tasks)
+
+    async def build_flatpak(self,
                       disable_cache: bool = False,
                       require_changes: bool = True,
                       keep_build_dirs: bool = False,
@@ -144,9 +148,11 @@ class Builder:
         :param bool delete_build_dirs: Delete the build dirs even if the build
             fails.
         """
-        with self.manifest_json.open('w') as fh:
-            json.dump(self.manifest.data, fh, indent=2)
-            fh.write("\n")
+        data = json.dumps(self.manifest.data, indent=2)
+
+        async with fs.open(self.manifest_json, 'w') as fh:
+            await fh.write(data)
+            await fh.write("\n")
 
         work_dir = self.build_dir
 
@@ -154,15 +160,15 @@ class Builder:
         # makes flatpak-builder use absolute paths in ostree cache.
         global_state = self.global_state_dir
         ccache = global_state / "ccache"
-        ccache.mkdir(exist_ok=True)
-        with (ccache / "ccache.conf").open("w") as fh:
-            fh.write("max_size = 20.0G\n")
+        await fs.makedirs(ccache, exist_ok=True)
+        async with fs.open(ccache / "ccache.conf", "w") as fh:
+            await fh.write("max_size = 20.0G\n")
         local_state = self.working_state_dir
-        local_state.mkdir(exist_ok=True)
+        await fs.makedirs(local_state, exist_ok=True)
         for symlink in 'cache', 'ccache', 'checksums', 'downloads', 'git':
             target = global_state / symlink
-            target.mkdir(exist_ok=True)
-            (local_state / symlink).symlink_to(target)
+            await fs.makedirs(target, exist_ok=True)
+            await fs.symlink(target, local_state / symlink)
 
         argv = ['time', 'flatpak-builder', '--ccache']
         if disable_cache:
@@ -179,13 +185,18 @@ class Builder:
             str(self.manifest_json.relative_to(work_dir))])
 
         LOGGER.debug("Running %s in %s.", argv, work_dir)
-        subprocess.run(argv, cwd=work_dir, check=True)
+        code, out = await exec_subprocess(argv, cwd=work_dir)
+        if code:
+            LOGGER.error("%s returned %d.\n%s", argv, code, out)
+            raise ValueError(code)
+        else:
+            LOGGER.info("%s returned %d.\n%s", argv, code, out)
 
-    def export_flatpak(self):
-        self.repo_dir.mkdir(exist_ok=True)
+    async def export_flatpak(self):
+        await fs.makedirs(self.repo_dir, exist_ok=True)
         work_dir = self.build_dir
         result_dir = work_dir / "result"
-        if not result_dir.exists():
+        if not await fs.isdir(result_dir):
             LOGGER.info("Nothing new to export to the repository.")
             return
 
@@ -203,7 +214,12 @@ class Builder:
             self.manifest.branch,
         ]
         LOGGER.debug("Exporting %s app %s %s", self.manifest.id, self.manifest.branch, argv)
-        subprocess.run(argv, cwd=work_dir, check=True)
+        code, out = await exec_subprocess(argv, cwd=work_dir)
+        if code:
+            LOGGER.error("%s returned %d.\n%s", argv, code, out)
+            raise ValueError(code)
+        else:
+            LOGGER.info("%s returned %d.\n%s", argv, code, out)
 
         argv = base_argv + [
             "-s",
@@ -216,25 +232,35 @@ class Builder:
             self.manifest.branch,
         ]
         LOGGER.debug("Exporting %s debuginfo %s %s", self.manifest.id, self.manifest.branch, argv)
-        subprocess.run(argv, cwd=work_dir, check=True)
+        code, out = await exec_subprocess(argv, cwd=work_dir)
+        if code:
+            LOGGER.error("%s returned %d.\n%s", argv, code, out)
+            raise ValueError(code)
+        else:
+            LOGGER.info("%s returned %d.\n%s", argv, code, out)
 
         argv = ["flatpak", "install", "--or-update", "--assumeyes", f"{self.manifest.id}//{self.manifest.branch}"]
         LOGGER.debug("Installing or updating %s//%s %s", self.manifest.id, self.manifest.branch, argv)
-        subprocess.run(argv, cwd=work_dir, check=True)
+        code, out = await exec_subprocess(argv, cwd=work_dir)
+        if code:
+            LOGGER.error("%s returned %d.\n%s", argv, code, out)
+            raise ValueError(code)
+        else:
+            LOGGER.info("%s returned %d.\n%s", argv, code, out)
 
-    def clean_up(self):
+    async def clean_up(self):
         """
         Clean up after the build.
 
         :raise OSError: When a filesystem operation fails.
         """
         try:
-            rmtree(self.build_dir)
+            await fs.rmtree(self.build_dir)
         except FileNotFoundError:
             pass
 
 
-def build(
+async def build(
         config: dict,
         build_root: Path,
         resources_dir: Path,
@@ -261,13 +287,30 @@ def build(
     LOGGER.debug('build(%s, %s, %s, %s, %s)', build_root, resources_dir,
                  manifests_dir, manifest_id, branch)
 
-    data = utils.load_yaml(manifests_dir / branch / (manifest_id + '.yml'), subst=subst)
+    data = await utils.load_yaml(manifests_dir / branch / (manifest_id + '.yml'), subst=subst)
     manifest = Manifest(data, branch, subst)
     builder = Builder(build_root, resources_dir, manifest, config)
-    builder.build(**kwargs)
+    await builder.build(**kwargs)
 
 
 def buildcdk(
+        branch: str,
+        *,
+        no_export: bool = False,
+        force_export: bool = False,
+        keep_build_dirs: bool = False,
+        delete_build_dirs: bool = False,
+):
+    asyncio.run(build_cdk(
+        branch,
+        no_export=no_export,
+        force_export=force_export,
+        keep_build_dirs=keep_build_dirs,
+        delete_build_dirs=delete_build_dirs,
+    ))
+
+
+async def build_cdk(
         branch: str,
         *,
         no_export: bool = False,
@@ -290,8 +333,8 @@ def buildcdk(
         export = True
     else:
         export = None
-    build(
-        utils.load_yaml(Path.cwd() / 'nufb.yml'),
+    await build(
+        await utils.load_yaml(Path.cwd() / 'nufb.yml'),
         utils.get_user_cache_dir('nuvola-flatpaks'),
         Path.cwd() / 'resources',
         Path.cwd() / 'manifests',
@@ -310,14 +353,31 @@ def buildadk(
         keep_build_dirs: bool = False,
         delete_build_dirs: bool = False,
 ):
+    asyncio.run(build_adk(
+        branch,
+        no_export=no_export,
+        force_export=force_export,
+        keep_build_dirs=keep_build_dirs,
+        delete_build_dirs=delete_build_dirs,
+    ))
+
+
+async def build_adk(
+        branch: str,
+        *,
+        no_export: bool = False,
+        force_export: bool = False,
+        keep_build_dirs: bool = False,
+        delete_build_dirs: bool = False,
+):
     if no_export:
         export = False
     elif force_export:
         export = True
     else:
         export = None
-    build(
-        utils.load_yaml(Path.cwd() / 'nufb.yml'),
+    await build(
+        await utils.load_yaml(Path.cwd() / 'nufb.yml'),
         utils.get_user_cache_dir('nuvola-flatpaks'),
         Path.cwd() / 'resources',
         Path.cwd() / 'manifests',
@@ -336,14 +396,31 @@ def buildbase(
         keep_build_dirs: bool = False,
         delete_build_dirs: bool = False,
 ):
+    asyncio.run(build_base(
+        branch,
+        no_export=no_export,
+        force_export=force_export,
+        keep_build_dirs=keep_build_dirs,
+        delete_build_dirs=delete_build_dirs,
+    ))
+
+
+async def build_base(
+        branch: str,
+        *,
+        no_export: bool = False,
+        force_export: bool = False,
+        keep_build_dirs: bool = False,
+        delete_build_dirs: bool = False,
+):
     if no_export:
         export = False
     elif force_export:
         export = True
     else:
         export = None
-    build(
-        utils.load_yaml(Path.cwd() / 'nufb.yml'),
+    await build(
+        await utils.load_yaml(Path.cwd() / 'nufb.yml'),
         utils.get_user_cache_dir('nuvola-flatpaks'),
         Path.cwd() / 'resources',
         Path.cwd() / 'manifests',
@@ -362,14 +439,31 @@ def buildnuvola(
         keep_build_dirs: bool = False,
         delete_build_dirs: bool = False,
 ):
+    asyncio.run(build_nuvola(
+        branch,
+        no_export=no_export,
+        force_export=force_export,
+        keep_build_dirs=keep_build_dirs,
+        delete_build_dirs=delete_build_dirs,
+    ))
+
+
+async def build_nuvola(
+        branch: str,
+        *,
+        no_export: bool = False,
+        force_export: bool = False,
+        keep_build_dirs: bool = False,
+        delete_build_dirs: bool = False,
+):
     if no_export:
         export = False
     elif force_export:
         export = True
     else:
         export = None
-    build(
-        utils.load_yaml(Path.cwd() / 'nufb.yml'),
+    await build(
+        await utils.load_yaml(Path.cwd() / 'nufb.yml'),
         utils.get_user_cache_dir('nuvola-flatpaks'),
         Path.cwd() / 'resources',
         Path.cwd() / 'manifests',
@@ -388,14 +482,31 @@ def buildapps(
         keep_build_dirs: bool = False,
         delete_build_dirs: bool = False,
 ):
-    config = utils.load_yaml(Path.cwd() / 'nufb.yml')
+    asyncio.run(build_apps(
+        branch,
+        no_export=no_export,
+        force_export=force_export,
+        keep_build_dirs=keep_build_dirs,
+        delete_build_dirs=delete_build_dirs,
+    ))
+
+
+async def build_apps(
+        branch: str,
+        *,
+        no_export: bool = False,
+        force_export: bool = False,
+        keep_build_dirs: bool = False,
+        delete_build_dirs: bool = False,
+):
+    config = await utils.load_yaml(Path.cwd() / 'nufb.yml')
     apps = config["apps"].get(branch)
     if apps is None:
         apps = config["apps"].get("master")
     assert apps
 
     for name in apps:
-        buildapp(
+        await build_app(
             branch,
             name,
             no_export=no_export,
@@ -404,16 +515,35 @@ def buildapps(
             delete_build_dirs=delete_build_dirs,
         )
 
-def buildapp(
-            branch: str,
-            name: str,
-            *,
-            no_export: bool = False,
-            force_export: bool = False,
-            keep_build_dirs: bool = False,
-            delete_build_dirs: bool = False,
-    ):
 
+def buildapp(
+        branch: str,
+        name: str,
+        *,
+        no_export: bool = False,
+        force_export: bool = False,
+        keep_build_dirs: bool = False,
+        delete_build_dirs: bool = False,
+):
+    return asyncio.run(build_app(
+        branch,
+        name,
+        no_export=no_export,
+        force_export=force_export,
+        keep_build_dirs=keep_build_dirs,
+        delete_build_dirs=delete_build_dirs,
+    ))
+
+
+async def build_app(
+        branch: str,
+        name: str,
+        *,
+        no_export: bool = False,
+        force_export: bool = False,
+        keep_build_dirs: bool = False,
+        delete_build_dirs: bool = False,
+):
     if no_export:
         export = False
     elif force_export:
@@ -432,8 +562,8 @@ def buildapp(
         "APP_ID_UNIQUE": ''.join(s.capitalize() for s in name.split("-")),
         "APP_BRANCH": app_branch,
     }
-    build(
-        utils.load_yaml(Path.cwd() / 'nufb.yml'),
+    return await build(
+        await utils.load_yaml(Path.cwd() / 'nufb.yml'),
         utils.get_user_cache_dir('nuvola-flatpaks'),
         Path.cwd() / 'resources',
         Path.cwd() / 'manifests',
