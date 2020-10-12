@@ -326,23 +326,6 @@ async def build(
     await builder.build(**kwargs)
 
 
-def buildcdk(
-        branch: str,
-        *,
-        no_export: bool = False,
-        force_export: bool = False,
-        keep_build_dirs: bool = False,
-        delete_build_dirs: bool = False,
-):
-    asyncio.run(build_cdk(
-        branch,
-        no_export=no_export,
-        force_export=force_export,
-        keep_build_dirs=keep_build_dirs,
-        delete_build_dirs=delete_build_dirs,
-    ))
-
-
 async def build_cdk(
         branch: str,
         *,
@@ -380,23 +363,6 @@ async def build_cdk(
     )
 
 
-def buildadk(
-        branch: str,
-        *,
-        no_export: bool = False,
-        force_export: bool = False,
-        keep_build_dirs: bool = False,
-        delete_build_dirs: bool = False,
-):
-    asyncio.run(build_adk(
-        branch,
-        no_export=no_export,
-        force_export=force_export,
-        keep_build_dirs=keep_build_dirs,
-        delete_build_dirs=delete_build_dirs,
-    ))
-
-
 async def build_adk(
         branch: str,
         *,
@@ -423,23 +389,6 @@ async def build_adk(
         delete_build_dirs=delete_build_dirs,
         export=export,
     )
-
-
-def buildbase(
-        branch: str,
-        *,
-        no_export: bool = False,
-        force_export: bool = False,
-        keep_build_dirs: bool = False,
-        delete_build_dirs: bool = False,
-):
-    asyncio.run(build_base(
-        branch,
-        no_export=no_export,
-        force_export=force_export,
-        keep_build_dirs=keep_build_dirs,
-        delete_build_dirs=delete_build_dirs,
-    ))
 
 
 async def build_base(
@@ -470,23 +419,6 @@ async def build_base(
     )
 
 
-def buildnuvola(
-        branch: str,
-        *,
-        no_export: bool = False,
-        force_export: bool = False,
-        keep_build_dirs: bool = False,
-        delete_build_dirs: bool = False,
-):
-    asyncio.run(build_nuvola(
-        branch,
-        no_export=no_export,
-        force_export=force_export,
-        keep_build_dirs=keep_build_dirs,
-        delete_build_dirs=delete_build_dirs,
-    ))
-
-
 async def build_nuvola(
         branch: str,
         *,
@@ -513,24 +445,6 @@ async def build_nuvola(
         delete_build_dirs=delete_build_dirs,
         export=export,
     )
-
-
-def buildapps(
-        branch: str,
-        *,
-        no_export: bool = False,
-        force_export: bool = False,
-        keep_build_dirs: bool = False,
-        delete_build_dirs: bool = False,
-        concurrency: int = None,
-):
-    asyncio.run(build_apps(
-        branch,
-        no_export=no_export,
-        force_export=force_export,
-        keep_build_dirs=keep_build_dirs,
-        delete_build_dirs=delete_build_dirs,
-    ))
 
 
 async def build_apps(
@@ -567,25 +481,6 @@ async def build_apps(
             )
 
     await asyncio.gather(*map(task, apps))
-
-
-def buildapp(
-        branch: str,
-        name: str,
-        *,
-        no_export: bool = False,
-        force_export: bool = False,
-        keep_build_dirs: bool = False,
-        delete_build_dirs: bool = False,
-):
-    return asyncio.run(build_app(
-        branch,
-        name,
-        no_export=no_export,
-        force_export=force_export,
-        keep_build_dirs=keep_build_dirs,
-        delete_build_dirs=delete_build_dirs,
-    ))
 
 
 async def build_app(
