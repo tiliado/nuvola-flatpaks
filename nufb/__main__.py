@@ -4,7 +4,7 @@ import sys
 import clizy
 
 import nufb
-from nufb.builder import build_cdk, build_adk, build_base, build_nuvola, build_apps, build_app
+from nufb.builder import build_cdk, build_adk, build_base, build_nuvola, build_apps, build_app, build_all
 from nufb.logging import init_logging
 
 
@@ -15,7 +15,7 @@ def main() -> int:
         sys.argv[0] = "nufbctl"
 
     init_logging()
-    clizy.run_funcs(buildcdk, buildadk, buildbase, buildnuvola, buildapp, buildapps, version)
+    clizy.run_funcs(buildall, buildcdk, buildadk, buildbase, buildnuvola, buildapp, buildapps, version)
     return 0
 
 
@@ -107,6 +107,7 @@ def buildapps(
         force_export=force_export,
         keep_build_dirs=keep_build_dirs,
         delete_build_dirs=delete_build_dirs,
+        concurrency=concurrency,
     ))
 
 
@@ -126,6 +127,25 @@ def buildapp(
         force_export=force_export,
         keep_build_dirs=keep_build_dirs,
         delete_build_dirs=delete_build_dirs,
+    ))
+
+
+def buildall(
+        branch: str,
+        *,
+        no_export: bool = False,
+        force_export: bool = False,
+        keep_build_dirs: bool = False,
+        delete_build_dirs: bool = False,
+        concurrency: int = None,
+):
+    asyncio.run(build_all(
+        branch,
+        no_export=no_export,
+        force_export=force_export,
+        keep_build_dirs=keep_build_dirs,
+        delete_build_dirs=delete_build_dirs,
+        concurrency=concurrency,
     ))
 
 

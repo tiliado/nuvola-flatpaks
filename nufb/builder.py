@@ -523,3 +523,25 @@ async def build_app(
         export=export,
         subst=subst,
     )
+
+
+async def build_all(
+        branch: str,
+        *,
+        concurrency: int = None,
+        **kwargs,
+):
+    locks = Locks()
+
+    async def base_and_apps():
+        await build_base(branch, locks=locks, **kwargs)
+        await asyncio.gather(
+            build_nuvola(branch, locks=locks, **kwargs),
+            build_apps(branch, locks=locks, concurrency=concurrency, **kwargs),
+        )
+
+    await build_cdk(branch, locks=locks, **kwargs)
+    await asyncio.gather(
+        base_and_apps(),
+        build_adk(branch, locks=locks, **kwargs),
+    )
