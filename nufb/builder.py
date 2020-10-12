@@ -8,7 +8,7 @@ import subprocess
 from os.path import expandvars, expanduser
 from pathlib import Path
 from shutil import rmtree
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from nufb import utils
 from nufb.manifest import Manifest
@@ -234,11 +234,22 @@ class Builder:
             pass
 
 
-def build(build_root: Path, resources_dir: Path, manifests_dir: Path,
-          manifest_id: str, branch: str, **kwargs) -> None:
+def build(
+        config: dict,
+        build_root: Path,
+        resources_dir: Path,
+        manifests_dir: Path,
+        manifest_id: str,
+        branch: str,
+        *,
+        subst: Dict[str, Any] = None,
+        **kwargs
+) -> None:
     """
     Star a build.
 
+    :param subst: Manifest substitutions.
+    :param config: Configuration.
     :param build_root: The root build directory.
     :param resources_dir: The directory containing build resources.
     :param manifests_dir: The directory where manifests are stored.
@@ -250,9 +261,8 @@ def build(build_root: Path, resources_dir: Path, manifests_dir: Path,
     LOGGER.debug('build(%s, %s, %s, %s, %s)', build_root, resources_dir,
                  manifests_dir, manifest_id, branch)
 
-    data = utils.load_yaml(manifests_dir / branch / (manifest_id + '.yml'))
-    config = utils.load_yaml(Path.cwd() / 'nufb.yml')
-    manifest = Manifest(data, branch)
+    data = utils.load_yaml(manifests_dir / branch / (manifest_id + '.yml'), subst=subst)
+    manifest = Manifest(data, branch, subst)
     builder = Builder(build_root, resources_dir, manifest, config)
     builder.build(**kwargs)
 
@@ -281,6 +291,7 @@ def buildcdk(
     else:
         export = None
     build(
+        utils.load_yaml(Path.cwd() / 'nufb.yml'),
         utils.get_user_cache_dir('nuvola-flatpaks'),
         Path.cwd() / 'resources',
         Path.cwd() / 'manifests',
@@ -306,6 +317,7 @@ def buildbase(
     else:
         export = None
     build(
+        utils.load_yaml(Path.cwd() / 'nufb.yml'),
         utils.get_user_cache_dir('nuvola-flatpaks'),
         Path.cwd() / 'resources',
         Path.cwd() / 'manifests',
@@ -331,6 +343,7 @@ def buildnuvola(
     else:
         export = None
     build(
+        utils.load_yaml(Path.cwd() / 'nufb.yml'),
         utils.get_user_cache_dir('nuvola-flatpaks'),
         Path.cwd() / 'resources',
         Path.cwd() / 'manifests',
@@ -338,4 +351,69 @@ def buildnuvola(
         keep_build_dirs=keep_build_dirs,
         delete_build_dirs=delete_build_dirs,
         export=export,
+    )
+
+
+def buildapps(
+        branch: str,
+        *,
+        no_export: bool = False,
+        force_export: bool = False,
+        keep_build_dirs: bool = False,
+        delete_build_dirs: bool = False,
+):
+    config = utils.load_yaml(Path.cwd() / 'nufb.yml')
+    apps = config["apps"].get(branch)
+    if apps is None:
+        apps = config["apps"].get("master")
+    assert apps
+
+    for name in apps:
+        buildapp(
+            branch,
+            name,
+            no_export=no_export,
+            force_export=force_export,
+            keep_build_dirs=keep_build_dirs,
+            delete_build_dirs=delete_build_dirs,
+        )
+
+def buildapp(
+            branch: str,
+            name: str,
+            *,
+            no_export: bool = False,
+            force_export: bool = False,
+            keep_build_dirs: bool = False,
+            delete_build_dirs: bool = False,
+    ):
+
+    if no_export:
+        export = False
+    elif force_export:
+        export = True
+    else:
+        export = None
+
+    if "@" in name:
+        name, app_branch = name.split("@")
+    else:
+        app_branch = "master"
+
+    subst = {
+        "APP_ID_DASH": name,
+        "APP_ID_UNDERSCORE": name.replace("-", "_"),
+        "APP_ID_UNIQUE": ''.join(s.capitalize() for s in name.split("-")),
+        "APP_BRANCH": app_branch,
+    }
+    build(
+        utils.load_yaml(Path.cwd() / 'nufb.yml'),
+        utils.get_user_cache_dir('nuvola-flatpaks'),
+        Path.cwd() / 'resources',
+        Path.cwd() / 'manifests',
+        'eu.tiliado.NuvolaApp', branch,
+        keep_build_dirs=keep_build_dirs,
+        delete_build_dirs=delete_build_dirs,
+        export=export,
+        subst=subst
     )

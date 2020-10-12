@@ -5,7 +5,7 @@ import sys
 import clizy
 
 import nufb
-from nufb.builder import buildcdk, buildbase, buildnuvola
+from nufb.builder import buildcdk, buildbase, buildnuvola, buildapps, buildapp
 from nufb.logging import init_logging
 
 
@@ -16,7 +16,7 @@ def main() -> int:
         sys.argv[0] = "nufbctl"
 
     init_logging()
-    clizy.run_funcs(buildcdk, buildbase, buildnuvola, version)
+    clizy.run_funcs(buildcdk, buildbase, buildnuvola, buildapp, buildapps, version)
     return 0
 
 

@@ -4,9 +4,11 @@
 This module contains various utility functions.
 """
 import os
+import re
 import shutil
+from io import StringIO
 from pathlib import Path
-from typing import Union, Optional
+from typing import Union, Optional, Dict, Any
 
 import ruamel.yaml
 
@@ -14,16 +16,26 @@ from nufb.logging import get_logger
 
 LOGGER = get_logger(__name__)
 YAML_LOADER = ruamel.yaml.YAML(typ='safe')
+SUBST_RE = re.compile("@(\w+)@")
 
 
-def load_yaml(source: Union[str, Path]) -> dict:
+def load_yaml(source: Union[str, Path], subst: Dict[str, Any] = None) -> dict:
     """
     Load YAML source file/string as Python dictionary.
 
+    :param subst: Substitutions.
     :param source: The source file or string.
     :return: Python representation of the YAML document.
     """
-    dictionary = YAML_LOADER.load(source)
+    if isinstance(source, str):
+        source = Path(source)
+    with source.open() as fh:
+        data = fh.read()
+
+    if subst is not None:
+        data = SUBST_RE.sub(lambda m: subst[m.group(1)], data)
+
+    dictionary = YAML_LOADER.load(StringIO(data))
     assert isinstance(dictionary, dict)
     return dictionary
 

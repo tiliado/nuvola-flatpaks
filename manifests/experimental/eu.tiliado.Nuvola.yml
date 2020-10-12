@@ -65,4 +65,5 @@ modules:
       - /app/share/dbus-1/services/eu.tiliado.Nuvola.service
       - /app/share/icons/hicolor/*/apps/eu.tiliado.Nuvola.*
     build-commands:
-      - rm /app/bin/{bash,nuvolasdk} /app/eu.tiliado.Nuvola.appdata.xml /app/libexec/udevd
+      - rm /app/bin/{bash,nuvolasdk,scour} /app/eu.tiliado.Nuvola.appdata.xml /app/libexec/udevd
+      - rm -r /app/lib/python3.8

@@ -1,11 +1,17 @@
-from typing import List,  Union
+from typing import List, Union, Dict, Any
 
 from nufb import const
 from nufb.utils import get_data_path
 
 
 class Manifest:
-    def __init__(self, data: dict, branch: str = const.MANIFEST_BRANCH_DEFAULT):
+    def __init__(
+            self,
+            data: dict,
+            branch: str = const.MANIFEST_BRANCH_DEFAULT,
+            subst: Dict[str, Any] = None,
+    ):
+        self.subst = subst
         self.branch = branch
         self.data = data
         modules = data.get(const.MANIFEST_MODULES)

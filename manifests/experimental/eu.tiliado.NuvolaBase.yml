@@ -103,16 +103,17 @@ modules:
   - name: final
     buildsystem: simple
     x-keep:
-      - /app/bin/{bash,xdg-*}
+      - /app/bin/{bash,xdg-*,scour}
       - /app/libexec/udevd
       - /app/share/{javascript,hwdata}/*
       - /app/etc/udev/udev.conf
       - /app/lib/{cef,libayatana-*,libunity}/*
       - /app/lib/libayatana*
       - /app/lib/{libdbus-glib-1,libdbusmenu-glib,libdbusmenu-gtk3,libdee-1.0,libdri2,libunity,libudev,libpci}.so*
+      - /app/lib/python3.8/*
     build-commands:
-      - rm /app/bin/{diorite-testgen4,vala*,nano,node,rnano,scour,standard,vapigen*}
+      - rm /app/bin/{diorite-testgen4,vala*,nano,node,rnano,standard,vapigen*}
       - rm -r /app/share/{vala,vala-*,valadoc-*,runtime/locale,locale,nano,graphviz}
-      - rm -r /app/lib/{{lib,}vala-*,{lib,}valadoc-*,pkgconfig,python3.8,node_modules}
+      - rm -r /app/lib/{{lib,}vala-*,{lib,}valadoc-*,pkgconfig,node_modules}
       - rm -r /app/lib/{graphviz,libcdt,libcgraph,libgvc,libxdot,libpathplan,libgvp,liblab_gamut}*
       - rm -r /app/include
