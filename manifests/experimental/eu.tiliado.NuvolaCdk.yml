@@ -1,6 +1,5 @@
 ---
 app-id: eu.tiliado.NuvolaCdk
-branch: experimental
 runtime: org.gnome.Sdk
 runtime-version: '3.38'
 sdk: org.gnome.Sdk
