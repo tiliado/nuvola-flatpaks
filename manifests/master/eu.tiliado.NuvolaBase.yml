@@ -1,0 +1,118 @@
+---
+app-id: eu.tiliado.NuvolaBase
+runtime: org.gnome.Platform
+runtime-version: '3.38'
+sdk: org.gnome.Sdk
+base: eu.tiliado.NuvolaCdk
+base-extensions:
+  - eu.tiliado.NuvolaCdk.Debug
+command: bash
+finish-args: []
+
+modules:
+  - name: valacef
+    buildsystem: simple
+    x-stage:
+      - /app/include/valacef-1.0/*
+      - /app/lib/pkgconfig/valacef*.pc
+      - /app/share/vala/vapi/cefiumrendererextension.*
+      - /app/share/vala/vapi/valacef*.*
+    x-keep:
+      - /app/.ref
+      - /app/manifest.json
+      - /app/lib/libvalacef*.so
+      - /app/lib/valacef/*
+      - /app/share/valacef/widevine/manifest.json
+    sources:
+      - type: git
+        path: /home/fenryxo/dev/projects/valacef
+        branch: 75.3770.x
+        disable-shallow-clone: true
+    build-commands:
+      - ./waf configure build install --prefix=/app --libdir=/app/lib
+      - rm /app/bin/Cefium
+
+  - name: nuvolasdk
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app .
+    x-stage:
+      - /app/bin/nuvolasdk
+      - /app/lib/python3.8/site-packages/nuvolasdk/*
+      - /app/lib/python3.8/site-packages/nuvolasdk-*.dist-info/*
+    sources:
+      - type: git
+        path: /home/fenryxo/dev/repo/nuvola/nuvolasdk
+        branch: master
+        disable-shallow-clone: true
+
+  - name: diorite
+    x-stage:
+      - /app/bin/diorite-testgen4
+      - /app/include/diorite-1.0/*
+      - /app/lib/pkgconfig/diorite*.pc
+      - /app/share/vala/vapi/diorite*.{vapi,deps}
+    x-keep:
+      - /app/lib/libdiorite*.so
+    sources:
+      - type: git
+        path: /home/fenryxo/dev/repo/diorite
+        branch: devel
+        disable-shallow-clone: true
+    buildsystem: simple
+    build-commands:
+      - python3 ./waf configure build install --prefix=/app --libdir=/app/lib --novaladoc --flatpak --no-vala-lint
+
+  - name: nuvola
+    buildsystem: simple
+    build-commands:
+      - python3 ./waf configure --prefix=/app --libdir=/app/lib --branding=tiliado --no-vala-lint --no-js-lint
+      - cat build/config.log
+      - python3 ./waf build install
+      - cp /app/share/metainfo/eu.tiliado.Nuvola.appdata.xml /app
+      - rm /app/share/*/eu.tiliado.Nuvola.appdata.xml
+      - rm -r /app/include/nuvolaruntime-1.0 /app/lib/pkgconfig/nuvolaruntime*
+      - rm /app/share/vala/vapi/{engineio,nuvolaruntime}*
+    x-keep:
+      - /app/bin/nuvola*
+      - /app/eu.tiliado.Nuvola.appdata.xml
+      - /app/lib/{libengineio,*nuvolaruntime}*
+      - /app/share/applications/eu.tiliado.Nuvola.desktop
+      - /app/share/dbus-1/services/eu.tiliado.Nuvola.service
+      - /app/share/icons/hicolor/*/apps/eu.tiliado.Nuvola.*
+      - /app/share/nuvolaruntime/*
+    sources:
+      - type: git
+        path: /home/fenryxo/dev/repo/nuvola/nuvolaruntime
+        branch: devel
+        disable-shallow-clone: true
+      - type: file
+        path: nuvola-branding.json
+        dest-filename: branding/tiliado.json
+      - type: file
+        path: nuvola-branding.xml
+        dest-filename: branding/tiliado/welcome.xml
+      - type: file
+        path: nuvola.appdata.xml
+        dest-filename: branding/tiliado/appdata.xml
+
+  - name: final
+    buildsystem: simple
+    x-keep:
+      - /app/bin/{bash,xdg-*,scour}
+      - /app/libexec/udevd
+      - /app/share/{javascript,hwdata}/*
+      - /app/etc/udev/udev.conf
+      - /app/lib/{cef,libayatana-*,libunity}/*
+      - /app/lib/libayatana*
+      - /app/lib/{libdbus-glib-1,libdbusmenu-glib,libdbusmenu-gtk3,libdee-1.0,libdri2,libunity,libudev,libpci}.so*
+      - /app/lib/python3.8/*
+    build-commands:
+      - rm /app/bin/{diorite-testgen4,vala*,nano,node,rnano,standard,vapigen*}
+      - rm -r /app/share/{vala,vala-*,valadoc-*,runtime/locale,locale,nano,graphviz}
+      - rm -r /app/lib/{{lib,}vala-*,{lib,}valadoc-*,pkgconfig,node_modules}
+      - rm -r /app/lib/{graphviz,libcdt,libcgraph,libgvc,libxdot,libpathplan,libgvp,liblab_gamut}*
+      - rm -r /app/include

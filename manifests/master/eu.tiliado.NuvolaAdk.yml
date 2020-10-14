@@ -1,0 +1,171 @@
+---
+app-id: eu.tiliado.NuvolaAdk
+# We need git, etc.
+runtime: org.gnome.Sdk
+runtime-version: '3.38'
+sdk: org.gnome.Sdk
+base: eu.tiliado.NuvolaCdk
+base-extensions:
+  - eu.tiliado.NuvolaCdk.Debug
+command: bash
+
+finish-args:
+  # X11 + XShm access
+  - --share=ipc
+  - --socket=x11
+  # Wayland access
+  - --socket=wayland
+  # OpenGL access
+  - --device=dri
+  # Needs to talk to the network
+  - --share=network
+  # Play audio
+  - --socket=pulseaudio
+  # OpenSUSE & ALSA issue: tiliado/nuvolaruntime#376
+  - --env=ALSA_CONFIG_PATH=
+  # Needed for dconf to work
+  - --filesystem=xdg-run/dconf
+  - --filesystem=~/.config/dconf:ro
+  - --talk-name=ca.desrt.dconf
+  - --env=DCONF_USER_CONFIG_DIR=.config/dconf
+  # For nvidia driver version
+  - --filesystem=/sys/module/nvidia:ro
+  # Bumblebeed: https://github.com/tiliado/nuvolaruntime/issues/380
+  - --filesystem=/sys/module/i915:ro
+  - --filesystem=/sys/fs/cgroup/pids/system.slice:ro
+  # Network Manager for HTTP Remote control, Nuvola service only
+  - --system-talk-name=org.freedesktop.NetworkManager
+  # VA-API drivers
+  - --env=LIBVA_DRIVERS_PATH=/app/lib/dri:/usr/lib/dri
+  # VDPAU drivers
+  - --env=VDPAU_DRIVER_PATH=/app/lib/vdpau
+  # We want bash!
+  - --env=SHELL=/usr/bin/bash
+  # Session managers
+  - --talk-name=org.gnome.SessionManager
+  - --talk-name=org.xfce.SessionManager
+  # MPRIS
+  - --own-name=org.mpris.MediaPlayer2.*
+  # Unity launcher API
+  - --talk-name=com.canonical.Unity
+  # Notifications
+  - --talk-name=org.freedesktop.Notifications
+  # app indicators
+  - --talk-name=org.kde.StatusNotifierWatcher
+  # Media keys
+  - --talk-name=org.gnome.SettingsDaemon.MediaKeys
+  - --talk-name=org.gnome.SettingsDaemon
+  # Keep .bashrc, etc
+  - --persist=
+  # Temporary icons
+  - --filesystem=~/.local/share/icons/hicolor
+  # pkg config
+  - --env=PKG_CONFIG_PATH=/app/lib/pkgconfig:/usr/lib/pkgconfig
+  # Needed for various branding
+  - --own-name=eu.tiliado.*
+
+modules:
+  - name: diorite
+    buildsystem: simple
+    x-keep:
+      - /app/{.ref,manifest.json}
+      - /app/lib/libdiorite*.so*
+    x-stage:
+      - /app/bin/diorite-testgen4
+      - /app/include/diorite-1.0/*
+      - /app/lib/pkgconfig/diorite*.pc
+      - /app/share/vala/vapi/diorite*.{vapi,deps}
+    sources:
+      - type: git
+        path: /home/fenryxo/dev/repo/diorite
+        branch: devel
+        disable-shallow-clone: true
+    build-commands:
+      - python3 ./waf configure build install --prefix=/app --libdir=/app/lib --novaladoc --flatpak --no-vala-lint
+
+  - name: valacef
+    buildsystem: simple
+    x-stage:
+      - /app/include/valacef-1.0/*
+      - /app/lib/pkgconfig/valacef*.pc
+      - /app/share/vala/vapi/cefiumrendererextension.{vapi,deps}
+      - /app/share/vala/vapi/valacef*.{vapi,deps}
+    x-keep:
+      - /app/lib/libvalacef*.so
+      - /app/lib/valacef/*
+      - /app/share/valacef/*
+    sources:
+      - type: git
+        path: /home/fenryxo/dev/projects/valacef
+        branch: 75.3770.x
+        disable-shallow-clone: true
+    build-commands:
+      - ./waf configure build install --prefix=/app --libdir=/app/lib
+      - rm /app/bin/Cefium
+
+  - name: nuvola
+    buildsystem: simple
+    x-keep:
+      - /app/bin/nuvola*
+      - /app/lib/{libengineio,libnuvolaruntime*}.so
+      - /app/lib/nuvolaruntime/*
+      - /app/share/dbus-1/services/eu.tiliado.NuvolaAdk.service
+      - /app/share/icons/hicolor/*/apps/eu.tiliado.NuvolaAdk.*
+      - /app/share/nuvolaruntime/*
+    sources:
+      - type: git
+        path: /home/fenryxo/dev/repo/nuvola/nuvolaruntime
+        branch: devel
+        disable-shallow-clone: true
+      - type: file
+        path: adk-branding.json
+        dest-filename: branding/tiliado.json
+      - type: file
+        path: nuvola-branding.xml
+        dest-filename: branding/tiliado/welcome.xml
+    build-commands:
+      - python3 ./waf configure --prefix=/app --libdir=/app/lib --branding=tiliado --no-vala-lint
+      - python3 ./waf build install
+      - rm /app/share/*/eu.tiliado.NuvolaAdk.appdata.xml
+      - rm /app/share/applications/eu.tiliado.NuvolaAdk.desktop
+      - rm /app/share/vala/vapi/{engineio,nuvolaruntime*}.{vapi,deps}
+      - rm -r /app/include/nuvolaruntime-1.0 /app/lib/pkgconfig/nuvolaruntime*.pc
+
+  - name: nuvolasdk
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app .
+    x-keep:
+      - /app/bin/nuvolasdk
+      - /app/lib/python3.8/site-packages/nuvolasdk-*.dist-info/*
+      - /app/lib/python3.8/site-packages/nuvolasdk/*
+    sources:
+      - type: git
+        path: /home/fenryxo/dev/repo/nuvola/nuvolasdk
+        branch: master
+        disable-shallow-clone: true
+
+  - name: final
+    buildsystem: simple
+    x-keep:
+      - /app/bin/{bash,nano,node,rnano,scour,standard,xdg-*}
+      - /app/etc/udev/udev.conf
+      - /app/lib/{cef/*,libayatana*,libdbus*,libdee*,libdri2*,libpci*,libudev*,libunity*}
+      - /app/lib/node_modules/standard/*
+      - /app/lib/python3.8/site-packages/{Pillow,scour}-*.dist-info/*
+      - /app/lib/python3.8/site-packages/{PIL,scour}/*
+      - /app/libexec/udevd
+      - /app/share/{hwdata,javascript,nano}/*
+      - /app/share/runtime/locale/*/nano.mo
+
+    build-commands:
+      - rm /app/bin/{diorite-testgen4,vala*,vapi*}
+      - rm -r /app/include
+      - rm -r /app/lib/{pkgconfig,{lib,}vala{doc,}-*}
+      - rm -r /app/share/{graphviz,valadoc-*,vala,vala-*}
+      - rm -r /app/lib/python3.8/site-packages/{pyparsing,ply,CppHeaderParser}*
+      - rm -r /app/lib/{graphviz,libcdt,libcgraph,libgvc,libxdot,libpathplan,libgvp,liblab_gamut}*
+      - rm /app/lib/python3.8/site-packages/__pycache__/pyparsing.cpython-38.pyc

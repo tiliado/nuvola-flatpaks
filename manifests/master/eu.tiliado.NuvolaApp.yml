@@ -1,0 +1,95 @@
+---
+app-id: eu.tiliado.NuvolaApp@APP_ID_UNIQUE@
+runtime: org.gnome.Platform
+runtime-version: '3.38'
+sdk: org.gnome.Sdk
+base: eu.tiliado.NuvolaBase
+base-extensions:
+  - eu.tiliado.NuvolaBase.Debug
+command: nuvola-app-@APP_ID_DASH@
+
+finish-args:
+  # X11 + XShm access
+  - --share=ipc
+  - --socket=x11
+  # Wayland access
+  - --socket=wayland
+  # OpenGL access
+  - --device=dri
+  # Needs to talk to the network
+  - --share=network
+  # Play audio
+  - --socket=pulseaudio
+  # OpenSUSE & ALSA issue: tiliado/nuvolaruntime#376
+  - --env=ALSA_CONFIG_PATH=
+  # Needed for dconf to work
+  - --filesystem=xdg-run/dconf
+  - --filesystem=~/.config/dconf:ro
+  - --talk-name=ca.desrt.dconf
+  - --env=DCONF_USER_CONFIG_DIR=.config/dconf
+  # For nvidia driver version
+  - --filesystem=/sys/module/nvidia:ro
+  # Bumblebeed: https:#github.com/tiliado/nuvolaruntime/issues/380
+  - --filesystem=/sys/module/i915:ro
+  - --filesystem=/sys/fs/cgroup/pids/system.slice:ro
+  # VA-API drivers
+  - --env=LIBVA_DRIVERS_PATH=/app/lib/dri:/usr/lib/dri
+  # VDPAU drivers
+  - --env=VDPAU_DRIVER_PATH=/app/lib/vdpau
+  # We want bash!
+  - --env=SHELL=/usr/bin/bash
+  # Session managers
+  - --talk-name=org.gnome.SessionManager
+  - --talk-name=org.xfce.SessionManager
+  # MPRIS
+  - --own-name=org.mpris.MediaPlayer2.NuvolaApp@APP_ID_UNIQUE@
+  # Unity launcher API
+  - --talk-name=com.canonical.Unity
+  # Notifications
+  - --talk-name=org.freedesktop.Notifications
+  # app indicators
+  - --talk-name=org.kde.StatusNotifierWatcher
+  # Media keys
+  - --talk-name=org.gnome.SettingsDaemon.MediaKeys
+  - --talk-name=org.gnome.SettingsDaemon
+  # Nuvola Service
+  - --talk-name=eu.tiliado.Nuvola
+
+modules:
+  - name: '@APP_ID_DASH@'
+    config-opts:
+      - --flatpak-build
+      - --genuine
+    x-keep:
+      - /app/bin/nuvola-app-@APP_ID_DASH@
+      - /app/manifest*.json
+      - '/app/share/applications/eu.tiliado.NuvolaApp@APP_ID_UNIQUE@.desktop'
+      - /app/share/dbus-1/services/eu.tiliado.NuvolaApp@APP_ID_UNIQUE@.service
+      - /app/share/icons/hicolor/*/apps/eu.tiliado.NuvolaApp@APP_ID_UNIQUE@.*
+      - '@/app/share/*/eu.tiliado.NuvolaApp@APP_ID_UNIQUE@.appdata.xml'
+      - /app/share/nuvolaruntime/web_apps/@APP_ID_UNDERSCORE@/*
+    sources:
+      - type: git
+        path: /home/fenryxo/dev/repo/nuvola/apps/nuvola-app-@APP_ID_DASH@
+        branch: '@APP_BRANCH@'
+        disable-shallow-clone: true
+
+  - name: final
+    buildsystem: simple
+    x-keep:
+      - /app/.ref
+      - /app/bin/{nuvola-app-@APP_ID_DASH@,nuvolaruntime,xdg-*,scour}
+      - /app/libexec/udevd
+      - /app/share/{javascript,hwdata,nuvolaruntime,valacef}/*
+      - /app/share/icons/hicolor/*/apps/eu.tiliado.Nuvola.*
+      - /app/etc/udev/udev.conf
+      - /app/lib/{cef,libayatana-*,libunity}/*
+      - /app/lib/{libayatana,libdiorite,libengineio,libnuvolaruntime,libvalacef,nuvolaruntime,valacef}*
+      - /app/lib/{libdbus-glib-1,libdbusmenu-glib,libdbusmenu-gtk3,libdee-1.0,libdri2,libunity,libudev,libpci}.so*
+    build-commands:
+      - rm -r /app/lib/python3.8
+      - rm /app/eu.tiliado.Nuvola.appdata.xml
+      - rm /app/share/dbus-1/services/eu.tiliado.Nuvola.service
+      - rm /app/bin/{bash,scour,nuvolasdk,nuvola,nuvolactl,nuvolaserviceinfo}
+      - rm /app/share/applications/eu.tiliado.Nuvola.desktop
+      - rm /app/share/metainfo/eu.tiliado.*.appdata.xml
