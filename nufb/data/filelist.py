@@ -2,7 +2,7 @@
 import os
 import re
 import sys
-from typing import Dict, List, Pattern, Set
+from typing import Dict, List, Pattern, Set, Tuple
 
 
 def compile_pattern(pattern: str) -> Pattern[str]:
@@ -24,29 +24,22 @@ def compile_pattern(pattern: str) -> Pattern[str]:
             regex.append("|")
         else:
             regex.append(re.escape(char))
+
     regex.append("$")
+    assert not group, group
     return re.compile("".join(regex))
 
 
-result = 0
-directory = sys.argv[1] if len(sys.argv) > 1 else "."
+def collect_entries(directory: str) -> List[str]:
+    return sorted(
+        os.path.join(root if not root.startswith("./") else root[2:], name) if root != "." else name
+        for root, _dirs, files in os.walk(directory, followlinks=False)
+        for name in files
+    )
 
-entries: List[str] = sorted(
-    os.path.join(root if not root.startswith("./") else root[2:], name) if root != "." else name
-    for root, _dirs, files in os.walk(directory, followlinks=False)
-    for name in files
-)
-print("\n".join(entries), file=sys.stdout)
 
-if len(sys.argv) > 2:
-    patterns: Dict[Pattern[str], int] = {}
-    paths: Set[str] = set()
-
-    if len(sys.argv) > 3:
-        with open(sys.argv[3]) as f:
-            paths = {line.strip() for line in f}
-
-    with open(sys.argv[2]) as f:
+def read_rules(paths: Set[str], patterns: Dict[Tuple[str, Pattern[str]], int], file: str) -> None:
+    with open(file) as f:
         for line in f:
             path = line.strip()
             if path and not path.startswith("#"):
@@ -55,6 +48,9 @@ if len(sys.argv) > 2:
                 else:
                     assert path not in paths
                     paths.add(path)
+
+
+def process_entries(paths: Set[str], patterns: Dict[Tuple[str, Pattern[str]], int], entries: List[str]) -> List[str]:
     extra = []
 
     for entry in entries:
@@ -68,6 +64,10 @@ if len(sys.argv) > 2:
             else:
                 extra.append(entry)
 
+    return extra
+
+
+def print_summary(paths: Set[str], patterns: Dict[Tuple[str, Pattern[str]], int], extra: List[str]) -> bool:
     success = not extra and not paths
 
     if extra:
@@ -88,4 +88,24 @@ if len(sys.argv) > 2:
             else:
                 print(" ", pattern, count, file=sys.stderr)
 
-sys.exit(0 if success else 1)
+    return success
+
+
+def main(argv: List[str]) -> int:
+    directory = argv[1] if len(argv) > 1 else "."
+    entries = collect_entries(directory)
+    print("\n".join(entries), file=sys.stdout)
+
+    patterns = {}
+    paths = set()
+
+    for file in argv[2:]:
+        read_rules(paths, patterns, file)
+
+    extra = process_entries(paths, patterns, entries)
+    success = print_summary(paths, patterns, extra)
+    return 0 if success else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
