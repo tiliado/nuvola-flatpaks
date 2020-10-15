@@ -6,7 +6,7 @@ import clizy
 
 import nufb
 from nufb import utils
-from nufb.builder import build_cdk, build_adk, build_base, build_nuvola, build_apps, build_app, build_all
+from nufb.builder import build_adk, build_all, build_app, build_apps, build_base, build_cdk, build_nuvola
 from nufb.logging import init_logging
 from nufb.repo import update_repo
 

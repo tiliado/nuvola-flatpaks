@@ -6,10 +6,10 @@ This module contains various utility functions.
 import asyncio
 import os
 import re
-from asyncio.subprocess import Process, DEVNULL, PIPE, STDOUT
+from asyncio.subprocess import DEVNULL, PIPE, STDOUT, Process
 from io import StringIO
 from pathlib import Path
-from typing import Union, Optional, Dict, Any, Tuple
+from typing import Any, Dict, Optional, Tuple, Union
 
 import aiofiles
 import aiofiles.os

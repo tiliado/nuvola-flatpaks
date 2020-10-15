@@ -2,3 +2,4 @@ clizy
 ruamel.yaml
 aiofiles
 black
+isort

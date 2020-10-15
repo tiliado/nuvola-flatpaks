@@ -4,6 +4,7 @@ lint:
 	yamllint .
 
 format:
+	isort nufb
 	black nufb
 
 cdk-experimental: lint

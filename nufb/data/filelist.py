@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import os
-import sys
 import re
-from typing import List, Dict, Set, Pattern
+import sys
+from typing import Dict, List, Pattern, Set
 
 
 def compile_pattern(pattern: str) -> Pattern[str]:

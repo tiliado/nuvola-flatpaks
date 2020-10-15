@@ -1,5 +1,5 @@
 from os import fspath
-from os.path import expandvars, expanduser
+from os.path import expanduser, expandvars
 from pathlib import Path
 
 from nufb import fs

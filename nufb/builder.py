@@ -5,14 +5,14 @@
 import asyncio
 import json
 import os
-from asyncio import Lock, BoundedSemaphore
-from os.path import expandvars, expanduser
+from asyncio import BoundedSemaphore, Lock
+from os.path import expanduser, expandvars
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
-from nufb import utils, fs
-from nufb.manifest import Manifest
+from nufb import fs, utils
 from nufb.logging import get_logger
+from nufb.manifest import Manifest
 from nufb.repo import update_repo
 from nufb.utils import exec_subprocess
 
