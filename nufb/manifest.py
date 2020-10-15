@@ -1,10 +1,12 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Union, cast
 
 from nufb import const
 from nufb.utils import get_data_path
 
 
 class Manifest:
+    modules: Dict[str, dict]
+
     def __init__(
         self,
         data: dict,
@@ -17,7 +19,7 @@ class Manifest:
         modules = data.get(const.MANIFEST_MODULES)
         if modules is None:
             self.data[const.MANIFEST_MODULES] = modules = []
-        self.modules = {m.get(const.MODULE_NAME): m for m in modules if isinstance(m, dict)}
+        self.modules = {cast(str, m[const.MODULE_NAME]): m for m in modules if isinstance(m, dict)}
 
         if self.data.setdefault(const.MANIFEST_BRANCH, branch) != branch:
             raise ValueError(f"Wrong branch in manifest: {self.data[const.MANIFEST_BRANCH]}")

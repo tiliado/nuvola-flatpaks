@@ -7,6 +7,10 @@ format:
 	isort nufb
 	black nufb
 
+check: format
+	flake8 --format=pylint --show-source nufb
+	mypy nufb
+
 cdk-experimental: lint
 	./nufbctl buildcdk experimental $(ARGS)
 

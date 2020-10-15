@@ -8,7 +8,7 @@ import os
 from asyncio import BoundedSemaphore, Lock
 from os.path import expanduser, expandvars
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from nufb import fs, utils
 from nufb.logging import get_logger
@@ -132,7 +132,7 @@ class Builder:
                 if isinstance(source, str):
                     path = source
                 elif source["type"] in ("file", "patch", "archive"):
-                    path = source.get("path")
+                    path = source.get("path", "")
                 else:
                     continue
 
@@ -347,6 +347,7 @@ async def build_cdk(
     :param bool delete_build_dirs: Delete the build dirs even if the build
         fails.
     """
+    export: Optional[bool]
     if no_export:
         export = False
     elif force_export:
@@ -376,6 +377,7 @@ async def build_adk(
     keep_build_dirs: bool = False,
     delete_build_dirs: bool = False,
 ):
+    export: Optional[bool]
     if no_export:
         export = False
     elif force_export:
@@ -405,6 +407,7 @@ async def build_base(
     keep_build_dirs: bool = False,
     delete_build_dirs: bool = False,
 ):
+    export: Optional[bool]
     if no_export:
         export = False
     elif force_export:
@@ -434,6 +437,7 @@ async def build_nuvola(
     keep_build_dirs: bool = False,
     delete_build_dirs: bool = False,
 ):
+    export: Optional[bool]
     if no_export:
         export = False
     elif force_export:
@@ -500,6 +504,7 @@ async def build_app(
     keep_build_dirs: bool = False,
     delete_build_dirs: bool = False,
 ):
+    export: Optional[bool]
     if no_export:
         export = False
     elif force_export:

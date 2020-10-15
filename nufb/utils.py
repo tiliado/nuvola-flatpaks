@@ -6,10 +6,10 @@ This module contains various utility functions.
 import asyncio
 import os
 import re
-from asyncio.subprocess import DEVNULL, PIPE, STDOUT, Process
+from asyncio.subprocess import DEVNULL, PIPE, STDOUT
 from io import StringIO
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union, cast
 
 import aiofiles
 import aiofiles.os
@@ -20,7 +20,7 @@ from nufb.logging import get_logger
 
 LOGGER = get_logger(__name__)
 YAML_LOADER = ruamel.yaml.YAML(typ="safe")
-SUBST_RE = re.compile("@(\w+)@")
+SUBST_RE = re.compile(r"@(\w+)@")
 
 
 async def load_yaml(source: Union[str, Path], subst: Dict[str, Any] = None) -> dict:
@@ -35,7 +35,7 @@ async def load_yaml(source: Union[str, Path], subst: Dict[str, Any] = None) -> d
         data = await fh.read()
 
     if subst is not None:
-        data = SUBST_RE.sub(lambda m: subst[m.group(1)], data)
+        data = SUBST_RE.sub(lambda m: cast(Dict[str, str], subst)[m.group(1)], data)
 
     dictionary = YAML_LOADER.load(StringIO(data))
     assert isinstance(dictionary, dict)

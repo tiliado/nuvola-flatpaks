@@ -6,3 +6,4 @@ __pycache__
 /resources/nuvola-branding.json
 /resources/nuvola-branding.xml
 /resources/nuvola.appdata.xml
+.mypy_cache/
