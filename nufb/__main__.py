@@ -1,11 +1,14 @@
 import asyncio
 import sys
+from pathlib import Path
 
 import clizy
 
 import nufb
+from nufb import utils
 from nufb.builder import build_cdk, build_adk, build_base, build_nuvola, build_apps, build_app, build_all
 from nufb.logging import init_logging
+from nufb.repo import update_repo
 
 
 def main() -> int:
@@ -15,7 +18,7 @@ def main() -> int:
         sys.argv[0] = "nufbctl"
 
     init_logging()
-    clizy.run_funcs(buildall, buildcdk, buildadk, buildbase, buildnuvola, buildapp, buildapps, version)
+    clizy.run_funcs(buildall, buildcdk, buildadk, buildbase, buildnuvola, buildapp, buildapps, updaterepo, version)
     return 0
 
 
@@ -147,6 +150,11 @@ def buildall(
         delete_build_dirs=delete_build_dirs,
         concurrency=concurrency,
     ))
+
+
+def updaterepo():
+    config = asyncio.run(utils.load_yaml(Path.cwd() / 'nufb.yml'))
+    asyncio.run(update_repo(config))
 
 
 if __name__ == "__main__":

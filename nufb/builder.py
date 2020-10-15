@@ -13,6 +13,7 @@ from typing import Dict, Any
 from nufb import utils, fs
 from nufb.manifest import Manifest
 from nufb.logging import get_logger
+from nufb.repo import update_repo
 from nufb.utils import exec_subprocess
 
 LOGGER = get_logger(__name__)
@@ -42,8 +43,9 @@ class Builder:
 
     def __init__(self, build_root: Path, resources_dir: Path, manifest: Manifest, config: dict, locks: Locks):
         self.locks = locks
-        self.repo_dir = Path(expandvars(expanduser(config["repository"]))).absolute()
-        self.key_id = config["key_id"]
+        self.repository = config["repository"]
+        self.repo_dir = Path(expandvars(expanduser(self.repository["path"]))).absolute()
+        self.key_id = self.repository["key_id"]
         self.resources_dir = resources_dir
         self.manifest = manifest
         self.name = f'{manifest.id}-{manifest.branch}'
@@ -532,6 +534,7 @@ async def build_all(
         **kwargs,
 ):
     locks = Locks()
+    config = await utils.load_yaml(Path.cwd() / 'nufb.yml')
 
     async def base_and_apps():
         await build_base(branch, locks=locks, **kwargs)
@@ -545,3 +548,4 @@ async def build_all(
         base_and_apps(),
         build_adk(branch, locks=locks, **kwargs),
     )
+    await update_repo(config)
