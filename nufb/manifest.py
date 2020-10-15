@@ -3,6 +3,17 @@ from typing import Any, Dict, List, Union, cast
 from nufb import const
 from nufb.utils import get_data_path
 
+FILE_CHECK_MODULE = {
+    const.MODULE_NAME: "nufb-filelist",
+    const.MODULE_BUILD_SYSTEM: const.BUILD_SYSTEM_SIMPLE,
+    const.MODULE_BUILD_COMMANDS: [
+        "mkdir -p /app/lib/debug/filelist",
+        "test -f /app/lib/debug/filelist/filelist || cp filelist.py /app/lib/debug/filelist/filelist",  # noqa: SC300
+        "test -e /app/lib/debug/filelist/latest || touch /app/lib/debug/filelist/latest",
+    ],
+    const.MODULE_SOURCES: [{"type": "file", "path": str(get_data_path("filelist.py"))}],
+}
+
 
 class Manifest:
     modules: Dict[str, dict]
@@ -68,9 +79,9 @@ class Manifest:
 
             if module != last_module:
                 post_install.append(
-                    "cd /app/lib/debug/filelist && "
-                    "./filelist /app $FLATPAK_BUILDER_BUILDDIR/allowed latest > current && "
-                    "mv current latest"
+                    "cd /app/lib/debug/filelist && "  # noqa: SC300
+                    "./filelist /app $FLATPAK_BUILDER_BUILDDIR/allowed latest > current && "  # noqa: SC300
+                    "mv current latest"  # noqa: SC300
                 )
 
                 sources.append(
@@ -81,10 +92,10 @@ class Manifest:
                     }
                 )
             else:
-                post_install.append(
+                post_install.append(  # noqa: SC300
                     "cd /app/lib/debug/filelist && "
                     "rm latest && "
-                    "./filelist /app $FLATPAK_BUILDER_BUILDDIR/allowed /dev/null > latest"
+                    "./filelist /app $FLATPAK_BUILDER_BUILDDIR/allowed /dev/null > latest"  # noqa: SC300
                 )
 
                 sources.append(
@@ -95,15 +106,5 @@ class Manifest:
                     }
                 )
 
-        file_check = {
-            const.MODULE_NAME: "nufb-filelist",
-            const.MODULE_BUILD_SYSTEM: const.BUILD_SYSTEM_SIMPLE,
-            const.MODULE_BUILD_COMMANDS: [
-                "mkdir -p /app/lib/debug/filelist",
-                "test -f /app/lib/debug/filelist/filelist || cp filelist.py /app/lib/debug/filelist/filelist",
-                "test -e /app/lib/debug/filelist/latest || touch /app/lib/debug/filelist/latest",
-            ],
-            const.MODULE_SOURCES: [{"type": "file", "path": str(get_data_path("filelist.py"))}],
-        }
-        self.data[const.MANIFEST_MODULES].insert(0, file_check)
-        self.modules["nufb-filelist"] = file_check
+        self.data[const.MANIFEST_MODULES].insert(0, FILE_CHECK_MODULE)
+        self.modules["nufb-filelist"] = FILE_CHECK_MODULE

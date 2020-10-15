@@ -5,3 +5,4 @@ black
 isort
 mypy
 flake8
+flake8-spellcheck @ git+https://github.com/fenryxo/flake8-spellcheck.git@devel
