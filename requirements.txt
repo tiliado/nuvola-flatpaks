@@ -5,4 +5,11 @@ black
 isort
 mypy
 flake8
+flake8-builtins
+flake8-blind-except
 flake8-spellcheck @ git+https://github.com/fenryxo/flake8-spellcheck.git@devel
+flake8-logging-format
+flake8-bugbear
+flake8-comprehensions
+flake8-pep3101
+flake8-simplify

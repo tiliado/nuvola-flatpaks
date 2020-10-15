@@ -15,7 +15,7 @@ class AsyncTextIO(AsyncTextIOWrapper):
         ...
 
 
-open = cast(Callable[..., AsyncTextIO], _open)
+open = cast(Callable[..., AsyncTextIO], _open)  # noqa: A001
 
 remove = wrap(os.remove)
 makedirs = wrap(os.makedirs)

@@ -6,6 +6,7 @@ import asyncio
 import json
 import os
 from asyncio import BoundedSemaphore, Lock
+from contextlib import suppress
 from os.path import expanduser, expandvars
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -103,10 +104,8 @@ class Builder:
 
         :raise OSError: When a filesystem operation fails.
         """
-        try:
+        with suppress(FileNotFoundError):
             await fs.rmtree(self.build_dir)
-        except FileNotFoundError:
-            pass
         await fs.makedirs(self.build_dir, exist_ok=True)
         self.manifest.process_stage_keep_rules()
 
@@ -118,10 +117,8 @@ class Builder:
         """
 
         async def task(source_path, destination_path):
-            try:
+            with suppress(FileNotFoundError):
                 await fs.remove(destination_path)
-            except FileNotFoundError:
-                pass
             await fs.makedirs(destination_path.parent, exist_ok=True)
             await utils.hardlink_or_copy(source_path, destination_path)
 
@@ -289,10 +286,8 @@ class Builder:
 
         :raise OSError: When a filesystem operation fails.
         """
-        try:
+        with suppress(FileNotFoundError):
             await fs.rmtree(self.build_dir)
-        except FileNotFoundError:
-            pass
 
 
 async def build(
