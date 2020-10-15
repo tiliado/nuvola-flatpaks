@@ -640,6 +640,7 @@ modules:
         url: 'https://www.kernel.org/pub/linux/utils/kernel/hotplug/udev-175.tar.xz'
         sha256: '6e7c7330a8f7a1d118e33338941381faa005759921caa241535d6930bb12140f'
         x-update:
+          ignore: true
           url: https://www.kernel.org/pub/linux/utils/kernel/hotplug/
           url-pattern: udev-(?P<version>\d+)\.tar\.xz
       - type: patch
