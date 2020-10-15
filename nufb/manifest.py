@@ -6,10 +6,10 @@ from nufb.utils import get_data_path
 
 class Manifest:
     def __init__(
-            self,
-            data: dict,
-            branch: str = const.MANIFEST_BRANCH_DEFAULT,
-            subst: Dict[str, Any] = None,
+        self,
+        data: dict,
+        branch: str = const.MANIFEST_BRANCH_DEFAULT,
+        subst: Dict[str, Any] = None,
     ):
         self.subst = subst
         self.branch = branch
@@ -71,11 +71,13 @@ class Manifest:
                     "mv current latest"
                 )
 
-                sources.append({
-                    "type": "script",
-                    "dest-filename": "allowed",
-                    "commands": stage,
-                })
+                sources.append(
+                    {
+                        "type": "script",
+                        "dest-filename": "allowed",
+                        "commands": stage,
+                    }
+                )
             else:
                 post_install.append(
                     "cd /app/lib/debug/filelist && "
@@ -83,11 +85,13 @@ class Manifest:
                     "./filelist /app $FLATPAK_BUILDER_BUILDDIR/allowed /dev/null > latest"
                 )
 
-                sources.append({
-                    "type": "script",
-                    "dest-filename": "allowed",
-                    "commands": keep_files,
-                })
+                sources.append(
+                    {
+                        "type": "script",
+                        "dest-filename": "allowed",
+                        "commands": keep_files,
+                    }
+                )
 
         file_check = {
             const.MODULE_NAME: "nufb-filelist",

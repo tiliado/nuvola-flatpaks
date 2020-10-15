@@ -11,7 +11,7 @@ def init_logging(level: int = logging.DEBUG, color: bool = True) -> None:
                 f"{Foreground.YELLOW}%(pathname)s{Foreground.RESET}:"
                 f"{Foreground.YELLOW}%(lineno)d{Foreground.RESET} "
                 f"{Foreground.GREEN}%(funcName)s{Foreground.RESET} "
-                "%("f"message)s"
+                "%(message)s"
             )
         else:
             fmt = "%(levelname)-7s %(pathname)s:%(lineno)d:%(funcName)s %(message)s"

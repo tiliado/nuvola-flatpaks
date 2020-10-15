@@ -13,17 +13,17 @@ async def update_repo(config: dict) -> None:
     repository = config["repository"]
     repo_dir = Path(expandvars(expanduser(repository["path"]))).absolute()
     key_id = repository["key_id"]
-    branch = repository.get('default_branch', 'stable')
+    branch = repository.get("default_branch", "stable")
     name = repository["name"]
 
     await fs.makedirs(repo_dir, exist_ok=True)
 
     argv = [
-        'time',
-        'flatpak',
-        'build-update-repo',
-        '-vv',
-        f'--title={name}',
+        "time",
+        "flatpak",
+        "build-update-repo",
+        "-vv",
+        f"--title={name}",
         f"--default-branch={branch}",
         f"--gpg-sign={key_id}",
         fspath(repo_dir),

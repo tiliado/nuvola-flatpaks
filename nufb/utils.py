@@ -19,7 +19,7 @@ from nufb import fs
 from nufb.logging import get_logger
 
 LOGGER = get_logger(__name__)
-YAML_LOADER = ruamel.yaml.YAML(typ='safe')
+YAML_LOADER = ruamel.yaml.YAML(typ="safe")
 SUBST_RE = re.compile("@(\w+)@")
 
 
@@ -49,11 +49,11 @@ def get_user_cache_dir(subdir: Optional[str] = None) -> Path:
     :param subdir: The subdirectory to get or None.
     :return: User's cache directory or its subdirectory.
     """
-    xdg_cache_dir = os.environ.get('XDG_CACHE_HOME')
+    xdg_cache_dir = os.environ.get("XDG_CACHE_HOME")
     if xdg_cache_dir:
         cache_dir = Path(xdg_cache_dir).resolve()
     else:
-        cache_dir = Path.home() / '.cache'
+        cache_dir = Path.home() / ".cache"
     return cache_dir / subdir if subdir else cache_dir
 
 

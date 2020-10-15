@@ -31,6 +31,7 @@ class Builder:
     """
     Build a flatpak according to the manifest.
     """
+
     manifest: Manifest
     name: str
     resources_dir: Path
@@ -48,19 +49,19 @@ class Builder:
         self.key_id = self.repository["key_id"]
         self.resources_dir = resources_dir
         self.manifest = manifest
-        self.name = f'{manifest.id}-{manifest.branch}'
+        self.name = f"{manifest.id}-{manifest.branch}"
         self.build_root = build_root
         self.build_dir = build_root / self.name
-        self.result_dir = self.build_dir / 'result'
-        self.global_state_dir = build_root / 'flatpak-builder'
-        self.working_state_dir = self.build_dir / '.flatpak-builder'
-        self.manifest_json = self.build_dir / (self.name + '.json')
+        self.result_dir = self.build_dir / "result"
+        self.global_state_dir = build_root / "flatpak-builder"
+        self.working_state_dir = self.build_dir / ".flatpak-builder"
+        self.manifest_json = self.build_dir / (self.name + ".json")
 
     async def build(
-            self,
-            keep_build_dirs: bool = False,
-            delete_build_dirs: bool = False,
-            export: bool = None,
+        self,
+        keep_build_dirs: bool = False,
+        delete_build_dirs: bool = False,
+        export: bool = None,
     ):
         """
         Build the flatpak.
@@ -130,8 +131,8 @@ class Builder:
             for source in self.manifest.sources(module, create=False):
                 if isinstance(source, str):
                     path = source
-                elif source['type'] in ('file', 'patch', 'archive'):
-                    path = source.get('path')
+                elif source["type"] in ("file", "patch", "archive"):
+                    path = source.get("path")
                 else:
                     continue
 
@@ -142,12 +143,13 @@ class Builder:
 
         await asyncio.gather(*tasks)
 
-    async def build_flatpak(self,
-                      disable_cache: bool = False,
-                      require_changes: bool = True,
-                      keep_build_dirs: bool = False,
-                      delete_build_dirs: bool = False,
-                      ) -> None:
+    async def build_flatpak(
+        self,
+        disable_cache: bool = False,
+        require_changes: bool = True,
+        keep_build_dirs: bool = False,
+        delete_build_dirs: bool = False,
+    ) -> None:
         """
         Build the flatpak with flatpak-builder.
 
@@ -162,7 +164,7 @@ class Builder:
         """
         data = json.dumps(self.manifest.data, indent=2)
 
-        async with fs.open(self.manifest_json, 'w') as fh:
+        async with fs.open(self.manifest_json, "w") as fh:
             await fh.write(data)
             await fh.write("\n")
 
@@ -177,7 +179,7 @@ class Builder:
             await fh.write("max_size = 20.0G\n")
         local_state = self.working_state_dir
         await fs.makedirs(local_state, exist_ok=True)
-        for symlink in 'cache', 'ccache', 'checksums', 'downloads', 'git':
+        for symlink in "cache", "ccache", "checksums", "downloads", "git":
             target = global_state / symlink
             await fs.makedirs(target, exist_ok=True)
             await fs.symlink(target, local_state / symlink)
@@ -187,7 +189,7 @@ class Builder:
             str(self.manifest_json.relative_to(work_dir)),
         ]
 
-        argv = ['time', 'flatpak-builder', '--download-only'] + args
+        argv = ["time", "flatpak-builder", "--download-only"] + args
 
         async with self.locks.download:
             LOGGER.debug("Running %s in %s.", argv, work_dir)
@@ -198,15 +200,15 @@ class Builder:
             else:
                 LOGGER.info("%s returned %d.\n%s", argv, code, out)
 
-        argv = ['time', 'flatpak-builder', '--ccache', "--disable-download"]
+        argv = ["time", "flatpak-builder", "--ccache", "--disable-download"]
         if disable_cache:
-            argv.append('--disable-cache')
+            argv.append("--disable-cache")
         if require_changes:
-            argv.append('--require-changes')
+            argv.append("--require-changes")
         if keep_build_dirs:
-            argv.append('--keep-build-dirs')
+            argv.append("--keep-build-dirs")
         if delete_build_dirs:
-            argv.append('--delete-build-dirs')
+            argv.append("--delete-build-dirs")
 
         argv.extend(args)
 
@@ -227,7 +229,7 @@ class Builder:
             LOGGER.info("Nothing new to export to the repository.")
             return
 
-        base_argv = ['time', 'flatpak', "build-export", "-v", f"--gpg-sign={self.key_id}"]
+        base_argv = ["time", "flatpak", "build-export", "-v", f"--gpg-sign={self.key_id}"]
 
         argv = base_argv + [
             "-s",
@@ -294,16 +296,16 @@ class Builder:
 
 
 async def build(
-        locks: Locks,
-        config: dict,
-        build_root: Path,
-        resources_dir: Path,
-        manifests_dir: Path,
-        manifest_id: str,
-        branch: str,
-        *,
-        subst: Dict[str, Any] = None,
-        **kwargs
+    locks: Locks,
+    config: dict,
+    build_root: Path,
+    resources_dir: Path,
+    manifests_dir: Path,
+    manifest_id: str,
+    branch: str,
+    *,
+    subst: Dict[str, Any] = None,
+    **kwargs,
 ) -> None:
     """
     Star a build.
@@ -319,23 +321,22 @@ async def build(
     :param kwargs: Other parameters for the builder.
     """
 
-    LOGGER.debug('build(%s, %s, %s, %s, %s)', build_root, resources_dir,
-                 manifests_dir, manifest_id, branch)
+    LOGGER.debug("build(%s, %s, %s, %s, %s)", build_root, resources_dir, manifests_dir, manifest_id, branch)
 
-    data = await utils.load_yaml(manifests_dir / branch / (manifest_id + '.yml'), subst=subst)
+    data = await utils.load_yaml(manifests_dir / branch / (manifest_id + ".yml"), subst=subst)
     manifest = Manifest(data, branch, subst)
     builder = Builder(build_root, resources_dir, manifest, config, locks)
     await builder.build(**kwargs)
 
 
 async def build_cdk(
-        branch: str,
-        *,
-        locks: Locks = None,
-        no_export: bool = False,
-        force_export: bool = False,
-        keep_build_dirs: bool = False,
-        delete_build_dirs: bool = False,
+    branch: str,
+    *,
+    locks: Locks = None,
+    no_export: bool = False,
+    force_export: bool = False,
+    keep_build_dirs: bool = False,
+    delete_build_dirs: bool = False,
 ):
     """
     Build Nuvola CDK
@@ -354,11 +355,12 @@ async def build_cdk(
         export = None
     await build(
         locks or Locks(),
-        await utils.load_yaml(Path.cwd() / 'nufb.yml'),
-        utils.get_user_cache_dir('nuvola-flatpaks'),
-        Path.cwd() / 'resources',
-        Path.cwd() / 'manifests',
-        'eu.tiliado.NuvolaCdk', branch,
+        await utils.load_yaml(Path.cwd() / "nufb.yml"),
+        utils.get_user_cache_dir("nuvola-flatpaks"),
+        Path.cwd() / "resources",
+        Path.cwd() / "manifests",
+        "eu.tiliado.NuvolaCdk",
+        branch,
         keep_build_dirs=keep_build_dirs,
         delete_build_dirs=delete_build_dirs,
         export=export,
@@ -366,13 +368,13 @@ async def build_cdk(
 
 
 async def build_adk(
-        branch: str,
-        *,
-        locks: Locks = None,
-        no_export: bool = False,
-        force_export: bool = False,
-        keep_build_dirs: bool = False,
-        delete_build_dirs: bool = False,
+    branch: str,
+    *,
+    locks: Locks = None,
+    no_export: bool = False,
+    force_export: bool = False,
+    keep_build_dirs: bool = False,
+    delete_build_dirs: bool = False,
 ):
     if no_export:
         export = False
@@ -382,11 +384,12 @@ async def build_adk(
         export = None
     await build(
         locks or Locks(),
-        await utils.load_yaml(Path.cwd() / 'nufb.yml'),
-        utils.get_user_cache_dir('nuvola-flatpaks'),
-        Path.cwd() / 'resources',
-        Path.cwd() / 'manifests',
-        'eu.tiliado.NuvolaAdk', branch,
+        await utils.load_yaml(Path.cwd() / "nufb.yml"),
+        utils.get_user_cache_dir("nuvola-flatpaks"),
+        Path.cwd() / "resources",
+        Path.cwd() / "manifests",
+        "eu.tiliado.NuvolaAdk",
+        branch,
         keep_build_dirs=keep_build_dirs,
         delete_build_dirs=delete_build_dirs,
         export=export,
@@ -394,13 +397,13 @@ async def build_adk(
 
 
 async def build_base(
-        branch: str,
-        *,
-        locks: Locks = None,
-        no_export: bool = False,
-        force_export: bool = False,
-        keep_build_dirs: bool = False,
-        delete_build_dirs: bool = False,
+    branch: str,
+    *,
+    locks: Locks = None,
+    no_export: bool = False,
+    force_export: bool = False,
+    keep_build_dirs: bool = False,
+    delete_build_dirs: bool = False,
 ):
     if no_export:
         export = False
@@ -410,11 +413,12 @@ async def build_base(
         export = None
     await build(
         locks or Locks(),
-        await utils.load_yaml(Path.cwd() / 'nufb.yml'),
-        utils.get_user_cache_dir('nuvola-flatpaks'),
-        Path.cwd() / 'resources',
-        Path.cwd() / 'manifests',
-        'eu.tiliado.NuvolaBase', branch,
+        await utils.load_yaml(Path.cwd() / "nufb.yml"),
+        utils.get_user_cache_dir("nuvola-flatpaks"),
+        Path.cwd() / "resources",
+        Path.cwd() / "manifests",
+        "eu.tiliado.NuvolaBase",
+        branch,
         keep_build_dirs=keep_build_dirs,
         delete_build_dirs=delete_build_dirs,
         export=export,
@@ -422,13 +426,13 @@ async def build_base(
 
 
 async def build_nuvola(
-        branch: str,
-        *,
-        locks: Locks = None,
-        no_export: bool = False,
-        force_export: bool = False,
-        keep_build_dirs: bool = False,
-        delete_build_dirs: bool = False,
+    branch: str,
+    *,
+    locks: Locks = None,
+    no_export: bool = False,
+    force_export: bool = False,
+    keep_build_dirs: bool = False,
+    delete_build_dirs: bool = False,
 ):
     if no_export:
         export = False
@@ -438,11 +442,12 @@ async def build_nuvola(
         export = None
     await build(
         locks or Locks(),
-        await utils.load_yaml(Path.cwd() / 'nufb.yml'),
-        utils.get_user_cache_dir('nuvola-flatpaks'),
-        Path.cwd() / 'resources',
-        Path.cwd() / 'manifests',
-        'eu.tiliado.Nuvola', branch,
+        await utils.load_yaml(Path.cwd() / "nufb.yml"),
+        utils.get_user_cache_dir("nuvola-flatpaks"),
+        Path.cwd() / "resources",
+        Path.cwd() / "manifests",
+        "eu.tiliado.Nuvola",
+        branch,
         keep_build_dirs=keep_build_dirs,
         delete_build_dirs=delete_build_dirs,
         export=export,
@@ -450,16 +455,16 @@ async def build_nuvola(
 
 
 async def build_apps(
-        branch: str,
-        *,
-        locks: Locks = None,
-        no_export: bool = False,
-        force_export: bool = False,
-        keep_build_dirs: bool = False,
-        delete_build_dirs: bool = False,
-        concurrency: int = None,
+    branch: str,
+    *,
+    locks: Locks = None,
+    no_export: bool = False,
+    force_export: bool = False,
+    keep_build_dirs: bool = False,
+    delete_build_dirs: bool = False,
+    concurrency: int = None,
 ):
-    config = await utils.load_yaml(Path.cwd() / 'nufb.yml')
+    config = await utils.load_yaml(Path.cwd() / "nufb.yml")
     apps = config["apps"].get(branch)
     if apps is None:
         apps = config["apps"].get("master")
@@ -486,14 +491,14 @@ async def build_apps(
 
 
 async def build_app(
-        branch: str,
-        name: str,
-        *,
-        locks: Locks = None,
-        no_export: bool = False,
-        force_export: bool = False,
-        keep_build_dirs: bool = False,
-        delete_build_dirs: bool = False,
+    branch: str,
+    name: str,
+    *,
+    locks: Locks = None,
+    no_export: bool = False,
+    force_export: bool = False,
+    keep_build_dirs: bool = False,
+    delete_build_dirs: bool = False,
 ):
     if no_export:
         export = False
@@ -510,16 +515,17 @@ async def build_app(
     subst = {
         "APP_ID_DASH": name,
         "APP_ID_UNDERSCORE": name.replace("-", "_"),
-        "APP_ID_UNIQUE": ''.join(s.capitalize() for s in name.split("-")),
+        "APP_ID_UNIQUE": "".join(s.capitalize() for s in name.split("-")),
         "APP_BRANCH": app_branch,
     }
     return await build(
         locks or Locks(),
-        await utils.load_yaml(Path.cwd() / 'nufb.yml'),
-        utils.get_user_cache_dir('nuvola-flatpaks'),
-        Path.cwd() / 'resources',
-        Path.cwd() / 'manifests',
-        'eu.tiliado.NuvolaApp', branch,
+        await utils.load_yaml(Path.cwd() / "nufb.yml"),
+        utils.get_user_cache_dir("nuvola-flatpaks"),
+        Path.cwd() / "resources",
+        Path.cwd() / "manifests",
+        "eu.tiliado.NuvolaApp",
+        branch,
         keep_build_dirs=keep_build_dirs,
         delete_build_dirs=delete_build_dirs,
         export=export,
@@ -528,13 +534,13 @@ async def build_app(
 
 
 async def build_all(
-        branches: str,
-        *,
-        concurrency: int = None,
-        **kwargs,
+    branches: str,
+    *,
+    concurrency: int = None,
+    **kwargs,
 ):
     locks = Locks()
-    config = await utils.load_yaml(Path.cwd() / 'nufb.yml')
+    config = await utils.load_yaml(Path.cwd() / "nufb.yml")
 
     async def base_and_apps(branch):
         await build_base(branch, locks=locks, **kwargs)

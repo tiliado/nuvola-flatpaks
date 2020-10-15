@@ -3,6 +3,9 @@ ARGS ?=
 lint:
 	yamllint .
 
+format:
+	black nufb
+
 cdk-experimental: lint
 	./nufbctl buildcdk experimental $(ARGS)
 

@@ -1,3 +1,4 @@
 clizy
 ruamel.yaml
 aiofiles
+black
