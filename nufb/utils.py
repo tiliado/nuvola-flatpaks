@@ -11,8 +11,6 @@ from io import StringIO
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union, cast
 
-import aiofiles
-import aiofiles.os
 import ruamel.yaml
 
 from nufb import fs
@@ -31,7 +29,7 @@ async def load_yaml(source: Union[str, Path], subst: Dict[str, Any] = None) -> d
     :param source: The source file or string.
     :return: Python representation of the YAML document.
     """
-    async with aiofiles.open(source) as fh:
+    async with fs.open(source) as fh:
         data = await fh.read()
 
     if subst is not None:

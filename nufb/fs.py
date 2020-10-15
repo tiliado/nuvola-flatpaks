@@ -1,15 +1,28 @@
 import os
 import shutil
+from typing import Callable, cast
 
-import aiofiles.os
-from aiofiles import open
+from aiofiles import open as _open
+from aiofiles.os import wrap
+from aiofiles.threadpool import AsyncTextIOWrapper  # type: ignore
 
-remove = aiofiles.os.remove
-makedirs = aiofiles.os.wrap(os.makedirs)
-hardlink = aiofiles.os.wrap(os.link)
-rmtree = aiofiles.os.wrap(shutil.rmtree)
-copy = aiofiles.os.wrap(shutil.copy2)
-symlink = aiofiles.os.wrap(os.symlink)
-isdir = aiofiles.os.wrap(os.path.isdir)
+
+class AsyncTextIO(AsyncTextIOWrapper):
+    async def __aenter__(self):
+        ...
+
+    async def __aexit__(self, exc_type, exc, tb):
+        ...
+
+
+open = cast(Callable[..., AsyncTextIO], _open)
+
+remove = wrap(os.remove)
+makedirs = wrap(os.makedirs)
+hardlink = wrap(os.link)
+rmtree = wrap(shutil.rmtree)
+copy = wrap(shutil.copy2)
+symlink = wrap(os.symlink)
+isdir = wrap(os.path.isdir)
 
 __all__ = ["open", "remove", "rmtree", "makedirs", "hardlink", "copy", "symlink", "isdir"]
