@@ -15,3 +15,6 @@ apps-experimental: lint
 	./nufbctl buildapps experimental $(ARGS)
 
 all-experimental: cdk-experimental adk-experimental apps-experimental
+
+publish:
+	cd ~/dev/k3s && ansible-playbook -i hosts.txt -vD playbooks/tiliado.eu-nginx.yml -l tiliado4 --tags flatpak-repo
