@@ -3,3 +3,5 @@ ruamel.yaml
 aiofiles
 black
 isort
+mypy
+flake8
