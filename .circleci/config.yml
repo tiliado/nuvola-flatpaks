@@ -1,12 +1,13 @@
+---
 version: 2.1
 
 executors:
   fedora:
     docker:
-     - image: fedora:32
-       auth:
-         username: $DOCKER_USERNAME
-         password: $DOCKER_PASSWORD
+      - image: fedora:32
+        auth:
+          username: $DOCKER_USERNAME
+          password: $DOCKER_PASSWORD
 
 commands:
 
@@ -17,12 +18,12 @@ commands:
           command: |
             dnf update -y > /dev/null
             dnf install -y \
-              gcc \
-              gcc-c++ \
-              git \
-              python3 \
-              python3-devel \
-              python3-pip
+            gcc \
+            gcc-c++ \
+            git \
+            python3 \
+            python3-devel \
+            python3-pip
       - run:
           name: Clone flatpak-manifest-update
           working_directory: ~/workdir
@@ -82,4 +83,3 @@ workflows:
               only:
                 - master
                 - devel
-
