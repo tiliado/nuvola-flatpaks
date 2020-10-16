@@ -349,6 +349,8 @@ modules:
         x-update:
           type: gnome
           project: vala
+      - type: patch
+        path: vala-ignore-deprecated-symbols.patch
     post-install:
       - rm -r /app/share/{aclocal,devhelp,man,vala/vapi/valadoc*}
       - rm -r /app/include/valadoc-0.50
