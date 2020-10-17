@@ -78,7 +78,7 @@ modules:
     sources:
       - type: git
         path: /home/fenryxo/dev/repo/diorite
-        branch: master
+        branch: release-4.x
         disable-shallow-clone: true
     build-commands:
       - python3 ./waf configure build install --prefix=/app --libdir=/app/lib --novaladoc --flatpak --no-vala-lint
@@ -115,7 +115,7 @@ modules:
     sources:
       - type: git
         path: /home/fenryxo/dev/repo/nuvola/nuvolaruntime
-        branch: master
+        branch: release-4.x
         disable-shallow-clone: true
       - type: file
         path: adk-branding.json

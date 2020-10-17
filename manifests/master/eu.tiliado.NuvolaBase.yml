@@ -60,7 +60,7 @@ modules:
     sources:
       - type: git
         path: /home/fenryxo/dev/repo/diorite
-        branch: devel
+        branch: master
         disable-shallow-clone: true
     buildsystem: simple
     build-commands:
@@ -87,7 +87,7 @@ modules:
     sources:
       - type: git
         path: /home/fenryxo/dev/repo/nuvola/nuvolaruntime
-        branch: devel
+        branch: master
         disable-shallow-clone: true
       - type: file
         path: nuvola-branding.json
