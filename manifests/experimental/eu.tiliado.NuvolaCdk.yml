@@ -899,6 +899,52 @@ modules:
         url: https://files.pythonhosted.org/packages/a2/3c/f42a62b7784c04b20f8b88d6c8ad04f4f20b0767b721102418aad94d8389/PyOpenGL-accelerate-3.1.5.tar.gz
         sha256: '12e5518b0216a478527c7ce5ddce623c3d0517adeb87226da767772e8b7f2f06'
 
+  - name: python3-pycparser
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app .
+    x-keep:
+      - /app/lib/python3.8/site-packages/pycparser-*.dist-info/*
+      - /app/lib/python3.8/site-packages/pycparser/*
+    sources:
+      - type: archive
+        url: https://files.pythonhosted.org/packages/0f/86/e19659527668d70be91d0369aeaa055b4eb396b0f387a4f92293a20035bd/pycparser-2.20.tar.gz
+        sha256: '2d475327684562c3a96cc71adf7dc8c4f0565175cf86b6d7a404ff4c771f15f0'
+
+  - name: python3-cffi
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app .
+    x-keep:
+      - /app/lib/python3.8/site-packages/cffi-*.dist-info/*
+      - /app/lib/python3.8/site-packages/cffi/*
+      - /app/lib/python3.8/site-packages/_cffi_backend.cpython-38-x86_64-linux-gnu.so
+    sources:
+      - type: archive
+        url: https://files.pythonhosted.org/packages/cb/ae/380e33d621ae301770358eb11a896a34c34f30db188847a561e8e39ee866/cffi-1.14.3.tar.gz
+        sha256: 'f92f789e4f9241cd262ad7a555ca2c648a98178a953af117ef7fad46aa1d5591'
+
+  - name: python3-vulkan
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app .
+    x-keep:
+      - /app/lib/python3.8/site-packages/vulkan-*.dist-info/*
+      - /app/lib/python3.8/site-packages/vulkan/*
+    sources:
+      - type: archive
+        url: https://files.pythonhosted.org/packages/82/2b/4ffb67f251cba6a39a0899b1a0042f2d31d8b8f57aa5d0707ba2bf36fce3/vulkan-1.1.99.1.tar.gz
+        sha256: '4befc458dceac21a9664f628a228283812094cadaed5dbbc1cb2abb532523b7f'
+
   # ======= Finish =======
   - name: final
     buildsystem: simple
