@@ -728,6 +728,42 @@ modules:
       - 'mkdir -pv /app/share/cef'
       - 'cp -r Resources/* /app/lib/cef'
 
+  # QtWebEngine
+  - name: python3-shiboken2
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+      no-debuginfo: true  # ImportError: shiboken2.abi3.so: object file has no loadable segments
+    build-commands:
+      - python3 -m pip install -v --prefix=/app *.whl
+      - shopt -s globstar && rm /app/lib/python3.8/site-packages/**/*.cpython-36.pyc
+    x-keep:
+      - /app/lib/python3.8/site-packages/shiboken2-*.dist-info/*
+      - /app/lib/python3.8/site-packages/shiboken2/*
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/8a/30/49df7f3dce1e9c5a8a93f08380c2c1a3ca8ae609d1b7f351aad8e80944e2/shiboken2-5.15.1-5.15.1-cp35.cp36.cp37.cp38.cp39-abi3-manylinux1_x86_64.whl
+        sha256: '71f563daabc3a363ccc27a843cfb452f01ebaeb24e5e46704964ffa4c7dc98d9'
+
+  - name: python3-pyside2
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+      no-debuginfo: true  # ImportError: QtWidgets.abi3.so: object file has no loadable segments
+    build-commands:
+      - python3 -m pip install -v --prefix=/app *.whl
+      - rm /app/bin/pyside2*
+      - shopt -s globstar && rm /app/lib/python3.8/site-packages/**/*.cpython-36.pyc
+    x-keep:
+      - /app/lib/python3.8/site-packages/PySide2-*.dist-info/*
+      - /app/lib/python3.8/site-packages/PySide2/*
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/07/b6/811abaf0972a268942ebf3ed89e58ddf612c2c3c530a12f0560af0ab916b/PySide2-5.15.1-5.15.1-cp35.cp36.cp37.cp38.cp39-abi3-manylinux1_x86_64.whl
+        sha256: '76f0e0875ed9eb526a98b9e8dedac033a25cdcf7a51eb366451a0202b140d8d4'
+
   # ======= Finish =======
   - name: final
     buildsystem: simple
