@@ -945,6 +945,25 @@ modules:
         url: https://files.pythonhosted.org/packages/82/2b/4ffb67f251cba6a39a0899b1a0042f2d31d8b8f57aa5d0707ba2bf36fce3/vulkan-1.1.99.1.tar.gz
         sha256: '4befc458dceac21a9664f628a228283812094cadaed5dbbc1cb2abb532523b7f'
 
+  - name: python3-pywayland
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app .
+    x-keep:
+      - /app/lib/python3.8/site-packages/pywayland-*.dist-info/*
+      - /app/lib/python3.8/site-packages/pywayland/*
+      - /app/bin/pywayland-scanner
+    sources:
+      - type: archive
+        url: https://files.pythonhosted.org/packages/7f/79/4683936d4356be540f67be1897a0b9a052e917c11f6b71f1dc9f22c6c4a6/pywayland-0.3.0.tar.gz
+        sha256: 'b1edef7ba733998ca3cfa849ab52ece6d33a9a0963b2fd71fe0937ab6bcd528d'
+        x-update:
+          type: pypi
+          project: pywayland
+
   # ======= Finish =======
   - name: final
     buildsystem: simple
