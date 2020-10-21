@@ -869,6 +869,36 @@ modules:
         url: https://files.pythonhosted.org/packages/c6/92/46157361bc005fa4a4d190b44ed60377f695dc38d53fc339631eb97fe78a/trio-0.17.0-py3-none-any.whl
         sha256: 'fc70c74e8736d1105b3c05cc2e49b30c58755733740f9c51ae6d88a4d6d0a291'
 
+  - name: python3-PyOpenGL
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app *.whl
+    x-keep:
+      - /app/lib/python3.8/site-packages/PyOpenGL-*.dist-info/*
+      - /app/lib/python3.8/site-packages/OpenGL/*
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/47/9a/8d9364533ebcaa13621994a63dcc6a6051e27671ae5e1715dac4af18cac2/PyOpenGL-3.1.5-py3-none-any.whl
+        sha256: '36b4ac28220e4bfa29e5557525ad2967ca74558a94bccea48864fc742b18db11'
+
+  - name: python3-PyOpenGL-accelerate
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app .
+    x-keep:
+      - /app/lib/python3.8/site-packages/PyOpenGL_accelerate-*.dist-info/*
+      - /app/lib/python3.8/site-packages/OpenGL_accelerate/*
+    sources:
+      - type: archive
+        url: https://files.pythonhosted.org/packages/a2/3c/f42a62b7784c04b20f8b88d6c8ad04f4f20b0767b721102418aad94d8389/PyOpenGL-accelerate-3.1.5.tar.gz
+        sha256: '12e5518b0216a478527c7ce5ddce623c3d0517adeb87226da767772e8b7f2f06'
+
   # ======= Finish =======
   - name: final
     buildsystem: simple
