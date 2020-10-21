@@ -764,6 +764,111 @@ modules:
         url: https://files.pythonhosted.org/packages/07/b6/811abaf0972a268942ebf3ed89e58ddf612c2c3c530a12f0560af0ab916b/PySide2-5.15.1-5.15.1-cp35.cp36.cp37.cp38.cp39-abi3-manylinux1_x86_64.whl
         sha256: '76f0e0875ed9eb526a98b9e8dedac033a25cdcf7a51eb366451a0202b140d8d4'
 
+  - name: python3-sortedcontainers
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app *.whl
+    x-keep:
+      - /app/lib/python3.8/site-packages/sortedcontainers-*.dist-info/*
+      - /app/lib/python3.8/site-packages/sortedcontainers/*
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/23/8c/22a47a4bf8c5289e4ed946d2b0e4df62bca385b9599cc1e46878f2e2529c/sortedcontainers-2.2.2-py2.py3-none-any.whl
+        sha256: 'c633ebde8580f241f274c1f8994a665c0e54a17724fecd0cae2f079e09c36d3f'
+
+  - name: python3-sniffio
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app *.whl
+    x-keep:
+      - /app/lib/python3.8/site-packages/sniffio-*.dist-info/*
+      - /app/lib/python3.8/site-packages/sniffio/*
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/b3/82/4bd4b7d9c0d1dc0fbfbc2a1e00138e7f3ab85bc239358fe9b78aa2ab586d/sniffio-1.1.0-py3-none-any.whl
+        sha256: '20ed6d5b46f8ae136d00b9dcb807615d83ed82ceea6b2058cecb696765246da5'
+
+  - name: python3-idna
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app *.whl
+    x-keep:
+      - /app/lib/python3.8/site-packages/idna-*.dist-info/*
+      - /app/lib/python3.8/site-packages/idna/*
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/a2/38/928ddce2273eaa564f6f50de919327bf3a00f091b5baba8dfa9460f3a8a8/idna-2.10-py2.py3-none-any.whl
+        sha256: 'b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0'
+
+  - name: python3-attrs
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app *.whl
+    x-keep:
+      - /app/lib/python3.8/site-packages/attrs-*.dist-info/*
+      - /app/lib/python3.8/site-packages/attr/*
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/14/df/479736ae1ef59842f512548bacefad1abed705e400212acba43f9b0fa556/attrs-20.2.0-py2.py3-none-any.whl
+        sha256: 'fce7fc47dfc976152e82d53ff92fa0407700c21acd20886a13777a0d20e655dc'
+
+  - name: python3-async-generator
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app *.whl
+    x-keep:
+      - /app/lib/python3.8/site-packages/async_generator-*.dist-info/*
+      - /app/lib/python3.8/site-packages/async_generator/*
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/71/52/39d20e03abd0ac9159c162ec24b93fbcaa111e8400308f2465432495ca2b/async_generator-1.10-py3-none-any.whl
+        sha256: '01c7bf666359b4967d2cda0000cc2e4af16a0ae098cbffcb8472fb9e8ad6585b'
+
+  - name: python3-outcome
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app *.whl
+    x-keep:
+      - /app/lib/python3.8/site-packages/outcome-*.dist-info/*
+      - /app/lib/python3.8/site-packages/outcome/*
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/ff/c7/c4ac99243794a6159ae9335bb26b021e104215390e12e95e40d51007c79b/outcome-1.0.1-py2.py3-none-any.whl
+        sha256: 'ee46c5ce42780cde85d55a61819d0e6b8cb490f1dbd749ba75ff2629771dcd2d'
+
+  - name: python3-trio
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+    build-commands:
+      - python3 -m pip install -v --prefix=/app *.whl
+    x-keep:
+      - /app/lib/python3.8/site-packages/trio-*.dist-info/*
+      - /app/lib/python3.8/site-packages/trio/*
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/c6/92/46157361bc005fa4a4d190b44ed60377f695dc38d53fc339631eb97fe78a/trio-0.17.0-py3-none-any.whl
+        sha256: 'fc70c74e8736d1105b3c05cc2e49b30c58755733740f9c51ae6d88a4d6d0a291'
+
   # ======= Finish =======
   - name: final
     buildsystem: simple
