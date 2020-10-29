@@ -8,6 +8,7 @@ apps:
   stable:
     - 8tracks
     - amazon-cloud-player
+    - apple-music
     - bandcamp
     - bbc-iplayer
     - brain-fm
@@ -44,6 +45,7 @@ apps:
   master:
     - 8tracks
     - amazon-cloud-player
+    - apple-music
     - bandcamp
     - bbc-iplayer
     - brain-fm
