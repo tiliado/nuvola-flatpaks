@@ -15,6 +15,7 @@ apps:
     - deezer
     - difm
     - focus-at-will
+    - gaana
     - google-calendar
     - google-play-music
     # google-keep
@@ -52,6 +53,7 @@ apps:
     - deezer
     - difm
     - focus-at-will
+    - gaana
     - google-calendar
     - google-play-music
     - google-keep
