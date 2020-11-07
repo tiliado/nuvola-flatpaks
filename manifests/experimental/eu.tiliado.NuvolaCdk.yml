@@ -92,20 +92,14 @@ modules:
       - /app/lib/node_modules/standard/*
     sources:
       - type: archive
-        url: 'https://github.com/standard/standard/archive/v13.0.2.tar.gz'
-        sha256: 'f11d1b9aefcf26993ec42a515bd06ac9d892cc3086c0c2ad6dd7ad51d5bb50c8'
+        path: standard-16.0.1-bundle.tar.xz
+        sha256: '42214d69b5fce57aafd26df4b70ce2d5df5ff15a75c389149417200a9290835e'
         dest: standard
-      - type: file
-        path: standard-13.0.2-package-lock.json
-        dest-filename: package-lock.json
-        dest: standard
-      - standard-13.0.2-sources.json
       - type: script
         dest-filename: standardjs.sh
         commands:
           - 'exec node /app/lib/node_modules/standard/bin/cmd.js "$@"'
     build-commands:
-      - cd standard && npm install --offline --cache=../npm-cache/
       - rm -rf standard/node_modules/*/{docs,test,*.md,.[^.]*,example,__tests__,*.markdown}
       - rm -rf standard/node_modules/*/{src/__tests__,Makefile}
       - mkdir -p /app/lib/node_modules
