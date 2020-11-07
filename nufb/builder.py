@@ -280,6 +280,16 @@ class Builder:
             else:
                 LOGGER.info("%s returned %d.\n%s", argv, code, out)
 
+        argv = ["flatpak", "install", "--or-update", "--assumeyes", f"{self.manifest.id}.Debug//{self.manifest.branch}"]
+        async with self.locks.install:
+            LOGGER.debug("Installing or updating %s.Debug//%s %s", self.manifest.id, self.manifest.branch, argv)
+            code, out = await exec_subprocess(argv, cwd=work_dir)
+            if code:
+                LOGGER.error("%s returned %d.\n%s", argv, code, out)
+                raise ValueError(code)
+            else:
+                LOGGER.info("%s returned %d.\n%s", argv, code, out)
+
     async def clean_up(self):
         """
         Clean up after the build.
