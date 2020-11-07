@@ -756,6 +756,7 @@ modules:
       - python3 -m pip install -v --prefix=/app *.whl
       - rm /app/bin/pyside2*
       - shopt -s globstar && rm /app/lib/python3.8/site-packages/**/*.cpython-36.pyc
+      - rm /app/lib/python3.8/site-packages/PySide2/scripts/__pycache__/__init__.cpython-38.pyc
     x-keep:
       - /app/lib/python3.8/site-packages/PySide2-*.dist-info/*
       - /app/lib/python3.8/site-packages/PySide2/*
@@ -786,6 +787,7 @@ modules:
         PYTHON: /usr/bin/python3
     build-commands:
       - python3 -m pip install -v --prefix=/app *.whl
+      - rm /app/lib/python3.8/site-packages/sniffio/_tests/__pycache__/__init__.cpython-38.pyc
     x-keep:
       - /app/lib/python3.8/site-packages/sniffio-*.dist-info/*
       - /app/lib/python3.8/site-packages/sniffio/*
@@ -831,6 +833,7 @@ modules:
         PYTHON: /usr/bin/python3
     build-commands:
       - python3 -m pip install -v --prefix=/app *.whl
+      - rm /app/lib/python3.8/site-packages/async_generator/_tests/__pycache__/__init__.cpython-38.pyc
     x-keep:
       - /app/lib/python3.8/site-packages/async_generator-*.dist-info/*
       - /app/lib/python3.8/site-packages/async_generator/*
@@ -861,6 +864,7 @@ modules:
         PYTHON: /usr/bin/python3
     build-commands:
       - python3 -m pip install -v --prefix=/app *.whl
+      - shopt -s globstar && rm /app/lib/python3.8/site-packages/trio/**/__init__.cpython-38.pyc
     x-keep:
       - /app/lib/python3.8/site-packages/trio-*.dist-info/*
       - /app/lib/python3.8/site-packages/trio/*
@@ -876,6 +880,7 @@ modules:
         PYTHON: /usr/bin/python3
     build-commands:
       - python3 -m pip install -v --prefix=/app *.whl
+      - shopt -s globstar && rm /app/lib/python3.8/site-packages/OpenGL/**/__init__.cpython-38.pyc
     x-keep:
       - /app/lib/python3.8/site-packages/PyOpenGL-*.dist-info/*
       - /app/lib/python3.8/site-packages/OpenGL/*
