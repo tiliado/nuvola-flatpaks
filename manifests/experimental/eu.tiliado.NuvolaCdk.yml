@@ -963,6 +963,43 @@ modules:
           type: pypi
           project: pywayland
 
+  - name: neon
+    no-make-install: true
+    post-install:
+      - make install-lib install-headers install-config
+      - rm /app/lib/libneon.la /app/bin/neon-config
+    config-opts:
+      - --disable-webdav
+      - --disable-static
+      - --enable-shared
+    x-keep:
+      - /app/include/neon/*
+      - /app/lib/pkgconfig/neon.pc
+      - /app/lib/libneon.so*
+    sources:
+      - type: archive
+        url: https://github.com/notroj/neon/archive/0.31.2.tar.gz
+        sha256: c6513d20c0affca6f4b45e2414a86cce951709cf4448b6b64ccdf3579fda0ce5
+        x-update:
+          type: github
+          project: notroj/neon
+          releases: false
+
+  - name: libmusicbrainz
+    buildsystem: cmake
+    x-keep:
+      - /app/include/musicbrainz5/*
+      - /app/lib/libmusicbrainz5.so*
+      - /app/lib/pkgconfig/libmusicbrainz5.pc
+    sources:
+      - type: archive
+        url: https://github.com/metabrainz/libmusicbrainz/releases/download/release-5.1.0/libmusicbrainz-5.1.0.tar.gz
+        sha256: '6749259e89bbb273f3f5ad7acdffb7c47a2cf8fcaeab4c4695484cef5f4c6b46'
+        x-update:
+          type: github
+          project: metabrainz/libmusicbrainz
+          releases: false
+
   # ======= Finish =======
   - name: final
     buildsystem: simple
