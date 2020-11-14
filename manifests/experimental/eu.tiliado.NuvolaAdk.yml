@@ -120,9 +120,6 @@ modules:
       - type: file
         path: adk-branding.json
         dest-filename: branding/tiliado.json
-      - type: file
-        path: nuvola-branding.xml
-        dest-filename: branding/tiliado/welcome.xml
     build-commands:
       - python3 ./waf configure --prefix=/app --libdir=/app/lib --branding=tiliado --no-vala-lint
       - python3 ./waf build install

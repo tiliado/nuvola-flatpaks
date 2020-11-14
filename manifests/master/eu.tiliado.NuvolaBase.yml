@@ -93,9 +93,6 @@ modules:
         path: nuvola-branding.json
         dest-filename: branding/tiliado.json
       - type: file
-        path: nuvola-branding.xml
-        dest-filename: branding/tiliado/welcome.xml
-      - type: file
         path: nuvola.appdata.xml
         dest-filename: branding/tiliado/appdata.xml
 
