@@ -74,8 +74,8 @@ modules:
       - /app/lib/node_modules/npm/package.json
     sources:
       - type: archive
-        url: https://nodejs.org/dist/latest/node-v15.2.0.tar.xz
-        sha256: 'f67a017a753cf6336f47307610f1954e275799883046c6f7ab8638a993e05308'
+        url: https://nodejs.org/dist/latest/node-v15.3.0.tar.xz
+        sha256: '3bb0b9fd6ea372dc247330e67e27caab7887c454b13325e3cd6573ae212cc240'
         x-update:
           url: https://nodejs.org/dist/latest/
           url-pattern: node-v$pure_version\.tar\.xz
