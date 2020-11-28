@@ -186,7 +186,7 @@ class Builder:
             str(self.manifest_json.relative_to(work_dir)),
         ]
 
-        argv = ["time", "flatpak-builder", "--download-only"] + args
+        argv = ["flatpak-builder", "--download-only"] + args
 
         async with self.locks.download:
             LOGGER.debug("Running %s in %s.", argv, work_dir)
@@ -197,7 +197,7 @@ class Builder:
             else:
                 LOGGER.info("%s returned %d.\n%s", argv, code, out)
 
-        argv = ["time", "flatpak-builder", "--ccache", "--disable-download"]
+        argv = ["flatpak-builder", "--ccache", "--disable-download"]
         if disable_cache:
             argv.append("--disable-cache")
         if require_changes:
@@ -226,7 +226,7 @@ class Builder:
             LOGGER.info("Nothing new to export to the repository.")
             return
 
-        base_argv = ["time", "flatpak", "build-export", "-v", f"--gpg-sign={self.key_id}"]
+        base_argv = ["flatpak", "build-export", "-v", f"--gpg-sign={self.key_id}"]
 
         argv = base_argv + [
             "-s",
