@@ -20,6 +20,7 @@ apps:
     - google-play-music
     # google-keep
     - idagio
+    - iheart-radio
     - ivoox
     - jamendo
     - jango
@@ -33,6 +34,7 @@ apps:
     - pandora
     - plex
     - pocket-casts
+    - pretzel
     - primephonic
     - qobuz
     - siriusxm
@@ -58,6 +60,7 @@ apps:
     - google-play-music
     - google-keep
     - idagio
+    - iheart-radio
     - ivoox
     - jamendo
     - jango
@@ -71,6 +74,7 @@ apps:
     - pandora
     - plex
     - pocket-casts
+    - pretzel
     - primephonic
     - qobuz
     - siriusxm
