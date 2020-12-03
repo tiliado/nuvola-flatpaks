@@ -91,10 +91,12 @@ modules:
         disable-shallow-clone: true
       - type: file
         path: nuvola-branding.json
-        dest-filename: branding/tiliado.json
+        dest: branding
+        dest-filename: tiliado.json
       - type: file
         path: nuvola.appdata.xml
-        dest-filename: branding/tiliado/appdata.xml
+        dest: branding/tiliado
+        dest-filename: appdata.xml
 
   - name: final
     buildsystem: simple
