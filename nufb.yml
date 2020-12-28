@@ -9,11 +9,13 @@ apps:
     - 8tracks
     - amazon-cloud-player
     - apple-music
+    - audible
     - bandcamp
     - bbc-iplayer
     - brain-fm
     - deezer
     - difm
+    - emby
     - focus-at-will
     - gaana
     - google-calendar
@@ -49,11 +51,13 @@ apps:
     - 8tracks
     - amazon-cloud-player
     - apple-music
+    - audible
     - bandcamp
     - bbc-iplayer
     - brain-fm
     - deezer
     - difm
+    - emby
     - focus-at-will
     - gaana
     - google-calendar
