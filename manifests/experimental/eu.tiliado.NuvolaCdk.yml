@@ -724,6 +724,7 @@ modules:
 
   # QtWebEngine
   - name: python3-shiboken2
+    disabled: true
     buildsystem: simple
     build-options:
       env:
@@ -741,6 +742,7 @@ modules:
         sha256: '71f563daabc3a363ccc27a843cfb452f01ebaeb24e5e46704964ffa4c7dc98d9'
 
   - name: python3-pyside2
+    disabled: true
     buildsystem: simple
     build-options:
       env:
@@ -962,6 +964,40 @@ modules:
         x-update:
           type: pypi
           project: pywayland
+
+  - name: python3-shiboken2-custom
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+      no-debuginfo: true  # ImportError: shiboken2.abi3.so: object file has no loadable segments
+    build-commands:
+      - python3 -m pip install -v --prefix=/app *.whl
+    x-keep:
+      - /app/lib/python3.8/site-packages/shiboken2-*.dist-info/*
+      - /app/lib/python3.8/site-packages/shiboken2/*
+    sources:
+      - type: file
+        url: https://dl.tiliado.eu/qt/shiboken2-5.15.2-5.15.2-cp38-cp38-linux_x86_64.whl
+        sha256: '0b5cb06af31c7116b16a237237e719f14c35145e0def4cca8567ba155f79b282'
+
+  - name: python3-pyside2-custom
+    buildsystem: simple
+    build-options:
+      env:
+        PYTHON: /usr/bin/python3
+      no-debuginfo: true  # ImportError: QtWidgets.abi3.so: object file has no loadable segments
+    build-commands:
+      - python3 -m pip install -v --prefix=/app *.whl
+      - rm /app/bin/pyside2*
+      - rm /app/lib/python3.8/site-packages/PySide2/scripts/__pycache__/__init__.cpython-38.pyc
+    x-keep:
+      - /app/lib/python3.8/site-packages/PySide2-*.dist-info/*
+      - /app/lib/python3.8/site-packages/PySide2/*
+    sources:
+      - type: file
+        url: https://dl.tiliado.eu/qt/PySide2-5.15.2-cp38-cp38-linux_x86_64.whl
+        sha256: '700027d521ca1ef225a6c906b82111ec14bfcbf36ccddaa5939b08aa58f162fa'
 
   # ======= Finish =======
   - name: final
