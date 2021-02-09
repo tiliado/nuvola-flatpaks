@@ -996,8 +996,8 @@ modules:
       - /app/lib/python3.8/site-packages/PySide2/*
     sources:
       - type: file
-        url: https://dl.tiliado.eu/qt/PySide2-5.15.2-cp38-cp38-linux_x86_64.whl
-        sha256: '700027d521ca1ef225a6c906b82111ec14bfcbf36ccddaa5939b08aa58f162fa'
+        path: /home/fenryxo/dev/projects/nuvolaplayer/qt/PySide2-5.15.2-5.15.2-cp38-cp38-linux_x86_64.whl
+        sha256: '16acc823557c4cbaf60e91645de24583a13d99000aab98dd1ed7ff45ea0f98f3'
 
   # ======= Finish =======
   - name: final
