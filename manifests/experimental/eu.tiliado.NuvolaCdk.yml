@@ -319,6 +319,7 @@ modules:
 
   - name: vala
     # needed by: Nuvola CDK - valadoc is not included in GNOME SDK
+    disabled: true
     x-keep:
       - /app/bin/vala*
       - /app/bin/vapigen*
@@ -348,6 +349,37 @@ modules:
     post-install:
       - rm -r /app/share/{aclocal,devhelp,man,vala/vapi/valadoc*}
       - rm -r /app/include/valadoc-0.50
+      - shopt -s globstar && rm /app/**/*.la
+
+  - name: vala-git
+    # needed by: Nuvola CDK - valadoc is not included in GNOME SDK
+    x-keep:
+      - /app/bin/vala*
+      - /app/bin/vapigen*
+      - /app/include/vala-*/*
+      - /app/lib/libvala-*.so*
+      - /app/lib/libvaladoc-*.so*
+      - /app/lib/pkgconfig/libvala-*.pc
+      - /app/lib/pkgconfig/valadoc-*.pc
+      - /app/lib/pkgconfig/vapigen-*.pc
+      - /app/lib/pkgconfig/vapigen.pc
+      - /app/lib/vala-*/gen-introspect-*
+      - /app/lib/vala-*/libvalaccodegen.so
+      - /app/lib/valadoc-*/doclets/*/libdoclet.so
+      - /app/share/vala/Makefile.vapigen
+      - /app/share/vala/vapi/libvala-*.vapi
+      - /app/share/vala-*/*
+      - /app/share/valadoc-*/*
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/GNOME/vala.git
+        branch: master
+        disable-shallow-clone: true
+      - type: patch
+        path: vala-ignore-deprecated-symbols.patch
+    post-install:
+      - rm -r /app/share/{aclocal,devhelp,man,vala/vapi/valadoc*}
+      - rm -r /app/include/valadoc-0.*
       - shopt -s globstar && rm /app/**/*.la
 
   - name: libdri2
