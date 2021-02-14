@@ -120,7 +120,8 @@ class Builder:
             with suppress(FileNotFoundError):
                 await fs.remove(destination_path)
             await fs.makedirs(destination_path.parent, exist_ok=True)
-            await utils.hardlink_or_copy(source_path, destination_path)
+            with suppress(FileExistsError):
+                await utils.hardlink_or_copy(source_path, destination_path)
 
         tasks = []
 
