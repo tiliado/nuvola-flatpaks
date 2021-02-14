@@ -376,8 +376,8 @@ modules:
       - /app/share/runtime/locale/*
     sources:
       - type: archive
-        url: https://www.nano-editor.org/dist/v5/nano-5.4.tar.xz
-        sha256: 'fe993408b22286355809ce48ebecc4444d19af8203ed4959d269969112ed86e9'
+        url: https://www.nano-editor.org/dist/v5/nano-5.5.tar.xz
+        sha256: '390b81bf9b41ff736db997aede4d1f60b4453fbd75a519a4ddb645f6fd687e4a'
         x-update:
           url: https://www.nano-editor.org/download.php
           url-pattern: /dist/v[^/]+/nano-$version\.tar\.xz
