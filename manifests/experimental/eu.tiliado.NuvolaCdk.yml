@@ -641,7 +641,7 @@ modules:
           type: ubuntu
           project: libunity
       - type: patch
-        path: libunity_7.1.4_7.patch
+        path: libunity_7.1.4_8.patch
     post-install:
       - rm /app/bin/{libunity-tool,unity-scope-loader}
       - rm /app/lib/{*.la,*/*.la,libunity-extras.so*,pkgconfig/unity-extras.pc}
