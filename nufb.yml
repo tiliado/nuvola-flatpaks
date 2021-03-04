@@ -5,6 +5,10 @@ repository:
   key_id: DA184021
   default_branch: stable
 apps:
+  retired:
+    - google-calendar
+    - google-play-music
+    - plex
   stable:
     - 8tracks
     - amazon-cloud-player
