@@ -25,7 +25,7 @@ apps-experimental: lint
 all-experimental: cdk-experimental adk-experimental apps-experimental
 
 publish:
-	cd ~/dev/k3s && ansible-playbook -i hosts.txt -vD playbooks/tiliado.eu-nginx.yml -l tiliado4 --tags flatpak-repo
+	cd ~/dev/k3s && ansible-playbook -i hosts.txt -vD playbooks/tiliado.eu-nginx.yml -l contabo2 --tags flatpak-repo
 
 update-appstream:
 	./nufbctl updaterepo
