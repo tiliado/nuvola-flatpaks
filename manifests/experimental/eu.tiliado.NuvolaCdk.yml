@@ -74,15 +74,15 @@ modules:
       - /app/lib/node_modules/npm/package.json
     sources:
       - type: archive
-        url: https://nodejs.org/dist/latest/node-v15.11.0.tar.xz
-        sha256: '1a7091a210423970619b4af95dba6f4c6e2b576b9700460e5220afff24a8d2d1'
+        url: https://nodejs.org/dist/latest/node-v15.13.0.tar.xz
+        sha256: '90dca5d2bc4aa1e1157f8e0029371fc857c63778c14c94683f49a2d6572aa8f1'
         x-update:
           url: https://nodejs.org/dist/latest/
           url-pattern: node-v$pure_version\.tar\.xz
     post-install:
       - rm -r /app/bin/npx /app/include/node /app/share/{doc,man,systemtap}
-      - rm -r /app/lib/node_modules/npm/{man,changelogs,docs,scripts,tap-snapshots}
-      - rm -r /app/lib/node_modules/npm/{.[^.]*,AUTHORS,*.md,LICENSE,Makefile,configure,make.bat}
+      - rm -r /app/lib/node_modules/npm/{man,docs,tap-snapshots}
+      - rm -r /app/lib/node_modules/npm/{.[^.]*,AUTHORS,*.md,LICENSE}
 
   - name: standardjs
     # needed by: nuvolasdk
@@ -227,8 +227,8 @@ modules:
       - /app/lib/python3.8/site-packages/PIL/*
     sources:
       - type: archive
-        url: https://files.pythonhosted.org/packages/60/f0/dd2eb7911f948bf529f58f0c7931f6f6466f711bd6f1d81a69dc4edd4e2a/Pillow-8.1.2.tar.gz
-        sha256: 'b07c660e014852d98a00a91adfbe25033898a9d90a8f39beb2437d22a203fc44'
+        url: https://files.pythonhosted.org/packages/21/23/af6bac2a601be6670064a817273d4190b79df6f74d8012926a39bc7aa77f/Pillow-8.2.0.tar.gz
+        sha256: 'a787ab10d7bb5494e5f76536ac460741788f1fbce851068d73a87ca7c35fc3e1'
         x-update:
           type: pypi
           project: Pillow
@@ -339,8 +339,8 @@ modules:
       - /app/share/valadoc-*/*
     sources:
       - type: archive
-        url: https://download.gnome.org/sources/vala/0.50/vala-0.50.4.tar.xz
-        sha256: '58fc31fa8bf492035b11d1a7d514801710afc65bd458b24c0f8d00280a92a38c'
+        url: https://download.gnome.org/sources/vala/0.52/vala-0.52.0.tar.xz
+        sha256: '1de26310db465aca525679d3b5a3c1d8db2e067c4cbc0e5ddd015cd938bac68b'
         x-update:
           type: gnome
           project: vala
@@ -558,8 +558,8 @@ modules:
       - /app/lib/libdbus-glib-1.so*
     sources:
       - type: archive
-        url: 'https://dbus.freedesktop.org/releases/dbus-glib/dbus-glib-0.110.tar.gz'
-        sha256: '7ce4760cf66c69148f6bd6c92feaabb8812dee30846b24cd0f7395c436d7e825'
+        url: 'https://dbus.freedesktop.org/releases/dbus-glib/dbus-glib-0.112.tar.gz'
+        sha256: '7d550dccdfcd286e33895501829ed971eeb65c614e73aadb4a08aeef719b143a'
         x-update:
           url: https://dbus.freedesktop.org/releases/dbus-glib/
           url-pattern: dbus-glib-$pure_version\.tar\.gz
