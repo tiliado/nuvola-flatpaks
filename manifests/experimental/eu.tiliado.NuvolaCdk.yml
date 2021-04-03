@@ -512,7 +512,7 @@ modules:
       - /app/share/vala/vapi/AyatanaIdo3-0.4.vapi
     sources:
       - type: archive
-        url: https://github.com/AyatanaIndicators/ayatana-ido/archive/0.8.2.tar.gz
+        url: https://github.com/AyatanaIndicators/ayatana-ido/archive/refs/tags/0.8.2.tar.gz
         sha256: '4d5cb5df9ab5b8e5fbe47caf077aa001d167bad5ee80df825b910d83904ac777'
         x-update:
           type: github
@@ -536,7 +536,7 @@ modules:
       - /app/lib/pkgconfig/ayatana-indicator3-0.4.pc
     sources:
       - type: archive
-        url: https://github.com/AyatanaIndicators/libayatana-indicator/archive/0.8.4.tar.gz
+        url: https://github.com/AyatanaIndicators/libayatana-indicator/archive/refs/tags/0.8.4.tar.gz
         sha256: '9cc29454932c2d35f0a08f7c97f04eccc43ef363825369b84b8e31f4168e8ce6'
         x-update:
           type: github
@@ -586,7 +586,7 @@ modules:
       - /app/share/vala/vapi/ayatana-appindicator3-0.1.*
     sources:
       - type: archive
-        url: https://github.com/AyatanaIndicators/libayatana-appindicator/archive/0.5.5.tar.gz
+        url: https://github.com/AyatanaIndicators/libayatana-appindicator/archive/refs/tags/0.5.5.tar.gz
         sha256: '55e47e94f54e6f2f13bcc06ab20530ad0a1412282a8775331af41788b59ee331'
         x-update:
           type: github
