@@ -9,6 +9,7 @@ apps:
     - google-calendar
     - google-play-music
     - plex
+    - pandora
   stable:
     - 8tracks
     - amazon-cloud-player
