@@ -991,8 +991,8 @@ modules:
       - /app/bin/pywayland-scanner
     sources:
       - type: archive
-        url: https://files.pythonhosted.org/packages/7f/79/4683936d4356be540f67be1897a0b9a052e917c11f6b71f1dc9f22c6c4a6/pywayland-0.3.0.tar.gz
-        sha256: 'b1edef7ba733998ca3cfa849ab52ece6d33a9a0963b2fd71fe0937ab6bcd528d'
+        url: https://files.pythonhosted.org/packages/14/01/7ceae09d204c39e7fbcd6b136b9a42be7171bdc5b9aca532fa0df854cee6/pywayland-0.4.0.tar.gz
+        sha256: 'd0e60a9ffdd94d7e3213debc2e961e468b63709e482a842a1916fc6bf493dbc8'
         x-update:
           type: pypi
           project: pywayland
