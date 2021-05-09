@@ -6,6 +6,7 @@ repository:
   default_branch: stable
 apps:
   retired:
+    - apple-music
     - google-calendar
     - google-play-music
     - plex
