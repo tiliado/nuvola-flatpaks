@@ -74,8 +74,8 @@ modules:
       - /app/lib/node_modules/npm/package.json
     sources:
       - type: archive
-        url: https://nodejs.org/dist/latest/node-v16.0.0.tar.xz
-        sha256: '47cb90111e8c3dc42dc538464789415354f0d933587fc89fff71f9bd816aaa02'
+        url: https://nodejs.org/dist/latest/node-v16.1.0.tar.xz
+        sha256: 'a0a9230f92c1f1757e63fd1c17cc1a3db63c1d7ef6c1ba1ed4951cc32b02087c'
         x-update:
           url: https://nodejs.org/dist/latest/
           url-pattern: node-v$pure_version\.tar\.xz
@@ -339,8 +339,8 @@ modules:
       - /app/share/valadoc-*/*
     sources:
       - type: archive
-        url: https://download.gnome.org/sources/vala/0.52/vala-0.52.2.tar.xz
-        sha256: '3a3c460803ba661e513be3d0984b583e05473f602c75fa98e91755503714a97b'
+        url: https://download.gnome.org/sources/vala/0.52/vala-0.52.3.tar.xz
+        sha256: '037ea1a92bf0f1ab04a71b52a01d50aca1945ad1017b6189d9614f84f5c9b2d9'
         x-update:
           type: gnome
           project: vala
@@ -408,8 +408,8 @@ modules:
       - /app/share/runtime/locale/*
     sources:
       - type: archive
-        url: https://www.nano-editor.org/dist/v5/nano-5.6.1.tar.xz
-        sha256: '760d7059e0881ca0ee7e2a33b09d999ec456ff7204df86bee58eb6f523ee8b09'
+        url: https://www.nano-editor.org/dist/v5/nano-5.7.tar.xz
+        sha256: 'd4b181cc2ec11def3711b4649e34f2be7a668e70ab506860514031d069cccafa'
         x-update:
           url: https://www.nano-editor.org/download.php
           url-pattern: /dist/v[^/]+/nano-$version\.tar\.xz
@@ -991,8 +991,8 @@ modules:
       - /app/bin/pywayland-scanner
     sources:
       - type: archive
-        url: https://files.pythonhosted.org/packages/89/52/9a538a33ec7379fdf4d226371da56dd63265a39c335487d0a7724c5b99ad/pywayland-0.4.1.tar.gz
-        sha256: 'b1c819343aa401a8c3700ee4e275eacdf2d883d8fa4e0151ebef32ec47241255'
+        url: https://files.pythonhosted.org/packages/68/f0/31aaa1671607dc4c2a7cda4c3e3742303a62ce4eb1e601578cd3d3546e00/pywayland-0.4.3.tar.gz
+        sha256: '80ad1d0ca840c654e2e7bcb07688465b534f303cdbc184fe04858874a55c2795'
         x-update:
           type: pypi
           project: pywayland
