@@ -29,3 +29,6 @@ publish:
 
 update-appstream:
 	./nufbctl updaterepo
+
+prune:
+	./nufbctl prunerepo 5

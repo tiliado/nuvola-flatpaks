@@ -8,7 +8,7 @@ import nufb
 from nufb import utils
 from nufb.builder import build_adk, build_all, build_app, build_apps, build_base, build_cdk, build_nuvola
 from nufb.logging import init_logging
-from nufb.repo import update_repo
+from nufb.repo import update_repo, prune_repo
 
 
 def main() -> int:
@@ -18,7 +18,18 @@ def main() -> int:
         sys.argv[0] = "nufbctl"
 
     init_logging()
-    clizy.run_funcs(buildall, buildcdk, buildadk, buildbase, buildnuvola, buildapp, buildapps, updaterepo, version)
+    clizy.run_funcs(
+        buildall,
+        buildcdk,
+        buildadk,
+        buildbase,
+        buildnuvola,
+        buildapp,
+        buildapps,
+        updaterepo,
+        prunerepo,
+        version,
+    )
     return 0
 
 
@@ -170,6 +181,10 @@ def updaterepo():
     config = asyncio.run(utils.load_yaml(Path.cwd() / "nufb.yml"))
     asyncio.run(update_repo(config))
 
+
+def prunerepo(depth: int):
+    config = asyncio.run(utils.load_yaml(Path.cwd() / "nufb.yml"))
+    asyncio.run(prune_repo(config, depth))
 
 if __name__ == "__main__":
     sys.exit(main())

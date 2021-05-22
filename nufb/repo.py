@@ -36,3 +36,30 @@ async def update_repo(config: dict) -> None:
         raise ValueError(code)
     else:
         LOGGER.info("%s returned %d.\n%s", argv, code, out)
+
+
+async def prune_repo(config: dict, depth: int) -> None:
+    repository = config["repository"]
+    repo_dir = Path(expandvars(expanduser(repository["path"]))).absolute()
+    key_id = repository["key_id"]
+
+    await fs.makedirs(repo_dir, exist_ok=True)
+
+    argv = [
+        "time",
+        "flatpak",
+        "build-update-repo",
+        "-vv",
+        "--prune",
+        f"--prune-depth={depth}",
+        f"--gpg-sign={key_id}",
+        fspath(repo_dir),
+    ]
+
+    LOGGER.debug("Running %s in %s.", argv, repo_dir)
+    code, out = await exec_subprocess(argv, cwd=repo_dir)
+    if code:
+        LOGGER.error("%s returned %d.\n%s", argv, code, out)
+        raise ValueError(code)
+    else:
+        LOGGER.info("%s returned %d.\n%s", argv, code, out)
