@@ -74,15 +74,15 @@ modules:
       - /app/lib/node_modules/npm/package.json
     sources:
       - type: archive
-        url: https://nodejs.org/dist/latest/node-v16.2.0.tar.xz
-        sha256: 'd0f93b9842afb8f23c07862e9cd48226e7104547f7b2415d250fdb752d1b35cf'
+        url: https://nodejs.org/dist/latest/node-v16.4.0.tar.xz
+        sha256: 'f91e212e0b64d5fa745b15da4b8ac504acf72fb9216bfa77d3f66ca0e178c81d'
         x-update:
           url: https://nodejs.org/dist/latest/
           url-pattern: node-v$pure_version\.tar\.xz
     post-install:
       - rm -r /app/bin/npx /app/include/node /app/share/{doc,man,systemtap}
       - rm -r /app/lib/node_modules/npm/{man,docs,tap-snapshots}
-      - rm -r /app/lib/node_modules/npm/{.[^.]*,AUTHORS,*.md,LICENSE}
+      - rm -r /app/lib/node_modules/npm/{.[^.]*,*.md,LICENSE}
 
   - name: standardjs
     # needed by: nuvolasdk
@@ -338,8 +338,8 @@ modules:
       - /app/share/valadoc-*/*
     sources:
       - type: archive
-        url: https://download.gnome.org/sources/vala/0.52/vala-0.52.3.tar.xz
-        sha256: '037ea1a92bf0f1ab04a71b52a01d50aca1945ad1017b6189d9614f84f5c9b2d9'
+        url: https://download.gnome.org/sources/vala/0.52/vala-0.52.4.tar.xz
+        sha256: 'ecde520e5160e659ee699f8b1cdc96065edbd44bbd08eb48ef5f2506751fdf31'
         x-update:
           type: gnome
           project: vala
@@ -376,8 +376,8 @@ modules:
       - /app/share/runtime/locale/*
     sources:
       - type: archive
-        url: https://www.nano-editor.org/dist/v5/nano-5.7.tar.xz
-        sha256: 'd4b181cc2ec11def3711b4649e34f2be7a668e70ab506860514031d069cccafa'
+        url: https://www.nano-editor.org/dist/v5/nano-5.8.tar.xz
+        sha256: 'e43b63db2f78336e2aa123e8d015dbabc1720a15361714bfd4b1bb4e5e87768c'
         x-update:
           url: https://www.nano-editor.org/download.php
           url-pattern: /dist/v[^/]+/nano-$version\.tar\.xz
