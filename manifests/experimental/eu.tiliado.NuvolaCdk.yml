@@ -1011,7 +1011,7 @@ modules:
     sources:
       - type: file
         url: https://dl.tiliado.eu/qt/shiboken2-5.15.2-5.15.2-cp38-cp38-linux_x86_64.whl
-        sha256: '0b5cb06af31c7116b16a237237e719f14c35145e0def4cca8567ba155f79b282'
+        sha256: '843b686a0800158f82d686fdd5071d5253ff9d72a266b08f7d6b40bb8eb42160'
 
   - name: python3-pyside2-custom
     buildsystem: simple
