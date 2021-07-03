@@ -63,7 +63,7 @@ modules:
     # needed by: standardjs
     buildsystem: simple
     build-commands:
-      - ./configure --prefix=/app && make -j$(expr $(grep -c processor /proc/cpuinfo) / 2) install
+      - ./configure --prefix=/app && make -j2 install
     x-keep:
       - /app/bin/node
     x-stage:
