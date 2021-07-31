@@ -6,11 +6,13 @@ repository:
   default_branch: stable
 apps:
   retired:
+    - amazon-cloud-player
     - apple-music
     - google-calendar
     - google-play-music
     - plex
     - pandora
+    - tidal
   stable:
     - 8tracks
     - airsonic
