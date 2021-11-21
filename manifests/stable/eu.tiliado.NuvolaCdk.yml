@@ -1,7 +1,7 @@
 ---
 app-id: eu.tiliado.NuvolaCdk
 runtime: org.gnome.Sdk
-runtime-version: '3.38'
+runtime-version: '40'
 sdk: org.gnome.Sdk
 command: bash
 finish-args:
@@ -63,7 +63,7 @@ modules:
     # needed by: standardjs
     buildsystem: simple
     build-commands:
-      - ./configure --prefix=/app && make -j2 install
+      - ./configure --prefix=/app && time make -j2 install
     x-keep:
       - /app/bin/node
     x-stage:
