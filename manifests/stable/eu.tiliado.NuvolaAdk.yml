@@ -119,7 +119,8 @@ modules:
         disable-shallow-clone: true
       - type: file
         path: adk-branding.json
-        dest-filename: branding/tiliado.json
+        dest: branding
+        dest-filename: tiliado.json
     build-commands:
       - python3 ./waf configure --prefix=/app --libdir=/app/lib --branding=tiliado --no-vala-lint
       - python3 ./waf build install
