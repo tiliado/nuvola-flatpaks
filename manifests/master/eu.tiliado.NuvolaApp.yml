@@ -43,6 +43,7 @@ finish-args:
   - --talk-name=org.xfce.SessionManager
   # MPRIS
   - --own-name=org.mpris.MediaPlayer2.NuvolaApp@APP_ID_UNIQUE@
+  - --own-name=org.mpris.MediaPlayer2.chromium.*
   # Unity launcher API
   - --talk-name=com.canonical.Unity
   # Notifications
